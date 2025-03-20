@@ -1,7 +1,5 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import reactLogo from "./assets/react.svg";
+import { useCallback, useMemo } from "react";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
-import viteLogo from "/vite.svg";
 import "./App.css";
 
 import {
@@ -13,14 +11,14 @@ import {
 
 import { TxViewer } from "./components/tx";
 
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient } from "@tanstack/react-query";
 import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { RegistryPage } from "./pages/registry";
 import { NavBar } from "./components/nav";
 import { processTx } from "./tx";
 
-export const queryClient = new QueryClient();
+const queryClient = new QueryClient();
 
 const persister = createSyncStoragePersister({
   storage: window.localStorage,

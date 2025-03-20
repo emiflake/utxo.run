@@ -2,12 +2,7 @@ import Fuse from "fuse.js";
 import { useMemo, useState } from "react";
 import { NavBar } from "../components/nav";
 import * as cexplorer from "../utils/cexplorer";
-import {
-  registryJSONURL,
-  registryURL,
-  ScriptInfo,
-  useRegistry,
-} from "../registry";
+import { registryJSONURL, ScriptInfo, useRegistry } from "../registry";
 import { ShimmerBox } from "../components/tx";
 import { ErrorBox } from "../App";
 

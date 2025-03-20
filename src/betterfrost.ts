@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import * as zod from "zod";
 
-export const betterfrostURL = "http://0.0.0.0:7777";
+export const betterfrostURL = import.meta.env.VITE_BETTERFROST_URL;
 
 export const transactionSchema = zod.object({
   index: zod.number(),
