@@ -157,7 +157,7 @@ export const ViewUnit = ({
   }, [quantity, decimals]);
 
   return (
-    <div className="grid grid-cols-4 gap-1 border-2 border-dotted border-gray-400 p-2 break-all">
+    <div className="grid grid-cols-4 gap-1 border-3 border-dotted border-gray-400 p-2 break-all">
       <span className="col-span-3 text-sm">{resolvedUnitName}</span>
       <span className="text-md justify-self-end">{adjustedQuantity}</span>
     </div>
