@@ -17,7 +17,6 @@ export const HashInput = ({
       className="flex-1 p-2 max-w-100 border-2 border-gray-200 focus:border-indigo-500 focus:ring-indigo-500 resize-none scroll-none overflow-hidden h-10"
       value={hash}
       onChange={(e) => {
-        console.log(e);
         setHash(e.target.value);
       }}
       wrap="off"

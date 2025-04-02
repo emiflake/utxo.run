@@ -16,7 +16,6 @@ export const AddressPage = () => {
   }, [searchParams]);
 
   const { data: utxos, isLoading, isError } = useUtxosByAddress(address);
-  console.log("utxos", utxos);
 
   const totalValue = useMemo(() => {
     // Map from unit to amount

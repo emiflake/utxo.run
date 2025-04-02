@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import * as zod from "zod";
 import * as tx from "./tx";
 
-export const betterfrostURL = import.meta.env.VITE_BETTERFROST_URL;
+export const betterfrostURL = '/betterfrost';
 
 export const transactionSchema = zod.object({
   index: zod.number(),

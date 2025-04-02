@@ -59,8 +59,6 @@
             };
           });
         in {
-
-          packages.bun = bun;
           devShells.default = pkgs.mkShell {
             buildInputs = [
               bun
