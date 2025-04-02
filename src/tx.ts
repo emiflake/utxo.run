@@ -1,7 +1,7 @@
 import * as CML from "@dcspark/cardano-multiplatform-lib-browser";
 
-import { Result, Tx, failure, success } from "./types";
 import { TransactionAmount } from "./betterfrost";
+import { failure, Result, success } from "./result";
 
 export type TxProcessError = {
   message: string;
@@ -13,6 +13,7 @@ export type TransactionInput = {
 };
 
 export type TransactionOutput = {
+  tx_hash: string;
   address: string;
   coin: bigint;
   amount: TransactionAmount[];
@@ -24,6 +25,7 @@ export type Transaction = {
   outputs: TransactionOutput[];
   referenceInputs: TransactionInput[];
   fee: bigint;
+  hash: string;
 };
 
 type CMLListLike<T> = {
@@ -67,10 +69,15 @@ const convertCMLMultiAsset = (
 
   return res;
 };
-export const processTx = (txCbor: string): Result<Tx, TxProcessError> => {
+
+export const processTxFromCbor = (
+  txCbor: string,
+): Result<Transaction, TxProcessError> => {
   try {
     const cmlTx = CML.Transaction.from_cbor_hex(txCbor);
     const body = cmlTx.body();
+
+    const tx_hash = CML.hash_transaction(cmlTx.body()).to_hex();
 
     const inputs = convertCMLList<CML.TransactionInput>(body.inputs());
 
@@ -95,6 +102,7 @@ export const processTx = (txCbor: string): Result<Tx, TxProcessError> => {
         (o) => ({
           address: o.address().to_bech32(),
           coin: o.amount().coin(),
+          tx_hash,
           amount: [
             ...convertCMLMultiAsset(o.amount().multi_asset()),
             {
@@ -107,12 +115,10 @@ export const processTx = (txCbor: string): Result<Tx, TxProcessError> => {
       ),
       referenceInputs,
       fee: body.fee(),
+      hash: tx_hash,
     };
 
-    return success({
-      cmlTx,
-      transaction,
-    });
+    return success(transaction);
   } catch (e) {
     return failure({ message: `Got error processing tx: ${e}` });
   }

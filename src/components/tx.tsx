@@ -1,6 +1,3 @@
-import * as CML from "@dcspark/cardano-multiplatform-lib-browser";
-import { Tx } from "../types";
-
 import {
   TransactionAmount,
   useTxByHash,
@@ -10,7 +7,8 @@ import {
 import { useMemo } from "react";
 import * as cexplorer from "../utils/cexplorer";
 import { useRegistry } from "../registry";
-import { TransactionInput, TransactionOutput } from "../tx";
+import { Transaction, TransactionInput, TransactionOutput } from "../tx";
+import { Link } from "react-router";
 
 export const ViewTransactionHash = ({ hash }: { hash: string }) => {
   const { data: tx, isLoading, isError } = useTxByHash(hash);
@@ -33,9 +31,7 @@ export const ViewTransactionHash = ({ hash }: { hash: string }) => {
             <li className="text-xs text-gray-500">
               <span>Block: </span>
               <a
-                href={cexplorer.block(tx.block)}
-                target="_blank"
-                rel="noreferrer"
+                href="#"
                 className="text-indigo-500 md:hover:underline"
               >
                 {tx.block_height}
@@ -53,9 +49,7 @@ export const ViewTransactionHash = ({ hash }: { hash: string }) => {
     if (tx) {
       return (
         <a
-          href={cexplorer.txHash(hash)}
-          target="_blank"
-          rel="noreferrer"
+          href="#"
           className="text-indigo-500 md:hover:underline"
         >
           <span className="break-all">{hash}</span>
@@ -87,9 +81,12 @@ export const ViewTransactionHash = ({ hash }: { hash: string }) => {
 
 export const ViewTxRef = ({ txref }: { txref: string }) => {
   return (
-    <span className="self-center justify-self-end break-all text-xs text-gray-500">
+    <Link
+      to={`/submitted-tx?txHash=${txref}`}
+      className="text-indigo-500 md:hover:underline"
+    >
       {txref}
-    </span>
+    </Link>
   );
 };
 
@@ -172,14 +169,12 @@ export const ViewValue = ({ value }: { value: TransactionAmount[] }) => {
 
 export const ViewAddress = ({ address }: { address: string }) => {
   return (
-    <a
-      href={cexplorer.address(address ?? "")}
-      target="_blank"
-      rel="noreferrer"
-      className="self-center text-indigo-500 md:hover:underline text-xs break-all"
+    <Link
+      to={`/address?address=${address}`}
+      className="text-indigo-500 md:hover:underline text-md break-all"
     >
       {address}
-    </a>
+    </Link>
   );
 };
 
@@ -298,20 +293,16 @@ export const ViewDatum = ({ datum }: { datum: string }) => {
 
 export const ViewTransactionOutput = ({
   output,
+  showTxHash = false,
 }: {
   output: TransactionOutput;
+  showTxHash?: boolean;
 }) => {
   return (
     <div className="inline-flex flex-col p-2 border-2 border-gray-400 gap-2 bg-gray-50 break-all">
       <h2>Output</h2>
-      <a
-        href={cexplorer.address(output.address)}
-        target="_blank"
-        rel="noreferrer"
-        className="text-indigo-500 text-xs md:hover:underline"
-      >
-        {output.address}
-      </a>
+      <ViewAddress address={output.address} />
+      {showTxHash && <ViewTxRef txref={output.tx_hash} />}
       <SeparatorLine />
       <ViewValue value={output.amount} />
       {output.cbor_datum && (
@@ -324,34 +315,34 @@ export const ViewTransactionOutput = ({
   );
 };
 
-export const TxViewer = ({ tx }: { tx: Tx }) => {
-  const inputs = tx.transaction.inputs.map((input) => (
+export const TxViewer = ({ tx }: { tx: Transaction }) => {
+  const inputs = tx.inputs.map((input) => (
     <ViewTransactionInput key={input.transactionId} input={input} />
   ));
-  const outputs = tx.transaction.outputs.map((output) => (
+  const outputs = tx.outputs.map((output) => (
     <ViewTransactionOutput key={output.address} output={output} />
   ));
-  const referenceInputs = tx.transaction.referenceInputs.map((input) => (
+  const referenceInputs = tx.referenceInputs.map((input) => (
     <ViewTransactionInput key={input.transactionId} input={input} />
   ));
 
   return (
     <div className="flex flex-col p-4 border-2 border-gray-200 gap-2">
       <h1>Transaction View</h1>
-      <ViewTransactionHash
-        hash={CML.hash_transaction(tx.cmlTx.body()).to_hex()}
-      />
+      <ViewTransactionHash hash={tx.hash} />
       <div className="flex flex-initial gap-4 border-2 border-gray-400 bg-gray-50 p-2">
-        Fee: {tx.transaction.fee} lovelace
+        Fee: {tx.fee} lovelace
       </div>
       <div className="flex flex-initial gap-2">
         <div className="flex flex-col w-1/2 gap-2">
           <h1 className="text-xl text-slate-900">Inputs</h1>
           {inputs}
-          <div className="flex flex-col gap-2 bg-amber-50 p-2">
-            <h1 className="text-xl text-slate-900">Reference Inputs</h1>
-            {referenceInputs}
-          </div>
+          {referenceInputs.length > 0 && (
+            <div className="flex flex-col gap-2 bg-amber-50 p-2">
+              <h1 className="text-xl text-slate-900">Reference Inputs</h1>
+              {referenceInputs}
+            </div>
+          )}
         </div>
         <div className="flex flex-col w-1/2 gap-2">
           <h1 className="text-xl text-slate-900">Outputs</h1>

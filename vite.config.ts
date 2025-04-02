@@ -13,5 +13,8 @@ export default defineConfig({
     watch: {
       ignored: ["**/.direnv/**"],
     },
+    cors: true,
+
+    host: "0.0.0.0",
   },
 });

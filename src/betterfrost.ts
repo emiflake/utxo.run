@@ -1,5 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import * as zod from "zod";
+import { TxProcessError } from "./tx";
+import * as tx from "./tx";
+import { Result, success } from "./result";
 
 export const betterfrostURL = import.meta.env.VITE_BETTERFROST_URL;
 
@@ -75,6 +78,112 @@ export type TransactionUtxosResponse = zod.infer<
   typeof transactionUtxosResponseSchema
 >;
 
+export const blockSchema = zod.object({
+  hash: zod.string(),
+  time: zod.number(),
+  height: zod.number(),
+  size: zod.number(),
+  slot: zod.number(),
+  epoch: zod.number(),
+  epoch_slot: zod.number(),
+  slot_leader: zod.string(),
+  tx_count: zod.number(),
+  output: zod.string().nullable(),
+  fees: zod.string().nullable(),
+  block_vrf: zod.string(),
+  op_cert: zod.string(),
+  op_cert_counter: zod.string(),
+  previous_block: zod.string(),
+  next_block: zod.string().nullable(),
+  confirmations: zod.number(),
+});
+
+export type Block = zod.infer<typeof blockSchema>;
+
+export const assetPolicyTransactionSchema = zod.object({
+  address: zod.string(),
+  tx_hash: zod.string(),
+  tx_index: zod.number(),
+  output_index: zod.number(),
+  amount: zod.array(transactionAmountSchema),
+  block: zod.string(),
+  block_slot: zod.number(),
+  data_hash: zod.string().nullable(),
+  inline_datum: zod.string().nullable(),
+  reference_script_hash: zod.string().nullable(),
+});
+
+export type AssetPolicyTransaction = zod.infer<
+  typeof assetPolicyTransactionSchema
+>;
+
+export const addressUtxoSchema = zod.object({
+  address: zod.string(),
+  block: zod.string(),
+  tx_hash: zod.string(),
+  tx_index: zod.number(),
+  output_index: zod.number(),
+  amount: zod.array(transactionAmountSchema),
+  data_hash: zod.string().nullable(),
+  inline_datum: zod.string().nullable(),
+  reference_script_hash: zod.string().nullable(),
+});
+
+export type AddressUtxo = zod.infer<typeof addressUtxoSchema>;
+
+// #[derive(Debug, FromRow, Serialize, Deserialize, PartialEq)]
+// pub struct Cbor {
+//     pub cbor: String,
+// }
+
+export const cborSchema = zod.object({
+  cbor: zod.string(),
+});
+
+export type Cbor = zod.infer<typeof cborSchema>;
+
+export const getTxsWithPolicyIds = async (
+  policyIds: string[],
+): Promise<AssetPolicyTransaction[]> => {
+  const response = await fetch(`${betterfrostURL}/api/v0/assets/policy/utxos`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(policyIds),
+  });
+  const json = await response.json();
+
+  return assetPolicyTransactionSchema.array().parse(json);
+};
+
+export const getCborByDatumHash = async (datumHash: string): Promise<Cbor> => {
+  const response = await fetch(
+    `${betterfrostURL}/api/v0/scripts/datum/${datumHash}/cbor`,
+  );
+  const json = await response.json();
+
+  return cborSchema.parse(json);
+};
+
+export const getLatestBlock = async (): Promise<Block> => {
+  const response = await fetch(`${betterfrostURL}/api/v0/blocks/latest`);
+  const json = await response.json();
+
+  return blockSchema.parse(json);
+};
+
+export const getBlockByHashOrNumber = async (
+  hashOrNumber: string,
+): Promise<Block> => {
+  const response = await fetch(
+    `${betterfrostURL}/api/v0/blocks/${hashOrNumber}`,
+  );
+  const json = await response.json();
+
+  return blockSchema.parse(json);
+};
+
 export const getTxByHash = async (
   hash: string,
 ): Promise<Transaction | null> => {
@@ -98,6 +207,48 @@ export const getTxUtxosByHash = async (
   }
 };
 
+export const getUtxosByAddress = async (
+  address: string,
+): Promise<AddressUtxo[]> => {
+  const response = await fetch(
+    `${betterfrostURL}/api/v0/addresses/${address}/utxos`,
+    {
+      method: "GET",
+    },
+  );
+  const json = await response.json();
+
+  return addressUtxoSchema.array().parse(json);
+};
+
+export const useUtxosByAddress = (
+  address: string,
+): {
+  data: AddressUtxo[] | undefined;
+  isLoading: boolean;
+  isError: boolean;
+} => {
+  return useQuery({
+    queryKey: ["utxos-by-address", address],
+    queryFn: () => getUtxosByAddress(address),
+    staleTime: 10_000,
+  });
+};
+
+export const useTxsWithPolicyIds = (
+  policyIds: string[],
+): {
+  data: AssetPolicyTransaction[] | undefined;
+  isLoading: boolean;
+  isError: boolean;
+} => {
+  return useQuery({
+    queryKey: ["txs-with-policy-ids", policyIds],
+    queryFn: () => getTxsWithPolicyIds(policyIds),
+    staleTime: 10_000,
+  });
+};
+
 export const useTxUtxosByHash = (
   hash: string,
 ): {
@@ -119,5 +270,125 @@ export const useTxByHash = (
     queryKey: ["tx", hash],
     queryFn: () => getTxByHash(hash),
     staleTime: 10_000,
+  });
+};
+
+export const useLatestBlock = (): {
+  data: Block | undefined;
+  isLoading: boolean;
+  isError: boolean;
+} => {
+  return useQuery({
+    queryKey: ["latest-block"],
+    queryFn: () => getLatestBlock(),
+    staleTime: 1000,
+    refetchInterval: 5000,
+  });
+};
+
+export const useBlockByHashOrNumber = (
+  hashOrNumber: string,
+): {
+  data: Block | undefined;
+  isLoading: boolean;
+  isError: boolean;
+} => {
+  return useQuery({
+    queryKey: ["block", hashOrNumber],
+    queryFn: () => getBlockByHashOrNumber(hashOrNumber),
+    staleTime: 10_000,
+  });
+};
+
+export const useCborByDatumHash = (
+  datumHash: string,
+): {
+  data: string | undefined;
+  isLoading: boolean;
+  isError: boolean;
+} => {
+  return useQuery({
+    queryKey: ["cbor", datumHash],
+    queryFn: () => getCborByDatumHash(datumHash).then((cbor) => cbor.cbor),
+    staleTime: 10_000,
+  });
+};
+
+const processTxFromBetterfrostData = (
+  tx: Transaction,
+  utxos: TransactionUtxosResponse,
+  datumHashes: Record<string, string>,
+): Result<tx.Transaction, TxProcessError> => {
+  const fee = BigInt(tx.fees);
+
+  const tx_hash = tx.hash;
+
+  const inputs: tx.TransactionInput[] = utxos.inputs.map((input) => ({
+    transactionId: input.tx_hash ?? "",
+    outputIndex: BigInt(input.output_index ?? 0),
+  }));
+
+  const outputs: tx.TransactionOutput[] = utxos.outputs.map((output) => ({
+    address: output.address ?? "",
+    coin: 0n,
+    tx_hash,
+    amount:
+      output.amount?.map((a) => ({
+        unit: a.unit,
+        quantity: a.quantity,
+      })) ?? [],
+    cbor_datum: output.inline_datum
+      ? output.inline_datum
+      : (datumHashes[output.data_hash ?? ""] ?? ""),
+  }));
+
+  // TODO
+  const referenceInputs: tx.TransactionInput[] = [];
+  const res: tx.Transaction = {
+    inputs,
+    outputs,
+    referenceInputs,
+    fee,
+    hash: tx.hash,
+  };
+
+  return success(res);
+};
+
+export const useTxData = (
+  txHash: string,
+): {
+  data: tx.Transaction | undefined;
+  isLoading: boolean;
+  isError: boolean;
+} => {
+  return useQuery({
+    queryKey: ["tx-data", txHash],
+    queryFn: async () => {
+      const tx = await getTxByHash(txHash);
+      if (tx === null) {
+        throw new Error("Could not `getTxByHash`");
+      }
+      const utxos = await getTxUtxosByHash(txHash);
+      if (utxos === undefined) {
+        throw new Error("Could not `getTxUtxosByHash`");
+      }
+      const datumHashes: Record<string, string> = {};
+      for (const output of utxos.outputs) {
+        if (output.data_hash !== null) {
+          const cbor = await getCborByDatumHash(output.data_hash);
+          if (cbor === undefined) {
+            throw new Error("Could not `getCborByDatumHash` for datum hash");
+          }
+          datumHashes[output.data_hash] = cbor.cbor;
+        }
+      }
+      const result = processTxFromBetterfrostData(tx, utxos, datumHashes);
+      if (result.success) {
+        return result.value;
+      } else {
+        throw new Error(result.error.message);
+      }
+    },
   });
 };
