@@ -1,8 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import * as zod from "zod";
-import { TxProcessError } from "./tx";
 import * as tx from "./tx";
-import { Result, success } from "./result";
 
 export const betterfrostURL = import.meta.env.VITE_BETTERFROST_URL;
 
@@ -131,11 +129,6 @@ export const addressUtxoSchema = zod.object({
 
 export type AddressUtxo = zod.infer<typeof addressUtxoSchema>;
 
-// #[derive(Debug, FromRow, Serialize, Deserialize, PartialEq)]
-// pub struct Cbor {
-//     pub cbor: String,
-// }
-
 export const cborSchema = zod.object({
   cbor: zod.string(),
 });
@@ -161,6 +154,13 @@ export const getCborByDatumHash = async (datumHash: string): Promise<Cbor> => {
   const response = await fetch(
     `${betterfrostURL}/api/v0/scripts/datum/${datumHash}/cbor`,
   );
+  const json = await response.json();
+
+  return cborSchema.parse(json);
+};
+
+export const getTxCborByHash = async (hash: string): Promise<Cbor> => {
+  const response = await fetch(`${betterfrostURL}/api/v0/txs/${hash}/cbor`);
   const json = await response.json();
 
   return cborSchema.parse(json);
@@ -314,47 +314,6 @@ export const useCborByDatumHash = (
   });
 };
 
-const processTxFromBetterfrostData = (
-  tx: Transaction,
-  utxos: TransactionUtxosResponse,
-  datumHashes: Record<string, string>,
-): Result<tx.Transaction, TxProcessError> => {
-  const fee = BigInt(tx.fees);
-
-  const tx_hash = tx.hash;
-
-  const inputs: tx.TransactionInput[] = utxos.inputs.map((input) => ({
-    transactionId: input.tx_hash ?? "",
-    outputIndex: BigInt(input.output_index ?? 0),
-  }));
-
-  const outputs: tx.TransactionOutput[] = utxos.outputs.map((output) => ({
-    address: output.address ?? "",
-    coin: 0n,
-    tx_hash,
-    amount:
-      output.amount?.map((a) => ({
-        unit: a.unit,
-        quantity: a.quantity,
-      })) ?? [],
-    cbor_datum: output.inline_datum
-      ? output.inline_datum
-      : (datumHashes[output.data_hash ?? ""] ?? ""),
-  }));
-
-  // TODO
-  const referenceInputs: tx.TransactionInput[] = [];
-  const res: tx.Transaction = {
-    inputs,
-    outputs,
-    referenceInputs,
-    fee,
-    hash: tx.hash,
-  };
-
-  return success(res);
-};
-
 export const useTxData = (
   txHash: string,
 ): {
@@ -365,25 +324,8 @@ export const useTxData = (
   return useQuery({
     queryKey: ["tx-data", txHash],
     queryFn: async () => {
-      const tx = await getTxByHash(txHash);
-      if (tx === null) {
-        throw new Error("Could not `getTxByHash`");
-      }
-      const utxos = await getTxUtxosByHash(txHash);
-      if (utxos === undefined) {
-        throw new Error("Could not `getTxUtxosByHash`");
-      }
-      const datumHashes: Record<string, string> = {};
-      for (const output of utxos.outputs) {
-        if (output.data_hash !== null) {
-          const cbor = await getCborByDatumHash(output.data_hash);
-          if (cbor === undefined) {
-            throw new Error("Could not `getCborByDatumHash` for datum hash");
-          }
-          datumHashes[output.data_hash] = cbor.cbor;
-        }
-      }
-      const result = processTxFromBetterfrostData(tx, utxos, datumHashes);
+      const cbor = await getTxCborByHash(txHash);
+      const result = await tx.processTxFromCbor(cbor.cbor);
       if (result.success) {
         return result.value;
       } else {
