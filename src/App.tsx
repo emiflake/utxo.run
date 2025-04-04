@@ -31,6 +31,7 @@ function App() {
     >
       <Router>
         <Routes>
+          <Route path="/" element={<TxViewPage />} />
           <Route path="/:txCbor" element={<TxViewPage />} />
           <Route path="/registry" element={<RegistryPage />} />
           <Route path="/chain" element={<ChainPage />} />
