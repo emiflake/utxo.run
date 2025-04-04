@@ -26,6 +26,10 @@ export type Transaction = {
   referenceInputs: TransactionInput[];
   fee: bigint;
   hash: string;
+  ttl: bigint | undefined;
+  requiredSigners: string[];
+  mint: TransactionAmount[];
+  burn: TransactionAmount[];
 };
 
 type CMLListLike<T> = {
@@ -81,6 +85,25 @@ export const processTxFromCbor = (
 
     const inputs = convertCMLList<CML.TransactionInput>(body.inputs());
 
+    const ttl = body.ttl();
+
+    const maybeRequiredSigners = body.required_signers();
+
+    const { mint, burn } = (() => {
+      const m = body.mint();
+      if (m) {
+        const positive_mint = convertCMLMultiAsset(m.as_positive_multiasset());
+        const burn = convertCMLMultiAsset(m.as_negative_multiasset());
+        return { mint: positive_mint, burn };
+      } else {
+        return { mint: [], burn: [] };
+      }
+    })();
+
+    const requiredSigners = (maybeRequiredSigners
+      ? convertCMLList<CML.Ed25519KeyHash>(maybeRequiredSigners)
+      : []).map((k) => k.to_hex());
+
     const referenceInputs = (() => {
       const ref = body.reference_inputs();
       if (ref) {
@@ -116,6 +139,10 @@ export const processTxFromCbor = (
       referenceInputs,
       fee: body.fee(),
       hash: tx_hash,
+      ttl,
+      requiredSigners,
+      mint,
+      burn,
     };
 
     return success(transaction);

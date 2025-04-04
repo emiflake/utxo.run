@@ -83,7 +83,7 @@ export const ViewTxRef = ({ txref }: { txref: string }) => {
   return (
     <Link
       to={`/submitted-tx/${txref}`}
-      className="text-indigo-500 md:hover:underline break-all"
+      className="text-indigo-500 font-mono md:hover:underline break-all"
     >
       {txref}
     </Link>
@@ -123,7 +123,7 @@ export const ViewUnit = ({
         return (
           <span className="flex gap-2">
             <a
-              className="text-indigo-500 md:hover:underline"
+              className="text-indigo-500 font-mono md:hover:underline"
               href={cexplorer.script(unit)}
             >
               {showPrefix(unit)}
@@ -137,7 +137,7 @@ export const ViewUnit = ({
           </span>
         );
       } else {
-        return <span>{showPrefix(unit)}</span>;
+        return <span className="font-mono">{showPrefix(unit)}</span>;
       }
     }
   }, [registry, unit, isLoading, isError]);
@@ -154,8 +154,8 @@ export const ViewUnit = ({
   }, [quantity, decimals]);
 
   return (
-    <div className="grid grid-cols-4 gap-1 border-3 border-dotted border-gray-400 p-2 break-all">
-      <span className="col-span-3 text-sm">{resolvedUnitName}</span>
+    <div className="flex flex-row justify-between gap-4 border-3 border-dotted border-gray-400 p-2 bg-white/50 break-all">
+      <span className="text-sm self-center">{resolvedUnitName}</span>
       <span className="text-md justify-self-end">{adjustedQuantity}</span>
     </div>
   );
@@ -171,7 +171,7 @@ export const ViewAddress = ({ address }: { address: string }) => {
   return (
     <Link
       to={`/address/${address}`}
-      className="text-indigo-500 md:hover:underline text-md break-all"
+      className="text-indigo-500 font-mono md:hover:underline text-md break-all"
     >
       {address}
     </Link>
@@ -213,7 +213,7 @@ export const ViewTransactionInput = ({
         <>
           {inputUtxo?.address && (
             <div className="flex flex-1 gap-2">
-              <span className="text-xs">Address:</span>
+              <span className="text-xs self-center">Address:</span>
               <ViewAddress address={inputUtxo?.address} />
             </div>
           )}
@@ -237,7 +237,7 @@ export const ViewTransactionInput = ({
   return (
     <div className="inline-flex flex-col p-2 border-2 gap-2 border-gray-400 bg-gray-50">
       <div className="flex flex-1 gap-4">
-        <h2>Input</h2>
+        <h2 className="self-center">Input</h2>
         <ViewTxRef txref={`${input.transactionId}#${input.outputIndex}`} />
       </div>
       {extraData}
@@ -328,13 +328,23 @@ export const TxViewer = ({ tx }: { tx: Transaction }) => {
 
   return (
     <div className="flex flex-col p-4 border-2 border-gray-200 gap-2">
-      <h1>Transaction View</h1>
       <ViewTransactionHash hash={tx.hash} />
       <div className="flex flex-initial gap-4 border-2 border-gray-400 bg-gray-50 p-2">
         Fee: {tx.fee} lovelace
       </div>
-      <div className="flex flex-initial gap-2">
-        <div className="flex flex-col w-1/2 gap-2">
+      {tx.ttl && <div className="flex flex-initial gap-4 border-2 border-gray-400 bg-gray-50 p-2">
+        TTL: {tx.ttl}
+      </div>}
+      {tx.requiredSigners.length > 0 && <div className="flex flex-initial gap-4 border-2 border-gray-400 bg-gray-50 p-2">
+        Required Signers:
+        {tx.requiredSigners.map((s) => (
+          <span key={s} className="text-indigo-500 md:hover:underline">
+            {s}
+          </span>
+        ))}
+      </div>}
+      <div className="flex flex-col lg:flex-row gap-2">
+        <div className="flex flex-col lg:w-1/2 gap-2">
           <h1 className="text-xl text-slate-900">Inputs</h1>
           {inputs}
           {referenceInputs.length > 0 && (
@@ -344,11 +354,19 @@ export const TxViewer = ({ tx }: { tx: Transaction }) => {
             </div>
           )}
         </div>
-        <div className="flex flex-col w-1/2 gap-2">
+        <div className="flex flex-col lg:w-1/2 gap-2">
           <h1 className="text-xl text-slate-900">Outputs</h1>
           {outputs}
         </div>
       </div>
+      {tx.mint.length > 0 && <div className="flex flex-col gap-2 bg-rose-50 p-2">
+        <h1 className="text-xl text-slate-900">Mint</h1>
+        <ViewValue value={tx.mint} />
+      </div>}
+      {tx.burn.length > 0 && <div className="flex flex-col gap-2 bg-rose-50 p-2">
+        <h1 className="text-xl text-slate-900">Burn</h1>
+        <ViewValue value={tx.burn} />
+      </div>}
     </div>
   );
 };

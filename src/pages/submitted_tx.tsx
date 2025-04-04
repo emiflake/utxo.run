@@ -56,7 +56,6 @@ export const SubmittedTxPage = () => {
         <main className="flex-1 flex flex-col gap-2">
           {txHash && (
             <>
-              <h2>Transaction {txHash}</h2>
               {txData && <TxViewer tx={txData} />}
               {isLoading && <ShimmerBox />}
               {isError && <ErrorBox message={"Could not load transaction"} />}
