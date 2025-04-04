@@ -2,24 +2,23 @@ import { useCallback, useMemo } from "react";
 import { processTxFromCbor } from "../tx";
 import { TxViewer } from "../components/tx";
 import { CborInput, ErrorBox } from "../App";
-import { useSearchParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { NavBar } from "../components/nav";
 
 export function TxViewPage() {
-  const [searchParams, setSearchParams] = useSearchParams({
-    txCbor: "",
-  });
+  const params = useParams()
 
   const txCbor = useMemo(() => {
-    return searchParams.get("txCbor") ?? "";
-  }, [searchParams]);
+    return params.txCbor ?? "";
+  }, [params]);
+
+  const navigate = useNavigate()
 
   const setTxCbor = useCallback(
     (txCbor: string) => {
-      searchParams.set("txCbor", txCbor);
-      setSearchParams(searchParams);
+      navigate(`/transaction-cbor/${txCbor}`);
     },
-    [setSearchParams, searchParams],
+    [navigate],
   );
 
   const processedCbor = useMemo(() => {

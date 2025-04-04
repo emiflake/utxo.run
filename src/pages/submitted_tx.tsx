@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from "react";
 import { NavBar } from "../components/nav";
-import { useSearchParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { useTxData } from "../betterfrost";
 import { ErrorBox } from "../App";
 import { ShimmerBox, TxViewer } from "../components/tx";
@@ -26,20 +26,18 @@ export const HashInput = ({
 };
 
 export const SubmittedTxPage = () => {
-  const [searchParams, setSearchParams] = useSearchParams({
-    txHash: "",
-  });
+  const params = useParams()
 
   const txHash = useMemo(() => {
-    return searchParams.get("txHash") ?? "";
-  }, [searchParams]);
+    return params.txHash ?? "";
+  }, [params]);
+  const navigate = useNavigate()
 
   const setTxHash = useCallback(
     (txHash: string) => {
-      searchParams.set("txHash", txHash);
-      setSearchParams(searchParams);
+      navigate(`/submitted-tx/${txHash}`)
     },
-    [setSearchParams, searchParams],
+    [navigate],
   );
 
   const { data: txData, isLoading, isError } = useTxData(txHash);

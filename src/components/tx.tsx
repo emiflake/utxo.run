@@ -22,7 +22,7 @@ export const ViewTransactionHash = ({ hash }: { hash: string }) => {
           <div className="flex flex-1">
             <span>Transaction is on-chain!</span>
             <img
-              src="check-badge.svg"
+              src="/check-badge.svg"
               alt="check badge"
               className="inline-block w-4 h-4 ml-2 self-center"
             />
@@ -82,7 +82,7 @@ export const ViewTransactionHash = ({ hash }: { hash: string }) => {
 export const ViewTxRef = ({ txref }: { txref: string }) => {
   return (
     <Link
-      to={`/submitted-tx?txHash=${txref}`}
+      to={`/submitted-tx/${txref}`}
       className="text-indigo-500 md:hover:underline break-all"
     >
       {txref}
@@ -170,7 +170,7 @@ export const ViewValue = ({ value }: { value: TransactionAmount[] }) => {
 export const ViewAddress = ({ address }: { address: string }) => {
   return (
     <Link
-      to={`/address?address=${address}`}
+      to={`/address/${address}`}
       className="text-indigo-500 md:hover:underline text-md break-all"
     >
       {address}

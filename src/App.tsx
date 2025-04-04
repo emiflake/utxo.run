@@ -31,11 +31,13 @@ function App() {
     >
       <Router>
         <Routes>
-          <Route path="/" element={<TxViewPage />} />
+          <Route path="/:txCbor" element={<TxViewPage />} />
           <Route path="/registry" element={<RegistryPage />} />
           <Route path="/chain" element={<ChainPage />} />
-          <Route path="/submitted-tx" element={<SubmittedTxPage />} />
-          <Route path="/address" element={<AddressPage />} />
+          <Route path="/submitted-tx/:txHash" 
+            element={<SubmittedTxPage />
+            } />
+          <Route path="/address/:address" element={<AddressPage />} />
         </Routes>
       </Router>
       <ReactQueryDevtools initialIsOpen />

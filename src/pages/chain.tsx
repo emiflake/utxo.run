@@ -60,7 +60,7 @@ export const ViewUtxo = ({
         <span className="text-xs">
           Transaction ID:
           <Link
-            to={`/submitted-tx?txHash=${utxo.transaction.id}`}
+            to={`/submitted-tx/${utxo.transaction.id}`}
             className="text-indigo-500 hover:underline"
           >
             {utxo.transaction.id}

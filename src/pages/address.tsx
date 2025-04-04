@@ -1,19 +1,17 @@
 import { useMemo } from "react";
 import { NavBar } from "../components/nav";
-import { useSearchParams } from "react-router";
 import { useUtxosByAddress } from "../betterfrost";
+import { useParams } from "react-router";
 import { ShimmerBox, ViewTransactionOutput, ViewUnit } from "../components/tx";
 import { TransactionOutput } from "../tx";
 import { ErrorBox } from "../App";
 
 export const AddressPage = () => {
-  const [searchParams] = useSearchParams({
-    address: "",
-  });
+  const params = useParams()
 
   const address = useMemo(() => {
-    return searchParams.get("address") ?? "";
-  }, [searchParams]);
+    return params.address ?? "";
+  }, [params]);
 
   const { data: utxos, isLoading, isError } = useUtxosByAddress(address);
 
