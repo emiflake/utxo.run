@@ -16,7 +16,7 @@ export function TxViewPage() {
 
   const setTxCbor = useCallback(
     (txCbor: string) => {
-      navigate(`/${txCbor}`);
+      navigate(`/tx/${txCbor}`);
     },
     [navigate],
   );

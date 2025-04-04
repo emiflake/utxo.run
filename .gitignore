@@ -25,3 +25,6 @@ dist-ssr
 
 .direnv
 workers
+
+tsconfig.app.tsbuildinfo
+tsconfig.node.tsbuildinfo
