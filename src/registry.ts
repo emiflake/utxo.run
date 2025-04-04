@@ -1,9 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import * as z from "zod";
 
-export const registryURL = import.meta.env.VITE_REGISTRY_URL;
+export const registryURL = '/registry-proxy';
 export const registryJSONURL = `${registryURL}/registry.json`;
-
 
 export const otherInfoSchema = z.object({
   agoraTestnetParams: z.unknown(),
@@ -29,12 +28,12 @@ export const scriptInfoSchema = z.object({
   tag: z.string(),
   network: z.object({
     tag: z.string(),
-  }),
-  description: z.string(),
+  }).optional(),
+  description: z.string().optional(),
   scriptHash: z.string(),
-  deployment: z.unknown(),
-  componentName: z.string(),
-  domain: z.unknown(),
+  deployment: z.unknown().optional(),
+  componentName: z.string().optional(),
+  domain: z.unknown().optional(),
   market: z.string().optional(),
 });
 

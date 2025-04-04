@@ -83,7 +83,7 @@ export const ViewTxRef = ({ txref }: { txref: string }) => {
   return (
     <Link
       to={`/submitted-tx?txHash=${txref}`}
-      className="text-indigo-500 md:hover:underline"
+      className="text-indigo-500 md:hover:underline break-all"
     >
       {txref}
     </Link>
@@ -213,7 +213,7 @@ export const ViewTransactionInput = ({
         <>
           {inputUtxo?.address && (
             <div className="flex flex-1 gap-2">
-              <span className="text-sm">Address:</span>
+              <span className="text-xs">Address:</span>
               <ViewAddress address={inputUtxo?.address} />
             </div>
           )}

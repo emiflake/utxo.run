@@ -24,21 +24,21 @@ export const NavBar = (props: NavBarProps) => {
         <div className="flex-1 flex gap-4 justify-center">
           <Link
             to="/registry"
-            className="border-2 border-gray-200 p-2 rounded-md"
+            className="p-2 rounded-md"
           >
             <span className="text-indigo-500 hover:underline ">Registry</span>
           </Link>
-          <Link to="/" className="border-2 border-gray-200 p-2 rounded-md">
+          <Link to="/" className="p-2 rounded-md">
             <span className="text-indigo-500 hover:underline">Tx by CBOR</span>
           </Link>
-          <Link to="/chain" className="border-2 border-gray-200 p-2 rounded-md">
+          <Link to="/chain" className="p-2 rounded-md">
             <span className="text-indigo-500 hover:underline">
               Chain explorer
             </span>
           </Link>
           <Link
             to="/submitted-tx"
-            className="border-2 border-gray-200 p-2 rounded-md"
+            className="p-2 rounded-md"
           >
             <span className="text-indigo-500 hover:underline">Tx by hash</span>
           </Link>

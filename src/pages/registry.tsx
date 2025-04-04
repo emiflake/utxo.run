@@ -67,7 +67,7 @@ const ViewScriptInfo = ({ scriptInfo }: { scriptInfo: ScriptInfo }) => {
         <Field name="Type" value={scriptInfo.type} />
         <Field name="Name" value={scriptInfo.name} />
         <Field name="Tag" value={scriptInfo.tag} />
-        <Field name="Network" value={scriptInfo.network.tag} />
+        <Field name="Network" value={scriptInfo.network?.tag} />
         <Field name="Description" value={scriptInfo.description} />
         <LinkField
           name="Script Hash"
@@ -138,7 +138,7 @@ export const RegistryPage = () => {
     if (registry) {
       const networkId = network === "Mainnet" ? "MainnetId" : "TestnetId";
       const options = registry.scriptInfos.filter((scriptInfo: ScriptInfo) => {
-        return scriptInfo.network.tag === networkId;
+        return scriptInfo.network?.tag === networkId;
       });
 
       if (search === "") {

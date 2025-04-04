@@ -34,6 +34,11 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/ogmios/, ""),
       },
+      '/registry-proxy': {
+        target: process.env.VITE_REGISTRY_URL,
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/registry-proxy/, ""),
+      },
     },
 
     host: "0.0.0.0",
