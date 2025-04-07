@@ -1,7 +1,6 @@
 import Fuse from "fuse.js";
 import { useMemo, useState } from "react";
 import { NavBar } from "../components/nav";
-import * as cexplorer from "../utils/cexplorer";
 import { registryJSONURL, ScriptInfo, useRegistry } from "../registry";
 import { ShimmerBox } from "../components/tx";
 import { ErrorBox } from "../App";
@@ -30,31 +29,6 @@ const ViewScriptInfo = ({ scriptInfo }: { scriptInfo: ScriptInfo }) => {
     );
   };
 
-  const LinkField = ({
-    name,
-    value,
-    format,
-  }: {
-    name: string;
-    value: string;
-    format: (value: string) => string;
-  }) => {
-    return (
-      <tr>
-        <td className="p-2">{name}</td>
-        <td>
-          <a
-            className="text-blue-500 hover:underline"
-            href={format(value)}
-            target="_blank"
-          >
-            {value}
-          </a>
-        </td>
-      </tr>
-    );
-  };
-
   return (
     <table className="table-auto border-2 border-gray-200 p-2">
       <thead>
@@ -69,10 +43,9 @@ const ViewScriptInfo = ({ scriptInfo }: { scriptInfo: ScriptInfo }) => {
         <Field name="Tag" value={scriptInfo.tag} />
         <Field name="Network" value={scriptInfo.network?.tag} />
         <Field name="Description" value={scriptInfo.description} />
-        <LinkField
+        <Field
           name="Script Hash"
           value={scriptInfo.scriptHash}
-          format={(value) => cexplorer.script(value)}
         />
         <Field name="Component Name" value={scriptInfo.componentName} />
         <Field name="Market" value={scriptInfo.market} />

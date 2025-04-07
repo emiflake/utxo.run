@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, UseQueryResult } from "@tanstack/react-query";
 import * as zod from "zod";
 import * as tx from "./tx";
 
@@ -145,32 +145,24 @@ export const getTxsWithPolicyIds = async (
     },
     body: JSON.stringify(policyIds),
   });
-  const json = await response.json();
-
-  return assetPolicyTransactionSchema.array().parse(json);
+  return assetPolicyTransactionSchema.array().parse(await response.json());
 };
 
 export const getCborByDatumHash = async (datumHash: string): Promise<Cbor> => {
   const response = await fetch(
     `${betterfrostURL}/api/v0/scripts/datum/${datumHash}/cbor`,
   );
-  const json = await response.json();
-
-  return cborSchema.parse(json);
+  return cborSchema.parse(await response.json());
 };
 
 export const getTxCborByHash = async (hash: string): Promise<Cbor> => {
   const response = await fetch(`${betterfrostURL}/api/v0/txs/${hash}/cbor`);
-  const json = await response.json();
-
-  return cborSchema.parse(json);
+  return cborSchema.parse(await response.json());
 };
 
 export const getLatestBlock = async (): Promise<Block> => {
   const response = await fetch(`${betterfrostURL}/api/v0/blocks/latest`);
-  const json = await response.json();
-
-  return blockSchema.parse(json);
+  return blockSchema.parse(await response.json());
 };
 
 export const getBlockByHashOrNumber = async (
@@ -179,9 +171,7 @@ export const getBlockByHashOrNumber = async (
   const response = await fetch(
     `${betterfrostURL}/api/v0/blocks/${hashOrNumber}`,
   );
-  const json = await response.json();
-
-  return blockSchema.parse(json);
+  return blockSchema.parse(await response.json());
 };
 
 export const getTxByHash = async (
@@ -197,14 +187,7 @@ export const getTxUtxosByHash = async (
   hash: string,
 ): Promise<TransactionUtxosResponse> => {
   const response = await fetch(`${betterfrostURL}/api/v0/txs/${hash}/utxos`);
-  const json = await response.json();
-
-  try {
-    return transactionUtxosResponseSchema.parse(json);
-  } catch (e) {
-    console.error(e);
-    throw e;
-  }
+  return transactionUtxosResponseSchema.parse(await response.json());
 };
 
 export const getUtxosByAddress = async (
@@ -223,11 +206,7 @@ export const getUtxosByAddress = async (
 
 export const useUtxosByAddress = (
   address: string,
-): {
-  data: AddressUtxo[] | undefined;
-  isLoading: boolean;
-  isError: boolean;
-} => {
+): UseQueryResult<AddressUtxo[], unknown> => {
   return useQuery({
     queryKey: ["utxos-by-address", address],
     queryFn: () => getUtxosByAddress(address),
@@ -237,11 +216,7 @@ export const useUtxosByAddress = (
 
 export const useTxsWithPolicyIds = (
   policyIds: string[],
-): {
-  data: AssetPolicyTransaction[] | undefined;
-  isLoading: boolean;
-  isError: boolean;
-} => {
+): UseQueryResult<AssetPolicyTransaction[], unknown> => {
   return useQuery({
     queryKey: ["txs-with-policy-ids", policyIds],
     queryFn: () => getTxsWithPolicyIds(policyIds),
@@ -251,11 +226,7 @@ export const useTxsWithPolicyIds = (
 
 export const useTxUtxosByHash = (
   hash: string,
-): {
-  data: TransactionUtxosResponse | undefined;
-  isLoading: boolean;
-  isError: boolean;
-} => {
+): UseQueryResult<TransactionUtxosResponse, unknown> => {
   return useQuery({
     queryKey: ["tx-utxos", hash],
     queryFn: () => getTxUtxosByHash(hash),
@@ -265,7 +236,7 @@ export const useTxUtxosByHash = (
 
 export const useTxByHash = (
   hash: string,
-): { data: Transaction | undefined; isLoading: boolean; isError: boolean } => {
+): UseQueryResult<Transaction, unknown> => {
   return useQuery({
     queryKey: ["tx", hash],
     queryFn: () => getTxByHash(hash),
@@ -273,11 +244,7 @@ export const useTxByHash = (
   });
 };
 
-export const useLatestBlock = (): {
-  data: Block | undefined;
-  isLoading: boolean;
-  isError: boolean;
-} => {
+export const useLatestBlock = (): UseQueryResult<Block, unknown> => {
   return useQuery({
     queryKey: ["latest-block"],
     queryFn: () => getLatestBlock(),
@@ -288,11 +255,7 @@ export const useLatestBlock = (): {
 
 export const useBlockByHashOrNumber = (
   hashOrNumber: string,
-): {
-  data: Block | undefined;
-  isLoading: boolean;
-  isError: boolean;
-} => {
+): UseQueryResult<Block, unknown> => {
   return useQuery({
     queryKey: ["block", hashOrNumber],
     queryFn: () => getBlockByHashOrNumber(hashOrNumber),
@@ -302,11 +265,7 @@ export const useBlockByHashOrNumber = (
 
 export const useCborByDatumHash = (
   datumHash: string,
-): {
-  data: string | undefined;
-  isLoading: boolean;
-  isError: boolean;
-} => {
+): UseQueryResult<string, unknown> => {
   return useQuery({
     queryKey: ["cbor", datumHash],
     queryFn: () => getCborByDatumHash(datumHash).then((cbor) => cbor.cbor),
@@ -314,13 +273,9 @@ export const useCborByDatumHash = (
   });
 };
 
-export const useTxData = (
+export const useTxDataByHash = (
   txHash: string,
-): {
-  data: tx.Transaction | undefined;
-  isLoading: boolean;
-  isError: boolean;
-} => {
+): UseQueryResult<tx.Transaction, unknown> => {
   return useQuery({
     queryKey: ["tx-data", txHash],
     queryFn: async () => {

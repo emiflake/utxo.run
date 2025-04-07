@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from "react";
 import { NavBar } from "../components/nav";
 import { useNavigate, useParams } from "react-router";
-import { useTxData } from "../betterfrost";
+import { useTxDataByHash } from "../betterfrost";
 import { ErrorBox } from "../App";
 import { ShimmerBox, TxViewer } from "../components/tx";
 
@@ -40,7 +40,7 @@ export const SubmittedTxPage = () => {
     [navigate],
   );
 
-  const { data: txData, isLoading, isError } = useTxData(txHash);
+  const { data: txData, isLoading, isError } = useTxDataByHash(txHash);
 
   return (
     <div className="min-h-screen flex flex-col p-1 gap-5">

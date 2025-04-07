@@ -87,8 +87,7 @@ export const processTxFromCbor = (
 
     const ttl = body.ttl();
 
-    const maybeRequiredSigners = body.required_signers();
-
+    
     const { mint, burn } = (() => {
       const m = body.mint();
       if (m) {
@@ -99,7 +98,8 @@ export const processTxFromCbor = (
         return { mint: [], burn: [] };
       }
     })();
-
+    
+    const maybeRequiredSigners = body.required_signers();
     const requiredSigners = (maybeRequiredSigners
       ? convertCMLList<CML.Ed25519KeyHash>(maybeRequiredSigners)
       : []).map((k) => k.to_hex());

@@ -5,7 +5,6 @@ import {
 } from "../betterfrost";
 
 import { useMemo } from "react";
-import * as cexplorer from "../utils/cexplorer";
 import { useRegistry } from "../registry";
 import { Transaction, TransactionInput, TransactionOutput } from "../tx";
 import { Link } from "react-router";
@@ -122,9 +121,10 @@ export const ViewUnit = ({
       if (liqwidName) {
         return (
           <span className="flex gap-2">
+            {/* TODO: Use local link */}
             <a
               className="text-indigo-500 font-mono md:hover:underline"
-              href={cexplorer.script(unit)}
+              href="#"
             >
               {showPrefix(unit)}
             </a>
