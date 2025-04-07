@@ -41,7 +41,7 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          build-args: | 
+          build-args: |
             VITE_REGISTRY_URL=https://public.liqwid.finance/v4
             VITE_BETTERFROST_URL=http://0.0.0.0:3001
             VITE_OGMIOS_URL=http://0.0.0.0:1337
