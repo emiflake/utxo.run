@@ -47,3 +47,13 @@ jobs:
             VITE_OGMIOS_URL=http://0.0.0.0:1337
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Add comment with image tag
+        uses: mshick/add-pr-comment@v2
+        with:
+          message: | 
+            Docker image pushed!
+            
+            |Tag|Commit hash|
+            |---|-----------|
+            |${{ steps.meta.outputs.tags }}|${{ github.sha }}|
