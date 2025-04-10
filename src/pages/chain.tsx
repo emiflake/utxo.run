@@ -58,7 +58,7 @@ export const ViewUtxo = ({
       <div className="flex flex-col gap-2">
         <span className="text-xs">Index: {utxo.index}</span>
         <span className="text-xs">
-          Transaction ID:
+          Transaction ID: {" "}
           <Link
             to={`/submitted-tx/${utxo.transaction.id}`}
             className="text-indigo-500 hover:underline"
@@ -107,7 +107,7 @@ export const ChainPage = () => {
       <NavBar />
 
       <div className="flex-1 flex flex-col sm:flex-row">
-        <main className="flex-1 flex flex-col gap-2 border-2 border-gray-200 p-4">
+        <main className="flex-1 flex flex-col gap-2">
           <h2>Chain explorer</h2>
 
           <div className="flex flex-col gap-2">
@@ -116,20 +116,19 @@ export const ChainPage = () => {
             </span>
           </div>
 
-          <div className="flex flex-1 gap-2">
-            <div className="flex flex-col gap-2 w-1/2 border dotted border-gray-200 p-4">
+          <div className="flex flex-col lg:flex-row lg:flex-1 gap-2">
+            <div className="flex flex-col gap-2 lg:w-1/2 border dotted border-gray-200 p-4">
               <p className="text-md">Latest block</p>
               <ViewLatestBlock />
             </div>
 
-            <div className="flex flex-col gap-2 w-1/2">
+            <div className="flex flex-col gap-2 lg:w-1/2">
               <ViewUtxos />
             </div>
           </div>
         </main>
-        <nav className="order-first sm:w-32"></nav>
-
-        <aside className="sm:w-32"></aside>
+        <aside className="order-first md:w-16 lg:w-32"></aside>
+        <aside className="md:w-16 lg:w-32"></aside>
       </div>
       <footer className="bg-gray-100"></footer>
     </div>

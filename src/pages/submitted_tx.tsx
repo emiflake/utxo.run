@@ -1,27 +1,56 @@
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { NavBar } from "../components/nav";
 import { useNavigate, useParams } from "react-router";
 import { useTxDataByHash } from "../betterfrost";
 import { ErrorBox } from "../App";
 import { ShimmerBox, TxViewer } from "../components/tx";
 
-export const HashInput = ({
-  hash,
-  setHash,
-}: {
-  hash: string;
-  setHash: (hash: string) => void;
-}) => {
+const TxHashForm = () => {
+  const navigate = useNavigate()
+
+  const [txHashValue, setTxHashValue] = useState("");
+
+  const handleSearch = useCallback((e: React.FormEvent) => {
+    e.preventDefault();
+    if (txHashValue.trim()) {
+      navigate(`/submitted-tx/${txHashValue.trim()}`);
+    }
+  }, [txHashValue, navigate]);
+
   return (
-    <textarea
-      className="flex-1 p-2 w-full border-2 border-gray-200 focus:border-indigo-500 focus:ring-indigo-500 resize-none scroll-none overflow-hidden h-10"
-      value={hash}
-      onChange={(e) => {
-        setHash(e.target.value);
-      }}
-      wrap="off"
-      rows={1}
-    />
+    <div className="mb-6 mt-4 mx-auto w-full bg-white border border-2 border-gray-200 overflow-hidden">
+      <div className="p-4">
+        <h2 className="text-lg font-medium text-gray-900 mb-3">Transaction Lookup</h2>
+        <form
+          onSubmit={handleSearch}
+          className="w-full"
+        >
+          <div className="flex flex-row sm:flex-row items-start sm:items-center gap-1">
+            <label htmlFor="tx-hash" className="text-sm min-w-[160px] font-medium text-gray-700">
+              Enter transaction hash:
+            </label>
+            <div className="w-full flex">
+              <div className="flex-grow">
+                <input
+                  type="text"
+                  id="tx-hash"
+                  name="tx-hash"
+                  value={txHashValue}
+                  onChange={(e) => setTxHashValue(e.target.value)}
+                  className="flex-1 p-2 w-full border-2 border-gray-200 focus:border-indigo-500 focus:ring-indigo-500 resize-none scroll-none overflow-hidden h-10"
+                />
+              </div>
+              <button
+                type="submit"
+                className="ml-2 px-4 py-2 bg-primary font-medium rounded hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-colors"
+              >
+                Search
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
   );
 };
 
@@ -32,15 +61,6 @@ export const SubmittedTxPage = () => {
     return params.txHash ?? "";
   }, [params]);
 
-  const navigate = useNavigate()
-
-  const setTxHash = useCallback(
-    (txHash: string) => {
-      navigate(`/submitted-tx/${txHash}`)
-    },
-    [navigate],
-  );
-
   const { data: txData, isLoading, isError } = useTxDataByHash(txHash);
 
   return (
@@ -50,19 +70,7 @@ export const SubmittedTxPage = () => {
       <div className="flex-1 flex flex-col sm:flex-row">
         <main className="flex-1 flex flex-col gap-2">
 
-          {!txData && <div className="mb-6 mt-4 mx-auto w-full bg-white border border-2 border-gray-200 overflow-hidden">
-            <div className="px-6 py-5">
-              <h2 className="text-lg font-medium text-gray-900 mb-3">Transaction Lookup</h2>
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-                <label htmlFor="tx-hash" className="text-sm font-medium text-gray-700 min-w-[180px]">
-                  Enter transaction hash:
-                </label>
-                <div className="w-full">
-                  <HashInput hash={txHash} setHash={setTxHash} />
-                </div>
-              </div>
-            </div>
-          </div>}
+          {!txData && <TxHashForm />}
           {txHash && (
             <>
               {txData && <TxViewer tx={txData} />}
@@ -76,9 +84,8 @@ export const SubmittedTxPage = () => {
             </div>
           )}
         </main>
-        <nav className="order-first sm:w-32"></nav>
-
-        <aside className="sm:w-32"></aside>
+        <aside className="order-first md:w-16 lg:w-32"></aside>
+        <aside className="md:w-16 lg:w-32"></aside>
       </div>
       <footer className=""></footer>
     </div>

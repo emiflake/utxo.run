@@ -10,9 +10,8 @@ export const PolicyPage = () => {
           <main className="flex-1 flex flex-col gap-2">
             We would render policy information here
           </main>
-          <nav className="order-first sm:w-32"></nav>
-  
-          <aside className="sm:w-32"></aside>
+          <aside className="order-first md:w-16 lg:w-32"></aside>
+          <aside className="md:w-16 lg:w-32"></aside>
         </div>
         <footer className=""></footer>
       </div>

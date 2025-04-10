@@ -165,9 +165,8 @@ export const RegistryPage = () => {
           <div className="flex flex-col gap-2">{scriptInfoViews}</div>
           {isError && <ErrorBox message={"Could not load registry"} />}
         </main>
-        <nav className="order-first sm:w-32"></nav>
-
-        <aside className="sm:w-32"></aside>
+        <aside className="order-first md:w-16 lg:w-32"></aside>
+        <aside className="md:w-16 lg:w-32"></aside>
       </div>
       <footer className="bg-gray-100"></footer>
     </div>

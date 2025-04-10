@@ -56,12 +56,12 @@ export const AddressPage = () => {
         <main className="flex-1 flex flex-col gap-2">
           <h2>Address {address}</h2>
 
-          <div className="flex gap-2 border-2 border-gray-200 p-4">
+          <div className="flex flex-col lg:flex-row lg:flex-1 gap-2">
             {isLoading && <ShimmerBox />}
             {isError && <ErrorBox message={"Could not load outputs"} />}
             {utxos && (
               <>
-                <div className="flex flex-col w-1/2 gap-2 border-2 border-gray-200 p-4">
+                <div className="flex flex-col lg:w-1/2 gap-2 border-1 border-gray-200 p-4">
                   <span className="text-md">Outputs</span>
                   {utxos && <span className="text-xs">Count: {utxos.length}</span>}
                   {processedUtxos?.map((utxo) => (
@@ -72,7 +72,7 @@ export const AddressPage = () => {
                     />
                   ))}
                 </div>
-                <div className="flex flex-col w-1/2 gap-2 border-2 border-gray-200 p-4">
+                <div className="flex flex-col lg:w-1/2 gap-2 border-1 border-gray-200 p-4">
                   <span className="text-md">Total asset value</span>
                   {totalValue && (
                     <span className="text-xs">
@@ -88,9 +88,8 @@ export const AddressPage = () => {
             )}
           </div>
         </main>
-        <nav className="order-first sm:w-32"></nav>
-
-        <aside className="sm:w-32"></aside>
+        <aside className="order-first md:w-16 lg:w-32"></aside>
+        <aside className="md:w-16 lg:w-32"></aside>
       </div>
       <footer className=""></footer>
     </div>
