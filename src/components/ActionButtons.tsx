@@ -82,7 +82,7 @@ interface ActionButtonProps {
 }
 
 function ActionButton({
-  className = '',
+  className = 'text-gray-500 hover:text-gray-700',
   title,
   ariaLabel,
   onClick,
@@ -93,7 +93,7 @@ function ActionButton({
   return (
     <button
       onClick={onClick}
-      className={`inline-flex items-center justify-center gap-1.5 p-1 text-xs text-gray-500 hover:text-gray-700 focus:outline-none transition-colors duration-200 ${className}`}
+      className={`inline-flex items-center justify-center gap-1.5 p-1 text-xs focus:outline-none transition-colors duration-200 ${className}`}
       title={title}
       aria-label={ariaLabel || title}
     >
@@ -117,7 +117,7 @@ interface ClipboardButtonProps {
 
 export function ClipboardButton({
   text,
-  className = '',
+  className = 'text-gray-500 hover:text-gray-700',
   copyDuration = 500
 }: ClipboardButtonProps) {
   const [copied, setCopied] = useState(false);
@@ -150,7 +150,7 @@ interface LinkClipboardButtonProps {
 
 export function LinkClipboardButton({
   text,
-  className = '',
+  className = 'text-gray-500 hover:text-gray-700',
   copyDuration = 500
 }: LinkClipboardButtonProps) {
   const [copied, setCopied] = useState(false);

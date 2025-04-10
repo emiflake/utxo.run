@@ -8,6 +8,7 @@ import { useMemo } from "react";
 import { useRegistry } from "../registry";
 import { Transaction, TransactionInput, TransactionOutput } from "../tx";
 import { Link } from "react-router";
+import { ClipboardButton } from "./ActionButtons";
 
 export const ViewTransactionHash = ({ hash }: { hash: string }) => {
   const { data: tx, isLoading } = useTxByHash(hash);
@@ -242,6 +243,37 @@ export const MiniButton = ({
   );
 };
 
+function ExternalLinkButton({ href, className = 'text-gray-500 hover:text-gray-700' }: { href: string, className?: string }) {
+  return (
+    <a 
+      href={href} 
+      target="_blank" 
+      rel="noopener noreferrer"
+      className={`inline-flex items-center justify-center gap-1.5 p-1 text-xs focus:outline-none transition-colors duration-200 ${className}`}
+      title="View in CBOR decoder"
+    >
+      <div className="relative w-3.5 h-3.5 flex items-center justify-center">
+        <div className="absolute inset-0">
+          <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            viewBox="0 0 24 24" 
+            fill="none" 
+            stroke="currentColor" 
+            className="h-3.5 w-3.5"
+            strokeWidth="2" 
+            strokeLinecap="round" 
+            strokeLinejoin="round"
+          >
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+            <polyline points="15 3 21 3 21 9"></polyline>
+            <line x1="10" y1="14" x2="21" y2="3"></line>
+          </svg>
+        </div>
+      </div>
+    </a>
+  );
+}
+
 export const ViewDatum = ({ datum }: { datum: string }) => {
   const cborNemo = useMemo(() => {
     return `https://cbor.nemo157.com/#type=hex&value=${datum}`;
@@ -250,16 +282,16 @@ export const ViewDatum = ({ datum }: { datum: string }) => {
   return (
     <div className="flex p-1 flex-col gap-2">
       <span className="text-sm">Datum:</span>
-      <div className="flex flex-col gap-2 border-black border-2 p-2 bg-slate-900 text-white break-all max-w-auto">
-        <span className="text-xs break-all font-mono">{datum}</span>
-      </div>
-      <div className="flex flex-1 gap-2 place-content-end">
-        <MiniButton href={cborNemo} onClick={() => {}}>
-          cbor.nemo157.com
-        </MiniButton>
-        <MiniButton onClick={() => navigator.clipboard.writeText(datum)}>
-          copy to clipboard
-        </MiniButton>
+      <div className="border-black border-2 bg-slate-900 text-white overflow-hidden">
+        <div className="flex items-start">
+          <div className="flex-grow p-2">
+            <span className="text-xs font-mono break-all">{datum}</span>
+          </div>
+          <div className="p-1 flex-shrink-0 flex gap-1">
+            <ExternalLinkButton href={cborNemo} className="text-white hover:text-blue-300" />
+            <ClipboardButton text={datum} className="text-white hover:text-blue-300"/>
+          </div>
+        </div>
       </div>
     </div>
   );
