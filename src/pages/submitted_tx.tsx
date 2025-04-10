@@ -14,7 +14,7 @@ export const HashInput = ({
 }) => {
   return (
     <textarea
-      className="flex-1 p-2 max-w-100 border-2 border-gray-200 focus:border-indigo-500 focus:ring-indigo-500 resize-none scroll-none overflow-hidden h-10"
+      className="flex-1 p-2 w-full border-2 border-gray-200 focus:border-indigo-500 focus:ring-indigo-500 resize-none scroll-none overflow-hidden h-10"
       value={hash}
       onChange={(e) => {
         setHash(e.target.value);
@@ -31,6 +31,7 @@ export const SubmittedTxPage = () => {
   const txHash = useMemo(() => {
     return params.txHash ?? "";
   }, [params]);
+
   const navigate = useNavigate()
 
   const setTxHash = useCallback(
@@ -44,16 +45,24 @@ export const SubmittedTxPage = () => {
 
   return (
     <div className="min-h-screen flex flex-col p-1 gap-5">
-      <NavBar>
-        <span className="self-center text-xs text-gray-500">
-          Enter your transaction hash here:
-        </span>
-
-        <HashInput hash={txHash} setHash={setTxHash} />
-      </NavBar>
+      <NavBar />
 
       <div className="flex-1 flex flex-col sm:flex-row">
         <main className="flex-1 flex flex-col gap-2">
+
+          {!txData && <div className="mb-6 mt-4 mx-auto w-full bg-white border border-2 border-gray-200 overflow-hidden">
+            <div className="px-6 py-5">
+              <h2 className="text-lg font-medium text-gray-900 mb-3">Transaction Lookup</h2>
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+                <label htmlFor="tx-hash" className="text-sm font-medium text-gray-700 min-w-[180px]">
+                  Enter transaction hash:
+                </label>
+                <div className="w-full">
+                  <HashInput hash={txHash} setHash={setTxHash} />
+                </div>
+              </div>
+            </div>
+          </div>}
           {txHash && (
             <>
               {txData && <TxViewer tx={txData} />}
