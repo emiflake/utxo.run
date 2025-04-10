@@ -247,7 +247,7 @@ export function NavBar() {
 
           <div className="flex items-center ml-auto">
             <div className="relative w-full md:w-64 lg:w-80">
-              <SearchIcon className="absolute left-2.5 top-1/2 transform -translate-y-1/2 h-4 w-4 z-10" color="#9ca3af" />
+              <SearchIcon className="absolute left-2.5 top-1/2 transform -translate-y-1/2 h-4 w-4 z-20" color="#9ca3af" />
               <AnimatedSearchInput
                 value={searchValue}
                 onChange={(e) => setSearchValue(e.target.value)}
@@ -259,7 +259,7 @@ export function NavBar() {
             </div>
             <button
               onClick={() => setIsSettingsOpen(!isSettingsOpen)}
-              className="h-9 ml-2 px-4 flex items-center justify-center rounded border border-gray-200 bg-background hover:bg-gray-100 focus:bg-gray-100 focus-visible:outline-none text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-50"
+              className="h-10 ml-2 px-3 flex items-center justify-center rounded border-2 border-gray-200 bg-background hover:bg-gray-100 focus:bg-gray-100 focus:outline-none text-sm font-medium transition-all duration-200 disabled:pointer-events-none disabled:opacity-50"
             >
               <SettingsIcon />
               <span className="sr-only">Settings</span>
