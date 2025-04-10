@@ -165,7 +165,7 @@ const classifySearch = (searchValue: string): SearchType => {
 
 export function NavBar() {
   const [searchValue, setSearchValue] = useState("")
-  const [isTransactionsOpen, setIsTransactionsOpen] = useState(false)
+  const [isSearchFocused, setIsSearchFocused] = useState(false)
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
 
   const navigate = useNavigate()
@@ -195,51 +195,48 @@ export function NavBar() {
               <li>
                 <Link
                   to="/registry"
-                  className="group inline-flex h-9 w-max items-center justify-center bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50"
+                  className="group inline-flex h-9 w-max items-center justify-center bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-gray-100 focus:bg-gray-100 focus:outline-none disabled:pointer-events-none disabled:opacity-50 rounded"
                 >
                   <RegistryIcon />
                   Registry
                 </Link>
               </li>
               <li>
-                <div className="relative">
+                <div className="relative group">
                   <button
-                    className="group inline-flex h-9 w-max items-center justify-center bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50"
-                    onClick={() => setIsTransactionsOpen(!isTransactionsOpen)}
+                    className="inline-flex h-9 w-max items-center justify-center bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-gray-100 focus:bg-gray-100 focus:outline-none disabled:pointer-events-none disabled:opacity-50 rounded"
                   >
                     Transactions
                     <ChevronDownIcon />
                   </button>
-                  {isTransactionsOpen && (
-                    <div className="absolute left-0 mt-2 w-[200px] bg-white shadow-md border border-gray-200">
-                      <ul className="py-1">
-                        <li>
-                          <Link
-                            to="/tx/"
-                            className="flex items-center gap-2 px-4 py-2 text-sm font-medium no-underline outline-none transition-colors hover:bg-gray-100"
-                          >
-                            <FileIcon />
-                            <span>Tx by CBOR</span>
-                          </Link>
-                        </li>
-                        <li>
-                          <Link
-                            to="/submitted-tx/"
-                            className="flex items-center gap-2 px-4 py-2 text-sm font-medium no-underline outline-none transition-colors hover:bg-gray-100"
-                          >
-                            <FileSearchIcon />
-                            <span>Tx by Hash</span>
-                          </Link>
-                        </li>
-                      </ul>
-                    </div>
-                  )}
+                  <div className="absolute left-0 mt-2 w-[200px] bg-white shadow-md border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                    <ul className="py-1">
+                      <li>
+                        <Link
+                          to="/tx/"
+                          className="flex items-center gap-2 px-4 py-2 text-sm font-medium no-underline outline-none transition-colors hover:bg-gray-100"
+                        >
+                          <FileIcon />
+                          <span>Tx by CBOR</span>
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          to="/submitted-tx/"
+                          className="flex items-center gap-2 px-4 py-2 text-sm font-medium no-underline outline-none transition-colors hover:bg-gray-100"
+                        >
+                          <FileSearchIcon />
+                          <span>Tx by Hash</span>
+                        </Link>
+                      </li>
+                    </ul>
+                  </div>
                 </div>
               </li>
               <li>
                 <Link
                   to="/chain"
-                  className="group inline-flex h-9 w-max items-center justify-center bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50"
+                  className="group inline-flex h-9 w-max items-center justify-center bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-gray-100 focus:bg-gray-100 focus:outline-none disabled:pointer-events-none disabled:opacity-50 rounded"
                 >
                   <ExplorerIcon />
                   Chain Explorer
@@ -248,26 +245,31 @@ export function NavBar() {
             </ul>
           </nav>
 
-          <div className="flex items-center space-x-2 ml-auto">
-            <form onSubmit={handleSearch} className="flex">
+          <div className="flex items-center ml-auto">
+            <form onSubmit={handleSearch} className="flex items-center">
               <div className="relative w-full md:w-64 lg:w-80">
-                <SearchIcon className="absolute left-2.5 top-[50%] transform -translate-y-1/2 h-4 w-4" color="#9ca3af" />
+                <SearchIcon className="absolute left-2.5 top-1/2 transform -translate-y-1/2 h-4 w-4" color="#9ca3af" />
                 <input
                   type="search"
                   placeholder="Enter your transaction hash here..."
-                  className="w-full p-2 pl-8 pr-10 border border-gray-200 bg-background text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  className={`h-9 w-full ${isSearchFocused ? 'rounded-l' : 'rounded'} border border-gray-200 bg-background text-sm px-2 pl-8 focus-visible:outline-none focus:border-gray-300 disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-200`}
                   value={searchValue}
                   onChange={(e) => setSearchValue(e.target.value)}
+                  onFocus={() => setIsSearchFocused(true)}
+                  onBlur={() => setIsSearchFocused(false)}
                 />
               </div>
-              <button type="submit" className="shrink-0 inline-flex items-center justify-center text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-9 w-9 px-0">
-                <SearchIcon />
-                <span className="sr-only">Search</span>
+              <button 
+                type="submit" 
+                className={`h-9 px-3 flex items-center justify-center rounded-r border border-l-0 border-gray-200 bg-background hover:bg-gray-100 focus:bg-gray-100 focus-visible:outline-none text-sm font-medium transition-all duration-200 disabled:pointer-events-none disabled:opacity-50 ${isSearchFocused ? 'opacity-100 max-w-[80px] ml-0' : 'opacity-0 max-w-0 ml-[-1px] overflow-hidden'}`}
+              >
+                Search
               </button>
             </form>
             <button
               onClick={() => setIsSettingsOpen(!isSettingsOpen)}
-              className="shrink-0 inline-flex items-center justify-center text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-gray-200 bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2">
+              className="h-9 ml-2 px-4 flex items-center justify-center rounded border border-gray-200 bg-background hover:bg-gray-100 focus:bg-gray-100 focus-visible:outline-none text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-50"
+            >
               <SettingsIcon />
               <span className="sr-only">Settings</span>
             </button>
