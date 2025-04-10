@@ -5,6 +5,7 @@ import { useParams } from "react-router";
 import { ShimmerBox, ViewTransactionOutput, ViewUnit } from "../components/tx";
 import { TransactionOutput } from "../tx";
 import { ErrorBox } from "../App";
+import { ClipboardButton, LinkClipboardButton } from "../components/ActionButtons";
 
 export const AddressPage = () => {
   const params = useParams()
@@ -49,12 +50,17 @@ export const AddressPage = () => {
 
   return (
     <div className="min-h-screen flex flex-col p-1 gap-5">
-      <NavBar>
-      </NavBar>
+      <NavBar />
 
       <div className="flex-1 flex flex-col sm:flex-row">
         <main className="flex-1 flex flex-col gap-2">
-          <h2>Address {address}</h2>
+          <h2>Address</h2>
+
+          <div className="flex items-center gap-1">
+            <span className="text-xs text-gray-500 font-mono">{address}</span>
+            <ClipboardButton text={address} className="opacity-70 hover:opacity-100" />
+            <LinkClipboardButton text={address} className="opacity-70 hover:opacity-100" />
+          </div>
 
           <div className="flex flex-col lg:flex-row lg:flex-1 gap-2">
             {isLoading && <ShimmerBox />}

@@ -10,7 +10,7 @@ import { Transaction, TransactionInput, TransactionOutput } from "../tx";
 import { Link } from "react-router";
 
 export const ViewTransactionHash = ({ hash }: { hash: string }) => {
-  const { data: tx, isLoading, isError } = useTxByHash(hash);
+  const { data: tx, isLoading } = useTxByHash(hash);
 
   const extraData = useMemo(() => {
     if (isLoading) {
@@ -44,37 +44,11 @@ export const ViewTransactionHash = ({ hash }: { hash: string }) => {
     }
   }, [tx, isLoading]);
 
-  const maybeLink = useMemo(() => {
-    if (tx) {
-      return (
-        <a
-          href="#"
-          className="text-indigo-500 md:hover:underline"
-        >
-          <span className="break-all">{hash}</span>
-        </a>
-      );
-    } else if (isLoading) {
-      return <span className="break-all">{hash}</span>;
-    } else if (isError) {
-      return (
-        <>
-          <span className="break-all">{hash}</span>
-          <span className="text-xs text-gray-500">
-            (Maybe not on-chain yet)
-          </span>
-        </>
-      );
-    }
-  }, [tx, isLoading, hash, isError]);
-
   return (
-    <div className="inline-flex flex-col p-2 border-2 border-gray-400 bg-gray-50">
-      <h2>Transaction Hash</h2>
-      {maybeLink}
+    <>
       {isLoading && <ShimmerBox />}
       {extraData}
-    </div>
+    </>
   );
 };
 

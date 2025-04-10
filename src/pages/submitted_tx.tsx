@@ -1,10 +1,11 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { NavBar } from "../components/nav";
-import { useNavigate, useParams } from "react-router";
+import { useLocation, useNavigate, useParams } from "react-router";
 import { useTxDataByHash } from "../betterfrost";
 import { ErrorBox } from "../App";
 import { ShimmerBox, TxViewer } from "../components/tx";
 import { AnimatedSearchInput } from "../components/AnimatedSearchInput";
+import { ClipboardButton, LinkClipboardButton } from "../components/ActionButtons";
 
 const TxHashForm = () => {
   const navigate = useNavigate()
@@ -48,6 +49,11 @@ export const SubmittedTxPage = () => {
     return params.txHash ?? "";
   }, [params]);
 
+
+  const txUrl = useMemo(() => {
+    return `${window.location.href}`;
+  }, []);
+
   const { data: txData, isLoading, isError } = useTxDataByHash(txHash);
 
   return (
@@ -56,6 +62,17 @@ export const SubmittedTxPage = () => {
 
       <div className="flex-1 flex flex-col sm:flex-row">
         <main className="flex-1 flex flex-col gap-2">
+
+          {txData && (
+            <>
+            <h2>Transaction</h2>
+              <div className="flex items-center gap-1">
+                <span className="text-xs text-gray-500 font-mono">{txHash}</span>
+                <ClipboardButton text={txHash} className="opacity-70 hover:opacity-100" />
+                <LinkClipboardButton text={txUrl} className="opacity-70 hover:opacity-100" />
+              </div>
+            </>
+          )}
 
           {!txData && <TxHashForm />}
           {txHash && (

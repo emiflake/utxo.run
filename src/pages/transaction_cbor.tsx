@@ -33,6 +33,8 @@ const TxViewForm = () => {
               onSubmit={handleSearch}
               id="tx-cbor"
               name="tx-cbor"
+              buttonText="Submit"
+              placeholder="Transaction CBOR here..."
             />
           </div>
         </div>
