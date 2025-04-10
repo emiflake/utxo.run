@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { NavBar } from "../components/nav";
-import { useLocation, useNavigate, useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { useTxDataByHash } from "../betterfrost";
 import { ErrorBox } from "../App";
 import { ShimmerBox, TxViewer } from "../components/tx";
