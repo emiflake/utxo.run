@@ -1,5 +1,6 @@
 import { useCallback, useState } from "react"
 import { Link, useNavigate } from "react-router"
+import { AnimatedSearchInput } from "./AnimatedSearchInput"
 import { SettingsModal } from "./SettingsModal"
 
 // Icon components
@@ -165,7 +166,6 @@ const classifySearch = (searchValue: string): SearchType => {
 
 export function NavBar() {
   const [searchValue, setSearchValue] = useState("")
-  const [isSearchFocused, setIsSearchFocused] = useState(false)
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
 
   const navigate = useNavigate()
@@ -246,26 +246,17 @@ export function NavBar() {
           </nav>
 
           <div className="flex items-center ml-auto">
-            <form onSubmit={handleSearch} className="flex items-center">
-              <div className="relative w-full md:w-64 lg:w-80">
-                <SearchIcon className="absolute left-2.5 top-1/2 transform -translate-y-1/2 h-4 w-4" color="#9ca3af" />
-                <input
-                  type="search"
-                  placeholder="Enter your transaction hash here..."
-                  className={`h-9 w-full ${isSearchFocused ? 'rounded-l' : 'rounded'} border border-gray-200 bg-background text-sm px-2 pl-8 focus-visible:outline-none focus:border-gray-300 disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-200`}
-                  value={searchValue}
-                  onChange={(e) => setSearchValue(e.target.value)}
-                  onFocus={() => setIsSearchFocused(true)}
-                  onBlur={() => setIsSearchFocused(false)}
-                />
-              </div>
-              <button 
-                type="submit" 
-                className={`h-9 px-3 flex items-center justify-center rounded-r border border-l-0 border-gray-200 bg-background hover:bg-gray-100 focus:bg-gray-100 focus-visible:outline-none text-sm font-medium transition-all duration-200 disabled:pointer-events-none disabled:opacity-50 ${isSearchFocused ? 'opacity-100 max-w-[80px] ml-0' : 'opacity-0 max-w-0 ml-[-1px] overflow-hidden'}`}
-              >
-                Search
-              </button>
-            </form>
+            <div className="relative w-full md:w-64 lg:w-80">
+              <SearchIcon className="absolute left-2.5 top-1/2 transform -translate-y-1/2 h-4 w-4 z-10" color="#9ca3af" />
+              <AnimatedSearchInput
+                value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value)}
+                onSubmit={handleSearch}
+                placeholder="Enter your transaction hash here..."
+                type="search"
+                inputClassName="pl-8 h-9 text-sm border border-gray-200"
+              />
+            </div>
             <button
               onClick={() => setIsSettingsOpen(!isSettingsOpen)}
               className="h-9 ml-2 px-4 flex items-center justify-center rounded border border-gray-200 bg-background hover:bg-gray-100 focus:bg-gray-100 focus-visible:outline-none text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-50"

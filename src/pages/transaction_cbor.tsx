@@ -4,6 +4,7 @@ import { TxViewer } from "../components/tx";
 import { ErrorBox } from "../App";
 import { useNavigate, useParams } from "react-router";
 import { NavBar } from "../components/nav";
+import { AnimatedSearchInput } from "../components/AnimatedSearchInput";
 
 const TxViewForm = () => {
   const navigate = useNavigate()
@@ -21,34 +22,20 @@ const TxViewForm = () => {
     <div className="mb-6 mt-4 mx-auto w-full bg-white border border-2 border-gray-200 overflow-hidden">
       <div className="p-4">
         <h2 className="text-lg font-medium text-gray-900 mb-3">Transaction Viewer</h2>
-        <form
-          onSubmit={handleSearch}
-          className="w-full"
-        >
-          <div className="flex flex-row sm:flex-row items-start sm:items-center gap-1">
-            <label htmlFor="tx-cbor" className="text-sm min-w-[160px] font-medium text-gray-700">
-              Enter transaction CBOR:
-            </label>
-            <div className="w-full flex">
-              <div className="flex-grow">
-                <input
-                  type="text"
-                  id="tx-cbor"
-                  name="tx-cbor"
-                  value={txCborValue}
-                  onChange={(e) => setTxCborValue(e.target.value)}
-                  className="flex-1 p-2 w-full border-2 border-gray-200 focus:border-indigo-500 focus:ring-indigo-500 resize-none scroll-none overflow-hidden h-10"
-                />
-              </div>
-              <button
-                type="submit"
-                className="ml-2 px-4 py-2 bg-primary font-medium rounded hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-colors"
-              >
-                Search
-              </button>
-            </div>
+        <div className="flex flex-row sm:flex-row items-start sm:items-center gap-1">
+          <label htmlFor="tx-cbor" className="text-sm min-w-[160px] font-medium text-gray-700">
+            Enter transaction CBOR:
+          </label>
+          <div className="w-full">
+            <AnimatedSearchInput
+              value={txCborValue}
+              onChange={(e) => setTxCborValue(e.target.value)}
+              onSubmit={handleSearch}
+              id="tx-cbor"
+              name="tx-cbor"
+            />
           </div>
-        </form>
+        </div>
       </div>
     </div>
   );

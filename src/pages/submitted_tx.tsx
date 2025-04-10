@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router";
 import { useTxDataByHash } from "../betterfrost";
 import { ErrorBox } from "../App";
 import { ShimmerBox, TxViewer } from "../components/tx";
+import { AnimatedSearchInput } from "../components/AnimatedSearchInput";
 
 const TxHashForm = () => {
   const navigate = useNavigate()
@@ -21,34 +22,20 @@ const TxHashForm = () => {
     <div className="mb-6 mt-4 mx-auto w-full bg-white border border-2 border-gray-200 overflow-hidden">
       <div className="p-4">
         <h2 className="text-lg font-medium text-gray-900 mb-3">Transaction Lookup</h2>
-        <form
-          onSubmit={handleSearch}
-          className="w-full"
-        >
-          <div className="flex flex-row sm:flex-row items-start sm:items-center gap-1">
-            <label htmlFor="tx-hash" className="text-sm min-w-[160px] font-medium text-gray-700">
-              Enter transaction hash:
-            </label>
-            <div className="w-full flex">
-              <div className="flex-grow">
-                <input
-                  type="text"
-                  id="tx-hash"
-                  name="tx-hash"
-                  value={txHashValue}
-                  onChange={(e) => setTxHashValue(e.target.value)}
-                  className="flex-1 p-2 w-full border-2 border-gray-200 focus:border-indigo-500 focus:ring-indigo-500 resize-none scroll-none overflow-hidden h-10"
-                />
-              </div>
-              <button
-                type="submit"
-                className="ml-2 px-4 py-2 bg-primary font-medium rounded hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-colors"
-              >
-                Search
-              </button>
-            </div>
+        <div className="flex flex-row sm:flex-row items-start sm:items-center gap-1">
+          <label htmlFor="tx-hash" className="text-sm min-w-[160px] font-medium text-gray-700">
+            Enter transaction hash:
+          </label>
+          <div className="w-full">
+            <AnimatedSearchInput
+              value={txHashValue}
+              onChange={(e) => setTxHashValue(e.target.value)}
+              onSubmit={handleSearch}
+              id="tx-hash"
+              name="tx-hash"
+            />
           </div>
-        </form>
+        </div>
       </div>
     </div>
   );
