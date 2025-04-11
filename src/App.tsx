@@ -47,9 +47,9 @@ function App() {
 export const ErrorBox = ({ message }: { message: string }) => {
   // Card for error messages
   return (
-    <div className="border-2 p-4 border-gray-200">
+    <div className="border-2 p-4 border-gray-200 dark:border-gray-700 dark:bg-gray-800">
       <img src="warn.svg" alt="Error" className="inline-block w-6 h-6 mr-2" />
-      <div className="text-red-900">{message}</div>
+      <div className="text-red-900 dark:text-red-400">{message}</div>
     </div>
   );
 };
@@ -63,7 +63,7 @@ export const CborInput = ({
 }) => {
   return (
     <textarea
-      className="flex-1 p-2 max-w-100 border-2 border-gray-200 focus:border-indigo-500 focus:ring-indigo-500 resize-none scroll-none overflow-hidden h-10"
+      className="flex-1 p-2 max-w-100 border-2 border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white focus:border-indigo-500 focus:ring-indigo-500 dark:focus:border-indigo-400 dark:focus:ring-indigo-400 resize-none scroll-none overflow-hidden h-10"
       value={cbor}
       onChange={(e) => {
         setCbor(e.target.value);

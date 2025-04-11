@@ -19,11 +19,11 @@ const TxViewForm = () => {
   }, [txCborValue, navigate]);
 
   return (
-    <div className="mb-6 mt-4 mx-auto w-full bg-white border border-2 border-gray-200 overflow-hidden">
+    <div className="mb-6 mt-4 mx-auto w-full bg-white dark:bg-gray-800 border border-2 border-gray-200 dark:border-gray-700 overflow-hidden">
       <div className="p-4">
-        <h2 className="text-lg font-medium text-gray-900 mb-3">Transaction Viewer</h2>
+        <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-3">Transaction Viewer</h2>
         <div className="flex flex-row sm:flex-row items-start sm:items-center gap-1">
-          <label htmlFor="tx-cbor" className="text-sm min-w-[160px] font-medium text-gray-700">
+          <label htmlFor="tx-cbor" className="text-sm min-w-[160px] font-medium text-gray-700 dark:text-gray-300">
             Enter transaction CBOR:
           </label>
           <div className="w-full">
@@ -59,7 +59,7 @@ export function TxViewPage() {
       return <TxViewer tx={processedCbor.value} />;
     } else if (txCbor.length === 0) {
       return (
-        <div className="flex flex-col p-4 border-2 border-gray-200 gap-2">
+        <div className="flex flex-col p-4 border-2 border-gray-200 dark:border-gray-700 gap-2 dark:text-white">
           Please enter a CBOR transaction to view it!
         </div>
       );
@@ -69,7 +69,7 @@ export function TxViewPage() {
   }, [txCbor, processedCbor]);
 
   return (
-    <div className="min-h-screen flex flex-col p-1 gap-5">
+    <div className="min-h-screen flex flex-col p-1 gap-5 dark:bg-gray-900">
       <NavBar />
 
       <div className="flex-1 flex flex-col sm:flex-row">

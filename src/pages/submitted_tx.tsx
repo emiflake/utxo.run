@@ -20,11 +20,11 @@ const TxHashForm = () => {
   }, [txHashValue, navigate]);
 
   return (
-    <div className="mb-6 mt-4 mx-auto w-full bg-white border border-2 border-gray-200 overflow-hidden">
+    <div className="mb-6 mt-4 mx-auto w-full bg-white dark:bg-gray-800 border border-2 border-gray-200 dark:border-gray-700 overflow-hidden">
       <div className="p-4">
-        <h2 className="text-lg font-medium text-gray-900 mb-3">Transaction Lookup</h2>
+        <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-3">Transaction Lookup</h2>
         <div className="flex flex-row sm:flex-row items-start sm:items-center gap-1">
-          <label htmlFor="tx-hash" className="text-sm min-w-[160px] font-medium text-gray-700">
+          <label htmlFor="tx-hash" className="text-sm min-w-[160px] font-medium text-gray-700 dark:text-gray-300">
             Enter transaction hash:
           </label>
           <div className="w-full">
@@ -57,7 +57,7 @@ export const SubmittedTxPage = () => {
   const { data: txData, isLoading, isError } = useTxDataByHash(txHash);
 
   return (
-    <div className="min-h-screen flex flex-col p-1 gap-5">
+    <div className="min-h-screen flex flex-col p-1 gap-5 dark:bg-gray-900">
       <NavBar />
 
       <div className="flex-1 flex flex-col sm:flex-row">
@@ -65,11 +65,11 @@ export const SubmittedTxPage = () => {
 
           {txData && (
             <>
-            <h2>Transaction</h2>
+            <h2 className="dark:text-white">Transaction</h2>
               <div className="flex items-center gap-1">
-                <span className="text-xs text-gray-500 font-mono">{txHash}</span>
-                <ClipboardButton text={txHash} className="opacity-70 hover:opacity-100" />
-                <LinkClipboardButton text={txUrl} className="opacity-70 hover:opacity-100" />
+                <span className="text-xs text-gray-500 dark:text-gray-300 font-mono">{txHash}</span>
+                <ClipboardButton text={txHash} className="opacity-70 hover:opacity-100 dark:text-white" />
+                <LinkClipboardButton text={txUrl} className="opacity-70 hover:opacity-100 dark:text-white" />
               </div>
             </>
           )}
@@ -83,7 +83,7 @@ export const SubmittedTxPage = () => {
             </>
           )}
           {!txHash && (
-            <div className="flex flex-col p-4 border-2 border-gray-200 gap-2">
+            <div className="flex flex-col p-4 border-2 border-gray-200 dark:border-gray-700 dark:bg-gray-800 gap-2 dark:text-white">
               Please enter a transaction hash to view it!
             </div>
           )}
