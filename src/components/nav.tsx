@@ -2,6 +2,7 @@ import { useCallback, useState } from "react"
 import { Link, useNavigate } from "react-router"
 import { AnimatedSearchInput } from "./AnimatedSearchInput"
 import { SettingsModal } from "./SettingsModal"
+import { ThemeToggle } from "./Toggle"
 
 // Icon components
 function LogoIcon({ className = "h-6 w-6 text-orange-500" }) {
@@ -181,12 +182,12 @@ export function NavBar() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
+      <header className="sticky top-0 z-50 w-full border-b border-gray-200 dark:border-gray-700 bg-white/95 dark:bg-gray-900/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-gray-900/60">
         <div className="flex h-16 items-center px-4 md:px-6">
           <div className="flex items-center gap-2 mr-8">
             <Link to="/" className="flex items-center gap-2">
               <LogoIcon />
-              <span className="text-2xl font-bold tracking-tight text-orange-500">fine.tx</span>
+              <span className="text-2xl font-bold tracking-tight text-orange-300">fine.tx</span>
             </Link>
           </div>
 
@@ -195,7 +196,7 @@ export function NavBar() {
               <li>
                 <Link
                   to="/registry"
-                  className="group inline-flex h-9 w-max items-center justify-center bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-gray-100 focus:bg-gray-100 focus:outline-none disabled:pointer-events-none disabled:opacity-50 rounded"
+                  className="group inline-flex h-9 w-max items-center justify-center bg-background dark:bg-gray-800 px-4 py-2 text-sm font-medium dark:text-white transition-colors hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700 focus:outline-none disabled:pointer-events-none disabled:opacity-50 rounded"
                 >
                   <RegistryIcon />
                   Registry
@@ -204,17 +205,17 @@ export function NavBar() {
               <li>
                 <div className="relative group">
                   <button
-                    className="inline-flex h-9 w-max items-center justify-center bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-gray-100 focus:bg-gray-100 focus:outline-none disabled:pointer-events-none disabled:opacity-50 rounded"
+                    className="inline-flex h-9 w-max items-center justify-center bg-background dark:bg-gray-800 px-4 py-2 text-sm font-medium dark:text-white transition-colors hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700 focus:outline-none disabled:pointer-events-none disabled:opacity-50 rounded"
                   >
                     Transactions
                     <ChevronDownIcon />
                   </button>
-                  <div className="absolute left-0 mt-2 w-[200px] bg-white shadow-md border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                  <div className="absolute left-0 mt-2 w-[200px] bg-white dark:bg-gray-800 shadow-md border border-gray-200 dark:border-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                     <ul className="py-1">
                       <li>
                         <Link
                           to="/tx/"
-                          className="flex items-center gap-2 px-4 py-2 text-sm font-medium no-underline outline-none transition-colors hover:bg-gray-100"
+                          className="flex items-center gap-2 px-4 py-2 text-sm font-medium dark:text-white no-underline outline-none transition-colors hover:bg-gray-100 dark:hover:bg-gray-700"
                         >
                           <FileIcon />
                           <span>Tx by CBOR</span>
@@ -223,7 +224,7 @@ export function NavBar() {
                       <li>
                         <Link
                           to="/submitted-tx/"
-                          className="flex items-center gap-2 px-4 py-2 text-sm font-medium no-underline outline-none transition-colors hover:bg-gray-100"
+                          className="flex items-center gap-2 px-4 py-2 text-sm font-medium dark:text-white no-underline outline-none transition-colors hover:bg-gray-100 dark:hover:bg-gray-700"
                         >
                           <FileSearchIcon />
                           <span>Tx by Hash</span>
@@ -236,7 +237,7 @@ export function NavBar() {
               <li>
                 <Link
                   to="/chain"
-                  className="group inline-flex h-9 w-max items-center justify-center bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-gray-100 focus:bg-gray-100 focus:outline-none disabled:pointer-events-none disabled:opacity-50 rounded"
+                  className="group inline-flex h-9 w-max items-center justify-center bg-background dark:bg-gray-800 px-4 py-2 text-sm font-medium dark:text-white transition-colors hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700 focus:outline-none disabled:pointer-events-none disabled:opacity-50 rounded"
                 >
                   <ExplorerIcon />
                   Chain Explorer
@@ -254,37 +255,40 @@ export function NavBar() {
                 onSubmit={handleSearch}
                 placeholder="Enter your transaction hash here..."
                 type="search"
-                inputClassName="pl-8 h-9 text-sm border border-gray-200"
+                inputClassName="pl-8 h-9 text-sm border border-gray-200 dark:border-gray-700"
               />
             </div>
-            <button
-              onClick={() => setIsSettingsOpen(!isSettingsOpen)}
-              className="h-10 ml-2 px-3 flex items-center justify-center rounded border-2 border-gray-200 bg-background hover:bg-gray-100 focus:bg-gray-100 focus:outline-none text-sm font-medium transition-all duration-200 disabled:pointer-events-none disabled:opacity-50"
-            >
-              <SettingsIcon />
-              <span className="sr-only">Settings</span>
-            </button>
+            <div className="flex items-center gap-3 p-3">
+              <ThemeToggle />
+              <button
+                onClick={() => setIsSettingsOpen(!isSettingsOpen)}
+                className="h-10 ml-2 px-3 flex items-center justify-center rounded border-2 border-gray-200 dark:border-gray-700 bg-background dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700 focus:outline-none text-sm font-medium dark:text-white transition-all duration-200 disabled:pointer-events-none disabled:opacity-50"
+              >
+                <SettingsIcon />
+                <span className="sr-only">Settings</span>
+              </button>
+            </div>
           </div>
         </div>
 
 
 
         {/* Mobile navigation */}
-        <div className="border-t border-gray-200 py-2 lg:hidden">
+        <div className="border-t border-gray-200 dark:border-gray-700 py-2 lg:hidden">
           <nav className="container mx-auto max-w-md flex justify-between px-4">
-            <Link to="/registry" className="flex flex-col items-center text-sm font-medium hover:underline">
+            <Link to="/registry" className="flex flex-col items-center text-sm font-medium dark:text-white hover:underline">
               <RegistryIcon className="mb-1 h-5 w-5" />
               Registry
             </Link>
-            <Link to="/tx/" className="flex flex-col items-center text-sm font-medium hover:underline">
+            <Link to="/tx/" className="flex flex-col items-center text-sm font-medium dark:text-white hover:underline">
               <FileIcon className="mb-1 h-5 w-5" />
               Tx by CBOR
             </Link>
-            <Link to="/chain" className="flex flex-col items-center text-sm font-medium hover:underline">
+            <Link to="/chain" className="flex flex-col items-center text-sm font-medium dark:text-white hover:underline">
               <ExplorerIcon className="mb-1 h-5 w-5" />
               Explorer
             </Link>
-            <Link to="/submitted-tx/" className="flex flex-col items-center text-sm font-medium hover:underline">
+            <Link to="/submitted-tx/" className="flex flex-col items-center text-sm font-medium dark:text-white hover:underline">
               <FileSearchIcon className="mb-1 h-5 w-5" />
               Tx by Hash
             </Link>

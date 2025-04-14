@@ -49,17 +49,17 @@ export const AddressPage = () => {
   }, [utxos]);
 
   return (
-    <div className="min-h-screen flex flex-col p-1 gap-5">
+    <div className="min-h-screen flex flex-col p-1 gap-5 dark:bg-gray-900">
       <NavBar />
 
       <div className="flex-1 flex flex-col sm:flex-row">
         <main className="flex-1 flex flex-col gap-2">
-          <h2>Address</h2>
+          <h2 className="dark:text-white">Address</h2>
 
           <div className="flex items-center gap-1">
-            <span className="text-xs text-gray-500 font-mono">{address}</span>
-            <ClipboardButton text={address} className="opacity-70 hover:opacity-100" />
-            <LinkClipboardButton text={address} className="opacity-70 hover:opacity-100" />
+            <span className="text-xs text-gray-500 dark:text-gray-300 font-mono">{address}</span>
+            <ClipboardButton text={address} className="opacity-70 hover:opacity-100 dark:text-white" />
+            <LinkClipboardButton text={address} className="opacity-70 hover:opacity-100 dark:text-white" />
           </div>
 
           <div className="flex flex-col lg:flex-row lg:flex-1 gap-2">
@@ -67,9 +67,9 @@ export const AddressPage = () => {
             {isError && <ErrorBox message={"Could not load outputs"} />}
             {utxos && (
               <>
-                <div className="flex flex-col lg:w-1/2 gap-2 border-1 border-gray-200 p-4">
-                  <span className="text-md">Outputs</span>
-                  {utxos && <span className="text-xs">Count: {utxos.length}</span>}
+                <div className="flex flex-col lg:w-1/2 gap-2 border-1 border-gray-200 dark:border-gray-700 p-4 dark:text-white">
+                  <span className="text-md dark:text-white">Outputs</span>
+                  {utxos && <span className="text-xs dark:text-gray-300">Count: {utxos.length}</span>}
                   {processedUtxos?.map((utxo) => (
                     <ViewTransactionOutput
                       key={utxo.tx_hash}
@@ -78,10 +78,10 @@ export const AddressPage = () => {
                     />
                   ))}
                 </div>
-                <div className="flex flex-col lg:w-1/2 gap-2 border-1 border-gray-200 p-4">
-                  <span className="text-md">Total asset value</span>
+                <div className="flex flex-col lg:w-1/2 gap-2 border-1 border-gray-200 dark:border-gray-700 p-4 dark:text-white">
+                  <span className="text-md dark:text-white">Total asset value</span>
                   {totalValue && (
-                    <span className="text-xs">
+                    <span className="text-xs dark:text-gray-300">
                       Count: {Object.entries(totalValue).length}
                     </span>
                   )}

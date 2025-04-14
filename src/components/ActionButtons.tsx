@@ -82,7 +82,7 @@ interface ActionButtonProps {
 }
 
 function ActionButton({
-  className = 'text-gray-500 hover:text-gray-700',
+  className = 'text-gray-500 hover:text-gray-700 dark:text-white dark:hover:text-gray-200',
   title,
   ariaLabel,
   onClick,
@@ -117,7 +117,7 @@ interface ClipboardButtonProps {
 
 export function ClipboardButton({
   text,
-  className = 'text-gray-500 hover:text-gray-700',
+  className = 'text-gray-500 hover:text-gray-700 dark:text-white dark:hover:text-gray-200',
   copyDuration = 500
 }: ClipboardButtonProps) {
   const [copied, setCopied] = useState(false);
@@ -136,7 +136,7 @@ export function ClipboardButton({
       title="Copy this to clipboard"
       onClick={handleCopy}
       icon={<CopyIcon />}
-      activeIcon={<CheckIcon className="text-green-500" />}
+      activeIcon={<CheckIcon className="text-green-500 dark:text-green-400" />}
       isActive={copied}
     />
   );
@@ -150,7 +150,7 @@ interface LinkClipboardButtonProps {
 
 export function LinkClipboardButton({
   text,
-  className = 'text-gray-500 hover:text-gray-700',
+  className = 'text-gray-500 hover:text-gray-700 dark:text-white dark:hover:text-gray-200',
   copyDuration = 500
 }: LinkClipboardButtonProps) {
   const [copied, setCopied] = useState(false);
@@ -169,7 +169,7 @@ export function LinkClipboardButton({
       title="Copy link to clipboard"
       onClick={handleCopy}
       icon={<LinkIcon />}
-      activeIcon={<CheckIcon className="text-green-500" />}
+      activeIcon={<CheckIcon className="text-green-500 dark:text-green-400" />}
       isActive={copied}
     />
   );

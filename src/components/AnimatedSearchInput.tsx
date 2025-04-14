@@ -42,19 +42,19 @@ export function AnimatedSearchInput({
           className={`h-10 w-full 
             ${
               isInputFocused ? "rounded-l" : "rounded"
-            } border-2 border-gray-200 p-2 
-            focus:outline-none focus:border-gray-300 transition-all duration-300 ease-in-out 
-            relative z-10 bg-white hover:bg-gradient-to-r hover:from-gray-50 hover:via-blue-50/20 
-            hover:to-purple-50/10 hover:shadow-inner focus:bg-gradient-to-r focus:from-gray-50 
-            focus:via-blue-50/20 focus:to-purple-50/10 focus:shadow-inner ${inputClassName}
+            } border-2 border-gray-200 dark:border-gray-700 p-2 
+            focus:outline-none focus:border-gray-300 dark:focus:border-gray-600 transition-all duration-300 ease-in-out 
+            relative z-10 bg-white dark:bg-gray-800 dark:text-white
+            hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-[inset_0_1px_2px_rgba(0,0,0,0.03)] dark:hover:shadow-[inset_0_1px_2px_rgba(255,255,255,0.01)] 
+            focus:border-gray-300 dark:focus:border-gray-600 focus:shadow-[inset_0_1px_2px_rgba(0,0,0,0.03)] dark:focus:shadow-[inset_0_1px_2px_rgba(255,255,255,0.01)] ${inputClassName}
           `}
         />
       </div>
       <button
         type="submit"
         className={`h-10 px-3 flex items-center justify-center rounded-r border-2 border-l-0 
-          border-gray-200 bg-background hover:bg-gray-100 focus:bg-gray-100 focus:outline-none 
-          text-sm font-medium transition-all duration-300 ease-in-out disabled:pointer-events-none disabled:opacity-50 
+          border-gray-200 dark:border-gray-700 bg-background dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 focus:bg-gray-100 dark:focus:bg-gray-600 focus:outline-none 
+          text-sm font-medium dark:text-white transition-all duration-300 ease-in-out disabled:pointer-events-none disabled:opacity-50 
           ${
             isInputFocused
               ? "opacity-100 max-w-[80px] ml-0"

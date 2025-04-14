@@ -14,7 +14,7 @@ import { Link } from "react-router";
 
 export const ViewBlock = ({ block }: { block: Block }) => {
   return (
-    <div className="flex flex-col gap-2 border-2 border-gray-200 p-4">
+    <div className="flex flex-col gap-2 border-2 border-gray-200 dark:border-gray-700 p-4 dark:text-white">
       <span className="text-xs">Block</span>
       <div className="flex flex-col gap-2">
         <span className="text-xs">Hash: {block?.hash}</span>
@@ -53,7 +53,7 @@ export const ViewUtxo = ({
   utxo: QueryLedgerStateUtxosResponse["result"][0];
 }) => {
   return (
-    <div className="flex flex-col gap-2 border-2 border-gray-200 p-4">
+    <div className="flex flex-col gap-2 border-2 border-gray-200 dark:border-gray-700 p-4 dark:text-white">
       <span className="text-xs">UTXO</span>
       <div className="flex flex-col gap-2">
         <span className="text-xs">Index: {utxo.index}</span>
@@ -61,7 +61,7 @@ export const ViewUtxo = ({
           Transaction ID: {" "}
           <Link
             to={`/submitted-tx/${utxo.transaction.id}`}
-            className="text-indigo-500 hover:underline"
+            className="text-indigo-500 dark:text-indigo-300 hover:underline"
           >
             {utxo.transaction.id}
           </Link>
@@ -82,7 +82,7 @@ export const ViewUtxos = () => {
   }
 
   return (
-    <div className="flex flex-col gap-2 border dotted border-gray-200 p-4">
+    <div className="flex flex-col gap-2 border dotted border-gray-200 dark:border-gray-700 p-4 dark:text-white">
       <span className="text-xs">UTXOs</span>
       <div className="flex flex-col gap-2">
         {utxos?.result && (
@@ -103,22 +103,22 @@ export const ViewUtxos = () => {
 export const ChainPage = () => {
   
   return (
-    <div className="min-h-screen flex flex-col p-1 gap-5">
+    <div className="min-h-screen flex flex-col p-1 gap-5 dark:bg-gray-900">
       <NavBar />
 
       <div className="flex-1 flex flex-col sm:flex-row">
         <main className="flex-1 flex flex-col gap-2">
-          <h2>Chain explorer</h2>
+          <h2 className="dark:text-white">Chain explorer</h2>
 
           <div className="flex flex-col gap-2">
-            <span className="text-xs text-gray-500">
+            <span className="text-xs text-gray-500 dark:text-gray-400">
               Running against betterfrost {betterfrostURL}
             </span>
           </div>
 
           <div className="flex flex-col lg:flex-row lg:flex-1 gap-2">
-            <div className="flex flex-col gap-2 lg:w-1/2 border dotted border-gray-200 p-4">
-              <p className="text-md">Latest block</p>
+            <div className="flex flex-col gap-2 lg:w-1/2 border dotted border-gray-200 dark:border-gray-700 p-4 dark:text-white">
+              <p className="text-md dark:text-white">Latest block</p>
               <ViewLatestBlock />
             </div>
 
@@ -130,7 +130,7 @@ export const ChainPage = () => {
         <aside className="order-first md:w-16 lg:w-32"></aside>
         <aside className="md:w-16 lg:w-32"></aside>
       </div>
-      <footer className="bg-gray-100"></footer>
+      <footer className="bg-gray-100 dark:bg-gray-800"></footer>
     </div>
   );
 };

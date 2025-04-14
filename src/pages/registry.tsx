@@ -16,28 +16,28 @@ const ViewScriptInfo = ({ scriptInfo }: { scriptInfo: ScriptInfo }) => {
     if (value === undefined) {
       return (
         <tr>
-          <td className="p-2">{name}</td>
-          <td className="text-gray-500">N/A</td>
+          <td className="p-2 dark:text-white">{name}</td>
+          <td className="text-gray-500 dark:text-gray-400">N/A</td>
         </tr>
       );
     }
     return (
       <tr>
-        <td className="p-2">{name}</td>
-        <td>{value}</td>
+        <td className="p-2 dark:text-white">{name}</td>
+        <td className="dark:text-white">{value}</td>
       </tr>
     );
   };
 
   return (
-    <table className="table-auto border-2 border-gray-200 p-2">
+    <table className="table-auto border-2 border-gray-200 dark:border-gray-700 p-2">
       <thead>
-        <tr className="border-b-2 border-gray-200">
-          <th className="p-2 text-left">Property</th>
-          <th className="text-left">Value</th>
+        <tr className="border-b-2 border-gray-200 dark:border-gray-700">
+          <th className="p-2 text-left dark:text-white">Property</th>
+          <th className="text-left dark:text-white">Value</th>
         </tr>
       </thead>
-      <tbody className="divide-y divide-gray-200">
+      <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
         <Field name="Type" value={scriptInfo.type} />
         <Field name="Name" value={scriptInfo.name} />
         <Field name="Tag" value={scriptInfo.tag} />
@@ -65,9 +65,9 @@ export const NetworkSelector = ({
 }) => {
   return (
     <div className="flex flex-1 gap-2 max-h-10">
-      <span className="self-center text-xs text-gray-500">Network:</span>
+      <span className="self-center text-xs text-gray-500 dark:text-gray-400">Network:</span>
       <select
-        className="border-2 border-gray-200 p-2"
+        className="border-2 border-gray-200 dark:border-gray-700 p-2 dark:bg-gray-800 dark:text-white"
         onChange={(e) =>
           ["Mainnet", "Preview"].includes(e.target.value) &&
           setNetwork(e.target.value as Network)
@@ -90,9 +90,9 @@ export const SearchBar = ({
 }) => {
   return (
     <div className="flex flex-1 gap-2 max-h-10">
-      <span className="self-center text-xs text-gray-500">Search:</span>
+      <span className="self-center text-xs text-gray-500 dark:text-gray-400">Search:</span>
       <input
-        className="border-2 border-gray-200 p-2"
+        className="border-2 border-gray-200 dark:border-gray-700 p-2 dark:bg-gray-800 dark:text-white"
         onChange={(e) => setSearch(e.target.value)}
         value={search}
       />
@@ -147,14 +147,14 @@ export const RegistryPage = () => {
   }, [registry, filteredScriptInfos, isLoading]);
 
   return (
-    <div className="min-h-screen flex flex-col p-1 gap-5">
+    <div className="min-h-screen flex flex-col p-1 gap-5 dark:bg-gray-900">
       <NavBar />
 
       <div className="flex-1 flex flex-col sm:flex-row">
-        <main className="flex-1 flex flex-col gap-2 border-2 border-gray-200 p-4">
-          <h2>Registry</h2>
+        <main className="flex-1 flex flex-col gap-2 border-2 border-gray-200 dark:border-gray-700 p-4 dark:text-white">
+          <h2 className="dark:text-white">Registry</h2>
           <div className="flex flex-col gap-2">
-            <span className="text-xs text-gray-500">
+            <span className="text-xs text-gray-500 dark:text-gray-400">
               URL: {registryJSONURL}
             </span>
           </div>
@@ -168,7 +168,7 @@ export const RegistryPage = () => {
         <aside className="order-first md:w-16 lg:w-32"></aside>
         <aside className="md:w-16 lg:w-32"></aside>
       </div>
-      <footer className="bg-gray-100"></footer>
+      <footer className="bg-gray-100 dark:bg-gray-800"></footer>
     </div>
   );
 };
