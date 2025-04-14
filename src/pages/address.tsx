@@ -14,6 +14,10 @@ export const AddressPage = () => {
     return params.address ?? "";
   }, [params]);
 
+  const addressUrl = useMemo(() => {
+    return `${window.location.href}`;
+  }, []);
+
   const { data: utxos, isLoading, isError } = useUtxosByAddress(address);
 
   const totalValue = useMemo(() => {
@@ -59,7 +63,7 @@ export const AddressPage = () => {
           <div className="flex items-center gap-1">
             <span className="text-xs text-gray-500 dark:text-gray-300 font-mono">{address}</span>
             <ClipboardButton text={address} className="opacity-70 hover:opacity-100 dark:text-white" />
-            <LinkClipboardButton text={address} className="opacity-70 hover:opacity-100 dark:text-white" />
+            <LinkClipboardButton text={addressUrl} className="opacity-70 hover:opacity-100 dark:text-white" />
           </div>
 
           <div className="flex flex-col lg:flex-row lg:flex-1 gap-2">

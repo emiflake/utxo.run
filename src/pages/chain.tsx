@@ -4,33 +4,46 @@ import {
   Block,
   useLatestBlock,
 } from "../betterfrost";
+import { MiniTransactionCard } from "../components/MiniTx";
 import { NavBar } from "../components/nav";
 import { ShimmerBox } from "../components/tx";
-import {
-  QueryLedgerStateUtxosResponse,
-  useQueryLedgerStateUtxos,
-} from "../ogmios";
-import { Link } from "react-router";
+import { useQueryLedgerStateUtxos } from "../ogmios";
 
 export const ViewBlock = ({ block }: { block: Block }) => {
+  const formattedDate = block?.time ? new Date(block.time * 1000).toLocaleString() : null;
+
   return (
-    <div className="flex flex-col gap-2 border-2 border-gray-200 dark:border-gray-700 p-4 dark:text-white">
-      <span className="text-xs">Block</span>
-      <div className="flex flex-col gap-2">
-        <span className="text-xs">Hash: {block?.hash}</span>
-        <span className="text-xs">Time: {block?.time ?? 0}</span>
-        <span className="text-xs">Height: {block?.height}</span>
-        <span className="text-xs">Size: {block?.size}</span>
-        <span className="text-xs">Slot: {block?.slot}</span>
-        <span className="text-xs">Epoch: {block?.epoch}</span>
-        <span className="text-xs">Epoch slot: {block?.epoch_slot}</span>
-        <span className="text-xs">Slot leader: {block?.slot_leader}</span>
-        <span className="text-xs">Tx count: {block?.tx_count}</span>
-        <span className="text-xs">Confirmations: {block?.confirmations}</span>
+    <div className="border border-gray-200 dark:border-gray-700 p-3 bg-gray-50/50 dark:bg-gray-800/50 hover:shadow-md transition-shadow duration-200">
+      <div className="flex flex-col gap-1">
+        {/* Header with hash and size */}
+        <div className="flex items-center justify-between">
+          {/* Not a link yet */}
+          <div className="font-mono text-sm truncate" title={block?.hash}>
+            {block?.hash.slice(0, 10)}...{block?.hash.slice(-6)}
+          </div>
+          <div className="flex items-center gap-1">
+            <span className="text-xs text-gray-500 dark:text-gray-400">
+              #{block?.slot}
+            </span>
+          </div>
+        </div>
+        
+        {/* Block info */}
+        <div className="flex justify-between items-center text-xs">
+          <div className="flex gap-1 items-center">
+            <span className="text-gray-500 dark:text-gray-400">Height {block?.height}</span>
+            <span className="text-gray-500 dark:text-gray-400 mx-1">•</span>
+            <span className="text-gray-500 dark:text-gray-400">{formattedDate}</span>
+          </div>
+          <span className="text-gray-500 dark:text-gray-400">
+            {block?.tx_count} txs
+          </span>
+        </div>
       </div>
     </div>
   );
 };
+
 export const ViewLatestBlock = () => {
   const { data: latestBlock, isLoading, isError } = useLatestBlock();
 
@@ -47,29 +60,6 @@ export const ViewLatestBlock = () => {
   }
 };
 
-export const ViewUtxo = ({
-  utxo,
-}: {
-  utxo: QueryLedgerStateUtxosResponse["result"][0];
-}) => {
-  return (
-    <div className="flex flex-col gap-2 border-2 border-gray-200 dark:border-gray-700 p-4 dark:text-white">
-      <span className="text-xs">UTXO</span>
-      <div className="flex flex-col gap-2">
-        <span className="text-xs">Index: {utxo.index}</span>
-        <span className="text-xs">
-          Transaction ID: {" "}
-          <Link
-            to={`/submitted-tx/${utxo.transaction.id}`}
-            className="text-indigo-500 dark:text-indigo-300 hover:underline"
-          >
-            {utxo.transaction.id}
-          </Link>
-        </span>
-      </div>
-    </div>
-  );
-};
 export const ViewUtxos = () => {
   const { data: utxos, isLoading, isError } = useQueryLedgerStateUtxos();
 
@@ -91,7 +81,7 @@ export const ViewUtxos = () => {
         {utxos?.result && (
           <div className="flex flex-col gap-2">
             {utxos.result.map((utxo) => (
-              <ViewUtxo utxo={utxo} />
+              <MiniTransactionCard key={utxo.transaction.id} txHash={utxo.transaction.id} />
             ))}
           </div>
         )}

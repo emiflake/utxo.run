@@ -18,7 +18,7 @@ export const ViewTransactionHash = ({ hash }: { hash: string }) => {
       return null;
     } else if (tx) {
       return (
-        <div className="flex flex-col break-all border-2 border-gray-200 dark:border-gray-700 p-2 bg-green-100 dark:bg-green-900">
+        <div className="flex flex-col break-all border-1 border-gray-200 dark:border-gray-700 p-2 bg-green-100 dark:bg-green-900">
           <div className="flex flex-1">
             <span className="dark:text-white">Transaction is on-chain!</span>
             <img
@@ -82,9 +82,9 @@ export const ViewUnit = ({
   const { data: registry, isLoading, isError } = useRegistry();
   const resolvedUnitName = useMemo(() => {
     if (isLoading || isError) {
-      return <span className="dark:text-white"> {showPrefix(unit)} </span>;
+      return <span> {showPrefix(unit)} </span>;
     } else if (unit === "lovelace") {
-      return <span className="text-sm dark:text-white">Ada</span>;
+      return <span className="text-sm">Ada</span>;
     } else {
       const liqwidName = registry?.scriptInfos.find(
         (s) => s.scriptHash === unit,
@@ -109,7 +109,9 @@ export const ViewUnit = ({
           </span>
         );
       } else {
-        return <span className="font-mono dark:text-white">{showPrefix(unit)}</span>;
+        return <span className="font-mono">
+          {showPrefix(unit)}
+        </span>;
       }
     }
   }, [registry, unit, isLoading, isError]);
@@ -127,7 +129,12 @@ export const ViewUnit = ({
 
   return (
     <div className="flex flex-row justify-between gap-4 border-3 border-dotted border-gray-400 dark:border-gray-600 p-2 bg-white/50 dark:bg-gray-800/50 break-all">
-      <span className="text-sm self-center dark:text-white">{resolvedUnitName}</span>
+      <span className="text-sm self-center">
+        {unit === "lovelace" ? <span className="font-mono dark:text-white">{resolvedUnitName}</span> : <Link to={`/policy/${unit}`} className="text-indigo-500 dark:text-indigo-300 font-mono md:hover:underline">
+          {resolvedUnitName}
+        </Link>}
+
+      </span>
       <span className="text-md justify-self-end dark:text-white">{adjustedQuantity}</span>
     </div>
   );
@@ -207,7 +214,7 @@ export const ViewTransactionInput = ({
   }, [inputUtxo, isError, isLoading]);
 
   return (
-    <div className="inline-flex flex-col p-2 border-2 gap-2 border-gray-400 dark:border-gray-600 bg-gray-50 dark:bg-gray-800">
+    <div className="inline-flex flex-col p-2 border-1 gap-2 border-gray-400 dark:border-gray-600 bg-gray-50 dark:bg-gray-800">
       <div className="flex flex-1 gap-4">
         <h2 className="self-center dark:text-white">Input</h2>
         <ViewTxRef txref={`${input.transactionId}#${input.outputIndex}`} />
@@ -232,7 +239,7 @@ export const MiniButton = ({
   children: React.ReactNode;
 }) => {
   return (
-    <a href={href ?? "#"} onClick={onClick ?? (() => {})}>
+    <a href={href ?? "#"} onClick={onClick ?? (() => { })}>
       <button className="flex flex-col gap-2 border-black dark:border-gray-400 bg-slate-100 dark:bg-slate-700 dark:text-white border-2 p-2 rounded-md break-all max-w-auto text-xs">
         {children}
       </button>
@@ -242,23 +249,23 @@ export const MiniButton = ({
 
 function ExternalLinkButton({ href, className = 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200' }: { href: string, className?: string }) {
   return (
-    <a 
-      href={href} 
-      target="_blank" 
+    <a
+      href={href}
+      target="_blank"
       rel="noopener noreferrer"
       className={`inline-flex items-center justify-center gap-1.5 p-1 text-xs focus:outline-none transition-colors duration-200 ${className}`}
       title="View in CBOR decoder"
     >
       <div className="relative w-3.5 h-3.5 flex items-center justify-center">
         <div className="absolute inset-0">
-          <svg 
-            xmlns="http://www.w3.org/2000/svg" 
-            viewBox="0 0 24 24" 
-            fill="none" 
-            stroke="currentColor" 
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
             className="h-3.5 w-3.5"
-            strokeWidth="2" 
-            strokeLinecap="round" 
+            strokeWidth="2"
+            strokeLinecap="round"
             strokeLinejoin="round"
           >
             <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
@@ -279,14 +286,14 @@ export const ViewDatum = ({ datum }: { datum: string }) => {
   return (
     <div className="flex p-1 flex-col gap-2">
       <span className="text-sm dark:text-white">Datum:</span>
-      <div className="border-black border-2 bg-gray-900 text-white overflow-hidden">
+      <div className="border-black border-1 bg-gray-900 text-white overflow-hidden">
         <div className="flex items-start">
           <div className="flex-grow p-2">
             <span className="text-xs font-mono break-all dark:text-white">{datum}</span>
           </div>
           <div className="p-1 flex-shrink-0 flex gap-1">
             <ExternalLinkButton href={cborNemo} className="text-white hover:text-blue-300" />
-            <ClipboardButton text={datum} className="text-white hover:text-blue-300"/>
+            <ClipboardButton text={datum} className="text-white hover:text-blue-300" />
           </div>
         </div>
       </div>
@@ -302,7 +309,7 @@ export const ViewTransactionOutput = ({
   showTxHash?: boolean;
 }) => {
   return (
-    <div className="inline-flex flex-col p-2 border-2 border-gray-400 dark:border-gray-600 gap-2 bg-gray-50 dark:bg-gray-800 break-all">
+    <div className="inline-flex flex-col p-2 border-1 border-gray-400 dark:border-gray-600 gap-2 bg-gray-50 dark:bg-gray-800 break-all">
       <h2 className="dark:text-white">Output</h2>
       <ViewAddress address={output.address} />
       {showTxHash && <ViewTxRef txref={output.tx_hash} />}
@@ -330,15 +337,15 @@ export const TxViewer = ({ tx }: { tx: Transaction }) => {
   ));
 
   return (
-    <div className="flex flex-col p-4 border-2 border-gray-200 dark:border-gray-700 gap-2 dark:bg-gray-900">
+    <div className="flex flex-col p-4 border-1 border-gray-200 dark:border-gray-700 gap-2 dark:bg-gray-900">
       <ViewTransactionHash hash={tx.hash} />
-      <div className="flex flex-initial gap-4 border-2 border-gray-400 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 dark:text-white p-2">
+      <div className="flex flex-initial gap-4 border-1 border-gray-400 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 dark:text-white p-2">
         Fee: {tx.fee} lovelace
       </div>
-      {tx.ttl && <div className="flex flex-initial gap-4 border-2 border-gray-400 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 dark:text-white p-2">
+      {tx.ttl && <div className="flex flex-initial gap-4 border-1 border-gray-400 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 dark:text-white p-2">
         TTL: {tx.ttl}
       </div>}
-      {tx.requiredSigners.length > 0 && <div className="flex flex-initial gap-4 border-2 border-gray-400 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 dark:text-white p-2">
+      {tx.requiredSigners.length > 0 && <div className="flex flex-initial gap-4 border-1 border-gray-400 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 dark:text-white p-2">
         Required Signers:
         {tx.requiredSigners.map((s) => (
           <span key={s} className="text-indigo-500 dark:text-indigo-300 md:hover:underline">
@@ -351,7 +358,7 @@ export const TxViewer = ({ tx }: { tx: Transaction }) => {
           <h1 className="text-xl text-slate-900 dark:text-white">Inputs</h1>
           {inputs}
           {referenceInputs.length > 0 && (
-            <div className="flex flex-col gap-2 bg-amber-50 dark:bg-amber-900/30 p-2">
+            <div className="flex flex-col gap-2 bg-amber-50 dark:bg-amber-50/20 p-2">
               <h1 className="text-xl text-slate-900 dark:text-white">Reference Inputs</h1>
               {referenceInputs}
             </div>
@@ -362,11 +369,11 @@ export const TxViewer = ({ tx }: { tx: Transaction }) => {
           {outputs}
         </div>
       </div>
-      {tx.mint.length > 0 && <div className="flex flex-col gap-2 bg-rose-100 dark:bg-red-700/40 p-2">
+      {tx.mint.length > 0 && <div className="flex flex-col gap-2 bg-blue-100 dark:bg-blue-700/40 p-2">
         <h1 className="text-xl text-slate-900 dark:text-white">Mint</h1>
         <ViewValue value={tx.mint} />
       </div>}
-      {tx.burn.length > 0 && <div className="flex flex-col gap-2 bg-rose-50 dark:bg-orange-700/30 p-2">
+      {tx.burn.length > 0 && <div className="flex flex-col gap-2 bg-rose-50 dark:bg-red-700/30 p-2">
         <h1 className="text-xl text-slate-900 dark:text-white">Burn</h1>
         <ViewValue value={tx.burn} />
       </div>}

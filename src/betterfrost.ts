@@ -4,6 +4,23 @@ import * as tx from "./tx";
 
 export const betterfrostURL = '/betterfrost';
 
+
+export const paginationSchema = zod.object({
+  count: zod.number().default(10),
+  page: zod.number().default(1),
+  order: zod.string().default("asc"),
+});
+
+export type Pagination = zod.infer<typeof paginationSchema>;
+
+export const urlWithParams = (url: string, params: Record<string, string | number>): URL => {
+  const urlWithParams = new URL(url, window.location.origin);
+  Object.entries(params).forEach(([key, value]) => {
+    urlWithParams.searchParams.set(key, value.toString());
+  });
+  return urlWithParams;
+};
+
 export const transactionSchema = zod.object({
   index: zod.number(),
   hash: zod.string(),
@@ -129,6 +146,23 @@ export const addressUtxoSchema = zod.object({
 
 export type AddressUtxo = zod.infer<typeof addressUtxoSchema>;
 
+export const assetHistorySchema = zod.object({
+  tx_hash: zod.string(),
+  amount: zod.string(),
+  action: zod.string(),
+});
+
+export type AssetHistory = zod.infer<typeof assetHistorySchema>;
+
+export const assetTransactionSchema = zod.object({
+  tx_hash: zod.string().nullable(),
+  tx_index: zod.number().nullable(),
+  block_height: zod.number().nullable(),
+  block_time: zod.number().nullable(),
+});
+
+export type AssetTransaction = zod.infer<typeof assetTransactionSchema>;
+
 export const cborSchema = zod.object({
   cbor: zod.string(),
 });
@@ -202,6 +236,40 @@ export const getUtxosByAddress = async (
   const json = await response.json();
 
   return addressUtxoSchema.array().parse(json);
+};
+
+export const getAssetHistory = async (
+  unit: string,
+  pagination: Partial<Pagination> = {},
+): Promise<AssetHistory[]> => {
+  const parsedPagination = paginationSchema.parse(pagination);
+  const url = urlWithParams(`${betterfrostURL}/api/v0/assets/${unit}/history`, parsedPagination);
+  const response = await fetch(
+    url,
+    {
+      method: "GET",
+    },
+  );
+  const json = await response.json();
+
+  return assetHistorySchema.array().parse(json);
+};
+
+export const getAssetTransactions = async (
+  unit: string,
+  pagination: Partial<Pagination> = {},
+): Promise<AssetTransaction[]> => {
+  const parsedPagination = paginationSchema.parse(pagination);
+  const url = urlWithParams(`${betterfrostURL}/api/v0/assets/${unit}/transactions`, parsedPagination);
+  const response = await fetch(
+    url,
+    {
+      method: "GET",
+    },
+  );
+  const json = await response.json();
+
+  return assetTransactionSchema.array().parse(json);
 };
 
 export const useUtxosByAddress = (
@@ -287,5 +355,27 @@ export const useTxDataByHash = (
         throw new Error(result.error.message);
       }
     },
+  });
+};
+
+export const useAssetHistory = (
+  unit: string,
+  pagination: Partial<Pagination> = {},
+): UseQueryResult<AssetHistory[], unknown> => {
+  return useQuery({
+    queryKey: ["asset-history", unit, pagination],
+    queryFn: () => getAssetHistory(unit, pagination),
+    staleTime: 10_000,
+  });
+};
+
+export const useAssetTransactions = (
+  unit: string,
+  pagination: Partial<Pagination> = {},
+): UseQueryResult<AssetTransaction[], unknown> => {
+  return useQuery({
+    queryKey: ["asset-transactions", unit, pagination],
+    queryFn: () => getAssetTransactions(unit, pagination),
+    staleTime: 10_000,
   });
 };
