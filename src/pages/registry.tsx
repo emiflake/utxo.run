@@ -1,9 +1,9 @@
-import Fuse from "fuse.js";
-import { useMemo, useState } from "react";
-import { NavBar } from "../components/nav";
-import { registryJSONURL, ScriptInfo, useRegistry } from "../registry";
-import { ShimmerBox } from "../components/tx";
-import { ErrorBox } from "../App";
+import Fuse from 'fuse.js';
+import { useMemo, useState } from 'react';
+import { NavBar } from '../components/nav';
+import { registryJSONURL, ScriptInfo, useRegistry } from '../registry';
+import { ShimmerBox } from '../components/tx';
+import { ErrorBox } from '../App';
 
 const ViewScriptInfo = ({ scriptInfo }: { scriptInfo: ScriptInfo }) => {
   const Field = ({
@@ -43,10 +43,7 @@ const ViewScriptInfo = ({ scriptInfo }: { scriptInfo: ScriptInfo }) => {
         <Field name="Tag" value={scriptInfo.tag} />
         <Field name="Network" value={scriptInfo.network?.tag} />
         <Field name="Description" value={scriptInfo.description} />
-        <Field
-          name="Script Hash"
-          value={scriptInfo.scriptHash}
-        />
+        <Field name="Script Hash" value={scriptInfo.scriptHash} />
         <Field name="Component Name" value={scriptInfo.componentName} />
         <Field name="Market" value={scriptInfo.market} />
       </tbody>
@@ -54,7 +51,7 @@ const ViewScriptInfo = ({ scriptInfo }: { scriptInfo: ScriptInfo }) => {
   );
 };
 
-export type Network = "Mainnet" | "Preview";
+export type Network = 'Mainnet' | 'Preview';
 
 export const NetworkSelector = ({
   network,
@@ -65,11 +62,13 @@ export const NetworkSelector = ({
 }) => {
   return (
     <div className="flex flex-1 gap-2 max-h-10">
-      <span className="self-center text-xs text-gray-500 dark:text-gray-400">Network:</span>
+      <span className="self-center text-xs text-gray-500 dark:text-gray-400">
+        Network:
+      </span>
       <select
         className="border-2 border-gray-200 dark:border-gray-700 p-2 dark:bg-gray-800 dark:text-white"
         onChange={(e) =>
-          ["Mainnet", "Preview"].includes(e.target.value) &&
+          ['Mainnet', 'Preview'].includes(e.target.value) &&
           setNetwork(e.target.value as Network)
         }
         value={network}
@@ -90,7 +89,9 @@ export const SearchBar = ({
 }) => {
   return (
     <div className="flex flex-1 gap-2 max-h-10">
-      <span className="self-center text-xs text-gray-500 dark:text-gray-400">Search:</span>
+      <span className="self-center text-xs text-gray-500 dark:text-gray-400">
+        Search:
+      </span>
       <input
         className="border-2 border-gray-200 dark:border-gray-700 p-2 dark:bg-gray-800 dark:text-white"
         onChange={(e) => setSearch(e.target.value)}
@@ -103,22 +104,22 @@ export const SearchBar = ({
 export const RegistryPage = () => {
   const { data: registry, isLoading, isError } = useRegistry();
 
-  const [network, setNetwork] = useState<Network>("Mainnet");
+  const [network, setNetwork] = useState<Network>('Mainnet');
 
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
 
   const filteredScriptInfos = useMemo(() => {
     if (registry) {
-      const networkId = network === "Mainnet" ? "MainnetId" : "TestnetId";
+      const networkId = network === 'Mainnet' ? 'MainnetId' : 'TestnetId';
       const options = registry.scriptInfos.filter((scriptInfo: ScriptInfo) => {
         return scriptInfo.network?.tag === networkId;
       });
 
-      if (search === "") {
+      if (search === '') {
         return options;
       }
       const fuse = new Fuse(options, {
-        keys: ["name", "tag", "description"],
+        keys: ['name', 'tag', 'description'],
       });
 
       return fuse.search(search).map((r) => r.item);
@@ -131,11 +132,11 @@ export const RegistryPage = () => {
         <ViewScriptInfo
           key={
             scriptInfo.scriptHash +
-            "-" +
+            '-' +
             scriptInfo.type +
-            "-" +
+            '-' +
             scriptInfo.name +
-            "-" +
+            '-' +
             scriptInfo.tag
           }
           scriptInfo={scriptInfo}
@@ -163,7 +164,7 @@ export const RegistryPage = () => {
           <SearchBar search={search} setSearch={setSearch} />
 
           <div className="flex flex-col gap-2">{scriptInfoViews}</div>
-          {isError && <ErrorBox message={"Could not load registry"} />}
+          {isError && <ErrorBox message={'Could not load registry'} />}
         </main>
         <aside className="order-first md:w-16 lg:w-32"></aside>
         <aside className="md:w-16 lg:w-32"></aside>

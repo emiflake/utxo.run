@@ -1,5 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
-import * as z from "zod";
+import { useQuery } from '@tanstack/react-query';
+import * as z from 'zod';
 
 export const ogmiosURL = '/ogmios';
 
@@ -27,13 +27,13 @@ export type QueryLedgerStateUtxosResponse = z.infer<
 
 export async function queryLedgerStateUtxos(): Promise<QueryLedgerStateUtxosResponse> {
   const response = await fetch(`${ogmiosURL}`, {
-    method: "POST",
+    method: 'POST',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      jsonrpc: "2.0",
-      method: "queryLedgerState/utxo",
+      jsonrpc: '2.0',
+      method: 'queryLedgerState/utxo',
     }),
   });
 
@@ -48,7 +48,7 @@ export const useQueryLedgerStateUtxos = (): {
   isError: boolean;
 } => {
   return useQuery({
-    queryKey: ["query-ledger-state-utxos"],
+    queryKey: ['query-ledger-state-utxos'],
     queryFn: () => queryLedgerStateUtxos(),
     staleTime: 10_000,
   });

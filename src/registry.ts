@@ -1,5 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
-import * as z from "zod";
+import { useQuery } from '@tanstack/react-query';
+import * as z from 'zod';
 
 export const registryURL = '/registry-proxy';
 export const registryJSONURL = `${registryURL}/registry.json`;
@@ -20,15 +20,21 @@ export const otherInfoSchema = z.object({
 
 export type OtherInfo = z.infer<typeof otherInfoSchema>;
 
-export type ScriptType = 'Validator' | 'MintingPolicy' | 'StakeValidator'
+export type ScriptType = 'Validator' | 'MintingPolicy' | 'StakeValidator';
 
 export const scriptInfoSchema = z.object({
-  type: z.union([z.literal('Validator'), z.literal('MintingPolicy'), z.literal('StakeValidator')]),
+  type: z.union([
+    z.literal('Validator'),
+    z.literal('MintingPolicy'),
+    z.literal('StakeValidator'),
+  ]),
   name: z.string(),
   tag: z.string(),
-  network: z.object({
-    tag: z.string(),
-  }).optional(),
+  network: z
+    .object({
+      tag: z.string(),
+    })
+    .optional(),
   description: z.string().optional(),
   scriptHash: z.string(),
   deployment: z.unknown().optional(),
@@ -58,10 +64,9 @@ export const getRegistry = async (): Promise<Registry> => {
   return registrySchema.parse(json);
 };
 
-
 export const useRegistry = () => {
   return useQuery({
-    queryKey: ["registry"],
+    queryKey: ['registry'],
     queryFn: () => getRegistry(),
     staleTime: 60_000,
   });

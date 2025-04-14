@@ -1,19 +1,21 @@
-import { useQuery, UseQueryResult } from "@tanstack/react-query";
-import * as zod from "zod";
-import * as tx from "./tx";
+import { useQuery, UseQueryResult } from '@tanstack/react-query';
+import * as zod from 'zod';
+import * as tx from './tx';
 
 export const betterfrostURL = '/betterfrost';
-
 
 export const paginationSchema = zod.object({
   count: zod.number().default(10),
   page: zod.number().default(1),
-  order: zod.string().default("asc"),
+  order: zod.string().default('asc'),
 });
 
 export type Pagination = zod.infer<typeof paginationSchema>;
 
-export const urlWithParams = (url: string, params: Record<string, string | number>): URL => {
+export const urlWithParams = (
+  url: string,
+  params: Record<string, string | number>,
+): URL => {
   const urlWithParams = new URL(url, window.location.origin);
   Object.entries(params).forEach(([key, value]) => {
     urlWithParams.searchParams.set(key, value.toString());
@@ -173,9 +175,9 @@ export const getTxsWithPolicyIds = async (
   policyIds: string[],
 ): Promise<AssetPolicyTransaction[]> => {
   const response = await fetch(`${betterfrostURL}/api/v0/assets/policy/utxos`, {
-    method: "POST",
+    method: 'POST',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
     body: JSON.stringify(policyIds),
   });
@@ -230,7 +232,7 @@ export const getUtxosByAddress = async (
   const response = await fetch(
     `${betterfrostURL}/api/v0/addresses/${address}/utxos`,
     {
-      method: "GET",
+      method: 'GET',
     },
   );
   const json = await response.json();
@@ -243,13 +245,13 @@ export const getAssetHistory = async (
   pagination: Partial<Pagination> = {},
 ): Promise<AssetHistory[]> => {
   const parsedPagination = paginationSchema.parse(pagination);
-  const url = urlWithParams(`${betterfrostURL}/api/v0/assets/${unit}/history`, parsedPagination);
-  const response = await fetch(
-    url,
-    {
-      method: "GET",
-    },
+  const url = urlWithParams(
+    `${betterfrostURL}/api/v0/assets/${unit}/history`,
+    parsedPagination,
   );
+  const response = await fetch(url, {
+    method: 'GET',
+  });
   const json = await response.json();
 
   return assetHistorySchema.array().parse(json);
@@ -260,13 +262,13 @@ export const getAssetTransactions = async (
   pagination: Partial<Pagination> = {},
 ): Promise<AssetTransaction[]> => {
   const parsedPagination = paginationSchema.parse(pagination);
-  const url = urlWithParams(`${betterfrostURL}/api/v0/assets/${unit}/transactions`, parsedPagination);
-  const response = await fetch(
-    url,
-    {
-      method: "GET",
-    },
+  const url = urlWithParams(
+    `${betterfrostURL}/api/v0/assets/${unit}/transactions`,
+    parsedPagination,
   );
+  const response = await fetch(url, {
+    method: 'GET',
+  });
   const json = await response.json();
 
   return assetTransactionSchema.array().parse(json);
@@ -276,7 +278,7 @@ export const useUtxosByAddress = (
   address: string,
 ): UseQueryResult<AddressUtxo[], unknown> => {
   return useQuery({
-    queryKey: ["utxos-by-address", address],
+    queryKey: ['utxos-by-address', address],
     queryFn: () => getUtxosByAddress(address),
     staleTime: 10_000,
   });
@@ -286,7 +288,7 @@ export const useTxsWithPolicyIds = (
   policyIds: string[],
 ): UseQueryResult<AssetPolicyTransaction[], unknown> => {
   return useQuery({
-    queryKey: ["txs-with-policy-ids", policyIds],
+    queryKey: ['txs-with-policy-ids', policyIds],
     queryFn: () => getTxsWithPolicyIds(policyIds),
     staleTime: 10_000,
   });
@@ -296,7 +298,7 @@ export const useTxUtxosByHash = (
   hash: string,
 ): UseQueryResult<TransactionUtxosResponse, unknown> => {
   return useQuery({
-    queryKey: ["tx-utxos", hash],
+    queryKey: ['tx-utxos', hash],
     queryFn: () => getTxUtxosByHash(hash),
     staleTime: 10_000,
   });
@@ -306,7 +308,7 @@ export const useTxByHash = (
   hash: string,
 ): UseQueryResult<Transaction, unknown> => {
   return useQuery({
-    queryKey: ["tx", hash],
+    queryKey: ['tx', hash],
     queryFn: () => getTxByHash(hash),
     staleTime: 10_000,
   });
@@ -314,7 +316,7 @@ export const useTxByHash = (
 
 export const useLatestBlock = (): UseQueryResult<Block, unknown> => {
   return useQuery({
-    queryKey: ["latest-block"],
+    queryKey: ['latest-block'],
     queryFn: () => getLatestBlock(),
     staleTime: 1000,
     refetchInterval: 5000,
@@ -325,7 +327,7 @@ export const useBlockByHashOrNumber = (
   hashOrNumber: string,
 ): UseQueryResult<Block, unknown> => {
   return useQuery({
-    queryKey: ["block", hashOrNumber],
+    queryKey: ['block', hashOrNumber],
     queryFn: () => getBlockByHashOrNumber(hashOrNumber),
     staleTime: 10_000,
   });
@@ -335,7 +337,7 @@ export const useCborByDatumHash = (
   datumHash: string,
 ): UseQueryResult<string, unknown> => {
   return useQuery({
-    queryKey: ["cbor", datumHash],
+    queryKey: ['cbor', datumHash],
     queryFn: () => getCborByDatumHash(datumHash).then((cbor) => cbor.cbor),
     staleTime: 10_000,
   });
@@ -345,7 +347,7 @@ export const useTxDataByHash = (
   txHash: string,
 ): UseQueryResult<tx.Transaction, unknown> => {
   return useQuery({
-    queryKey: ["tx-data", txHash],
+    queryKey: ['tx-data', txHash],
     queryFn: async () => {
       const cbor = await getTxCborByHash(txHash);
       const result = await tx.processTxFromCbor(cbor.cbor);
@@ -363,7 +365,7 @@ export const useAssetHistory = (
   pagination: Partial<Pagination> = {},
 ): UseQueryResult<AssetHistory[], unknown> => {
   return useQuery({
-    queryKey: ["asset-history", unit, pagination],
+    queryKey: ['asset-history', unit, pagination],
     queryFn: () => getAssetHistory(unit, pagination),
     staleTime: 10_000,
   });
@@ -374,7 +376,7 @@ export const useAssetTransactions = (
   pagination: Partial<Pagination> = {},
 ): UseQueryResult<AssetTransaction[], unknown> => {
   return useQuery({
-    queryKey: ["asset-transactions", unit, pagination],
+    queryKey: ['asset-transactions', unit, pagination],
     queryFn: () => getAssetTransactions(unit, pagination),
     staleTime: 10_000,
   });

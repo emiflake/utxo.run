@@ -1,11 +1,11 @@
-import { useCallback, useState } from "react"
-import { Link, useNavigate } from "react-router"
-import { AnimatedSearchInput } from "./AnimatedSearchInput"
-import { SettingsModal } from "./SettingsModal"
-import { ThemeToggle } from "./Toggle"
+import { useCallback, useState } from 'react';
+import { Link, useNavigate } from 'react-router';
+import { AnimatedSearchInput } from './AnimatedSearchInput';
+import { SettingsModal } from './SettingsModal';
+import { ThemeToggle } from './Toggle';
 
 // Icon components
-function LogoIcon({ className = "h-6 w-6 text-orange-500" }) {
+function LogoIcon({ className = 'h-6 w-6 text-orange-500' }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -21,10 +21,10 @@ function LogoIcon({ className = "h-6 w-6 text-orange-500" }) {
       <path d="M2 17l10 5 10-5" />
       <path d="M2 12l10 5 10-5" />
     </svg>
-  )
+  );
 }
 
-function RegistryIcon({ className = "mr-2 h-4 w-4" }) {
+function RegistryIcon({ className = 'mr-2 h-4 w-4' }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -41,10 +41,10 @@ function RegistryIcon({ className = "mr-2 h-4 w-4" }) {
       <rect width="7" height="7" x="14" y="14" rx="1" />
       <rect width="7" height="7" x="3" y="14" rx="1" />
     </svg>
-  )
+  );
 }
 
-function ChevronDownIcon({ className = "ml-1 h-4 w-4" }) {
+function ChevronDownIcon({ className = 'ml-1 h-4 w-4' }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -58,10 +58,10 @@ function ChevronDownIcon({ className = "ml-1 h-4 w-4" }) {
     >
       <path d="M6 9l6 6 6-6" />
     </svg>
-  )
+  );
 }
 
-function ExplorerIcon({ className = "mr-2 h-4 w-4" }) {
+function ExplorerIcon({ className = 'mr-2 h-4 w-4' }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -76,10 +76,10 @@ function ExplorerIcon({ className = "mr-2 h-4 w-4" }) {
       <circle cx="12" cy="12" r="10" />
       <path d="M12 2a14.5 14.5 0 0 0 0 20a14.5 14.5 0 0 0 0-20" />
     </svg>
-  )
+  );
 }
 
-function FileIcon({ className = "h-4 w-4" }) {
+function FileIcon({ className = 'h-4 w-4' }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -94,10 +94,10 @@ function FileIcon({ className = "h-4 w-4" }) {
       <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
       <polyline points="14 2 14 8 20 8" />
     </svg>
-  )
+  );
 }
 
-function FileSearchIcon({ className = "h-4 w-4" }) {
+function FileSearchIcon({ className = 'h-4 w-4' }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -114,10 +114,10 @@ function FileSearchIcon({ className = "h-4 w-4" }) {
       <circle cx="17" cy="17" r="3" />
       <path d="m21 21-1.5-1.5" />
     </svg>
-  )
+  );
 }
 
-function SearchIcon({ className = "h-4 w-4", color = "currentColor" }) {
+function SearchIcon({ className = 'h-4 w-4', color = 'currentColor' }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -134,10 +134,10 @@ function SearchIcon({ className = "h-4 w-4", color = "currentColor" }) {
       <circle cx="11" cy="11" r="8" />
       <path d="m21 21-4.3-4.3" />
     </svg>
-  )
+  );
 }
 
-function SettingsIcon({ className = "h-4 w-4 text-gray-500" }) {
+function SettingsIcon({ className = 'h-4 w-4 text-gray-500' }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -152,33 +152,33 @@ function SettingsIcon({ className = "h-4 w-4 text-gray-500" }) {
       <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
       <circle cx="12" cy="12" r="3" />
     </svg>
-  )
+  );
 }
 
-type SearchType = "hash" | "cbor"
+type SearchType = 'hash' | 'cbor';
 
 // TODO: We could support more types of search if we are clever enough
 const classifySearch = (searchValue: string): SearchType => {
   if (searchValue.length === 64) {
-    return "hash"
+    return 'hash';
   }
-  return "cbor"
-}
+  return 'cbor';
+};
 
 export function NavBar() {
-  const [searchValue, setSearchValue] = useState("")
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false)
+  const [searchValue, setSearchValue] = useState('');
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const handleSearch = useCallback(() => {
-    const searchType = classifySearch(searchValue)
-    if (searchType === "hash") {
-      navigate(`/submitted-tx/${searchValue}`)
+    const searchType = classifySearch(searchValue);
+    if (searchType === 'hash') {
+      navigate(`/submitted-tx/${searchValue}`);
     } else {
-      navigate(`/tx/${searchValue}`)
+      navigate(`/tx/${searchValue}`);
     }
-  }, [searchValue, navigate])
+  }, [searchValue, navigate]);
 
   return (
     <>
@@ -187,7 +187,9 @@ export function NavBar() {
           <div className="flex items-center gap-2 mr-8">
             <Link to="/" className="flex items-center gap-2">
               <LogoIcon />
-              <span className="text-2xl font-bold tracking-tight text-orange-300">fine.tx</span>
+              <span className="text-2xl font-bold tracking-tight text-orange-300">
+                fine.tx
+              </span>
             </Link>
           </div>
 
@@ -204,9 +206,7 @@ export function NavBar() {
               </li>
               <li>
                 <div className="relative group">
-                  <button
-                    className="inline-flex h-9 w-max items-center justify-center bg-background dark:bg-gray-800 px-4 py-2 text-sm font-medium dark:text-white transition-colors hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700 focus:outline-none disabled:pointer-events-none disabled:opacity-50 rounded"
-                  >
+                  <button className="inline-flex h-9 w-max items-center justify-center bg-background dark:bg-gray-800 px-4 py-2 text-sm font-medium dark:text-white transition-colors hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700 focus:outline-none disabled:pointer-events-none disabled:opacity-50 rounded">
                     Transactions
                     <ChevronDownIcon />
                   </button>
@@ -248,7 +248,10 @@ export function NavBar() {
 
           <div className="flex items-center ml-auto">
             <div className="relative w-full md:w-64 lg:w-80">
-              <SearchIcon className="absolute left-2.5 top-1/2 transform -translate-y-1/2 h-4 w-4 z-20" color="#9ca3af" />
+              <SearchIcon
+                className="absolute left-2.5 top-1/2 transform -translate-y-1/2 h-4 w-4 z-20"
+                color="#9ca3af"
+              />
               <AnimatedSearchInput
                 value={searchValue}
                 onChange={(e) => setSearchValue(e.target.value)}
@@ -271,31 +274,46 @@ export function NavBar() {
           </div>
         </div>
 
-
-
         {/* Mobile navigation */}
         <div className="border-t border-gray-200 dark:border-gray-700 py-2 lg:hidden">
           <nav className="container mx-auto max-w-md flex justify-between px-4">
-            <Link to="/registry" className="flex flex-col items-center text-sm font-medium dark:text-white hover:underline">
+            <Link
+              to="/registry"
+              className="flex flex-col items-center text-sm font-medium dark:text-white hover:underline"
+            >
               <RegistryIcon className="mb-1 h-5 w-5" />
               Registry
             </Link>
-            <Link to="/tx/" className="flex flex-col items-center text-sm font-medium dark:text-white hover:underline">
+            <Link
+              to="/tx/"
+              className="flex flex-col items-center text-sm font-medium dark:text-white hover:underline"
+            >
               <FileIcon className="mb-1 h-5 w-5" />
               Tx by CBOR
             </Link>
-            <Link to="/chain" className="flex flex-col items-center text-sm font-medium dark:text-white hover:underline">
+            <Link
+              to="/chain"
+              className="flex flex-col items-center text-sm font-medium dark:text-white hover:underline"
+            >
               <ExplorerIcon className="mb-1 h-5 w-5" />
               Explorer
             </Link>
-            <Link to="/submitted-tx/" className="flex flex-col items-center text-sm font-medium dark:text-white hover:underline">
+            <Link
+              to="/submitted-tx/"
+              className="flex flex-col items-center text-sm font-medium dark:text-white hover:underline"
+            >
               <FileSearchIcon className="mb-1 h-5 w-5" />
               Tx by Hash
             </Link>
           </nav>
         </div>
       </header>
-      {isSettingsOpen && <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />}
+      {isSettingsOpen && (
+        <SettingsModal
+          isOpen={isSettingsOpen}
+          onClose={() => setIsSettingsOpen(false)}
+        />
+      )}
     </>
-  )
+  );
 }

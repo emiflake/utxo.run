@@ -1,17 +1,20 @@
-import { useMemo } from "react";
-import { NavBar } from "../components/nav";
-import { useUtxosByAddress } from "../betterfrost";
-import { useParams } from "react-router";
-import { ShimmerBox, ViewTransactionOutput, ViewUnit } from "../components/tx";
-import { TransactionOutput } from "../tx";
-import { ErrorBox } from "../App";
-import { ClipboardButton, LinkClipboardButton } from "../components/ActionButtons";
+import { useMemo } from 'react';
+import { NavBar } from '../components/nav';
+import { useUtxosByAddress } from '../betterfrost';
+import { useParams } from 'react-router';
+import { ShimmerBox, ViewTransactionOutput, ViewUnit } from '../components/tx';
+import { TransactionOutput } from '../tx';
+import { ErrorBox } from '../App';
+import {
+  ClipboardButton,
+  LinkClipboardButton,
+} from '../components/ActionButtons';
 
 export const AddressPage = () => {
-  const params = useParams()
+  const params = useParams();
 
   const address = useMemo(() => {
-    return params.address ?? "";
+    return params.address ?? '';
   }, [params]);
 
   const addressUrl = useMemo(() => {
@@ -45,7 +48,7 @@ export const AddressPage = () => {
         coin: 0n,
         amount: utxo.amount,
         tx_hash: utxo.tx_hash,
-        cbor_datum: utxo.data_hash ?? "",
+        cbor_datum: utxo.data_hash ?? '',
       }));
     } else {
       return [];
@@ -61,19 +64,31 @@ export const AddressPage = () => {
           <h2 className="dark:text-white">Address</h2>
 
           <div className="flex items-center gap-1">
-            <span className="text-xs text-gray-500 dark:text-gray-300 font-mono">{address}</span>
-            <ClipboardButton text={address} className="opacity-70 hover:opacity-100 dark:text-white" />
-            <LinkClipboardButton text={addressUrl} className="opacity-70 hover:opacity-100 dark:text-white" />
+            <span className="text-xs text-gray-500 dark:text-gray-300 font-mono">
+              {address}
+            </span>
+            <ClipboardButton
+              text={address}
+              className="opacity-70 hover:opacity-100 dark:text-white"
+            />
+            <LinkClipboardButton
+              text={addressUrl}
+              className="opacity-70 hover:opacity-100 dark:text-white"
+            />
           </div>
 
           <div className="flex flex-col lg:flex-row lg:flex-1 gap-2">
             {isLoading && <ShimmerBox />}
-            {isError && <ErrorBox message={"Could not load outputs"} />}
+            {isError && <ErrorBox message={'Could not load outputs'} />}
             {utxos && (
               <>
                 <div className="flex flex-col lg:w-1/2 gap-2 border-1 border-gray-200 dark:border-gray-700 p-4 dark:text-white">
                   <span className="text-md dark:text-white">Outputs</span>
-                  {utxos && <span className="text-xs dark:text-gray-300">Count: {utxos.length}</span>}
+                  {utxos && (
+                    <span className="text-xs dark:text-gray-300">
+                      Count: {utxos.length}
+                    </span>
+                  )}
                   {processedUtxos?.map((utxo) => (
                     <ViewTransactionOutput
                       key={utxo.tx_hash}
@@ -83,7 +98,9 @@ export const AddressPage = () => {
                   ))}
                 </div>
                 <div className="flex flex-col lg:w-1/2 gap-2 border-1 border-gray-200 dark:border-gray-700 p-4 dark:text-white">
-                  <span className="text-md dark:text-white">Total asset value</span>
+                  <span className="text-md dark:text-white">
+                    Total asset value
+                  </span>
                   {totalValue && (
                     <span className="text-xs dark:text-gray-300">
                       Count: {Object.entries(totalValue).length}

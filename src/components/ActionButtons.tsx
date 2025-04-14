@@ -6,7 +6,7 @@ async function copyToClipboard(text: string): Promise<boolean> {
     console.warn('Clipboard API not available');
     return false;
   }
-  
+
   try {
     await navigator.clipboard.writeText(text);
     return true;
@@ -17,7 +17,7 @@ async function copyToClipboard(text: string): Promise<boolean> {
 }
 
 // Icons
-function CheckIcon({ className = "h-3.5 w-3.5" }: { className?: string }) {
+function CheckIcon({ className = 'h-3.5 w-3.5' }: { className?: string }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -34,7 +34,7 @@ function CheckIcon({ className = "h-3.5 w-3.5" }: { className?: string }) {
   );
 }
 
-function CopyIcon({ className = "h-3.5 w-3.5" }: { className?: string }) {
+function CopyIcon({ className = 'h-3.5 w-3.5' }: { className?: string }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -52,7 +52,7 @@ function CopyIcon({ className = "h-3.5 w-3.5" }: { className?: string }) {
   );
 }
 
-function LinkIcon({ className = "h-3.5 w-3.5" }: { className?: string }) {
+function LinkIcon({ className = 'h-3.5 w-3.5' }: { className?: string }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -88,7 +88,7 @@ function ActionButton({
   onClick,
   icon,
   activeIcon,
-  isActive = false
+  isActive = false,
 }: ActionButtonProps) {
   return (
     <button
@@ -118,10 +118,10 @@ interface ClipboardButtonProps {
 export function ClipboardButton({
   text,
   className = 'text-gray-500 hover:text-gray-700 dark:text-white dark:hover:text-gray-200',
-  copyDuration = 500
+  copyDuration = 500,
 }: ClipboardButtonProps) {
   const [copied, setCopied] = useState(false);
-  
+
   const handleCopy = async () => {
     const success = await copyToClipboard(text);
     if (success) {
@@ -151,10 +151,10 @@ interface LinkClipboardButtonProps {
 export function LinkClipboardButton({
   text,
   className = 'text-gray-500 hover:text-gray-700 dark:text-white dark:hover:text-gray-200',
-  copyDuration = 500
+  copyDuration = 500,
 }: LinkClipboardButtonProps) {
   const [copied, setCopied] = useState(false);
-  
+
   const handleCopy = async () => {
     const success = await copyToClipboard(text);
     if (success) {

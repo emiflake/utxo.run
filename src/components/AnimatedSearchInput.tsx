@@ -1,4 +1,4 @@
-import { useState, FormEvent, ChangeEvent } from "react";
+import { useState, FormEvent, ChangeEvent } from 'react';
 
 interface AnimatedSearchInputProps {
   value: string;
@@ -17,13 +17,13 @@ export function AnimatedSearchInput({
   value,
   onChange,
   onSubmit,
-  placeholder = "Search...",
+  placeholder = 'Search...',
   id,
   name,
-  type = "text",
-  buttonText = "Search",
-  className = "",
-  inputClassName = "",
+  type = 'text',
+  buttonText = 'Search',
+  className = '',
+  inputClassName = '',
 }: AnimatedSearchInputProps) {
   const [isInputFocused, setIsInputFocused] = useState(false);
 
@@ -41,7 +41,7 @@ export function AnimatedSearchInput({
           placeholder={placeholder}
           className={`h-10 w-full 
             ${
-              isInputFocused ? "rounded-l" : "rounded"
+              isInputFocused ? 'rounded-l' : 'rounded'
             } border-2 border-gray-200 dark:border-gray-700 p-2 
             focus:outline-none focus:border-gray-300 dark:focus:border-gray-600 transition-all duration-300 ease-in-out 
             relative z-10 bg-white dark:bg-gray-800 dark:text-white
@@ -57,8 +57,8 @@ export function AnimatedSearchInput({
           text-sm font-medium dark:text-white transition-all duration-300 ease-in-out disabled:pointer-events-none disabled:opacity-50 
           ${
             isInputFocused
-              ? "opacity-100 max-w-[80px] ml-0"
-              : "opacity-0 max-w-0 ml-[-2px] overflow-hidden"
+              ? 'opacity-100 max-w-[80px] ml-0'
+              : 'opacity-0 max-w-0 ml-[-2px] overflow-hidden'
           }`}
       >
         {buttonText}

@@ -1,29 +1,37 @@
-import { useCallback, useMemo, useState } from "react";
-import { processTxFromCbor } from "../tx";
-import { TxViewer } from "../components/tx";
-import { ErrorBox } from "../App";
-import { useNavigate, useParams } from "react-router";
-import { NavBar } from "../components/nav";
-import { AnimatedSearchInput } from "../components/AnimatedSearchInput";
+import { useCallback, useMemo, useState } from 'react';
+import { processTxFromCbor } from '../tx';
+import { TxViewer } from '../components/tx';
+import { ErrorBox } from '../App';
+import { useNavigate, useParams } from 'react-router';
+import { NavBar } from '../components/nav';
+import { AnimatedSearchInput } from '../components/AnimatedSearchInput';
 
 const TxViewForm = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
-  const [txCborValue, setTxCborValue] = useState("");
+  const [txCborValue, setTxCborValue] = useState('');
 
-  const handleSearch = useCallback((e: React.FormEvent) => {
-    e.preventDefault();
-    if (txCborValue.trim()) {
-      navigate(`/tx/${txCborValue.trim()}`);
-    }
-  }, [txCborValue, navigate]);
+  const handleSearch = useCallback(
+    (e: React.FormEvent) => {
+      e.preventDefault();
+      if (txCborValue.trim()) {
+        navigate(`/tx/${txCborValue.trim()}`);
+      }
+    },
+    [txCborValue, navigate],
+  );
 
   return (
     <div className="mb-6 mt-4 mx-auto w-full bg-white dark:bg-gray-800 border border-2 border-gray-200 dark:border-gray-700 overflow-hidden">
       <div className="p-4">
-        <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-3">Transaction Viewer</h2>
+        <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-3">
+          Transaction Viewer
+        </h2>
         <div className="flex flex-row sm:flex-row items-start sm:items-center gap-1">
-          <label htmlFor="tx-cbor" className="text-sm min-w-[160px] font-medium text-gray-700 dark:text-gray-300">
+          <label
+            htmlFor="tx-cbor"
+            className="text-sm min-w-[160px] font-medium text-gray-700 dark:text-gray-300"
+          >
             Enter transaction CBOR:
           </label>
           <div className="w-full">
@@ -44,10 +52,10 @@ const TxViewForm = () => {
 };
 
 export function TxViewPage() {
-  const params = useParams()
+  const params = useParams();
 
   const txCbor = useMemo(() => {
-    return params.txCbor ?? "";
+    return params.txCbor ?? '';
   }, [params]);
 
   const processedCbor = useMemo(() => {

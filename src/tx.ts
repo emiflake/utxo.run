@@ -1,7 +1,7 @@
-import * as CML from "@dcspark/cardano-multiplatform-lib-browser";
+import * as CML from '@dcspark/cardano-multiplatform-lib-browser';
 
-import { TransactionAmount } from "./betterfrost";
-import { failure, Result, success } from "./result";
+import { TransactionAmount } from './betterfrost';
+import { failure, Result, success } from './result';
 
 export type TxProcessError = {
   message: string;
@@ -87,7 +87,6 @@ export const processTxFromCbor = (
 
     const ttl = body.ttl();
 
-    
     const { mint, burn } = (() => {
       const m = body.mint();
       if (m) {
@@ -98,11 +97,13 @@ export const processTxFromCbor = (
         return { mint: [], burn: [] };
       }
     })();
-    
+
     const maybeRequiredSigners = body.required_signers();
-    const requiredSigners = (maybeRequiredSigners
-      ? convertCMLList<CML.Ed25519KeyHash>(maybeRequiredSigners)
-      : []).map((k) => k.to_hex());
+    const requiredSigners = (
+      maybeRequiredSigners
+        ? convertCMLList<CML.Ed25519KeyHash>(maybeRequiredSigners)
+        : []
+    ).map((k) => k.to_hex());
 
     const referenceInputs = (() => {
       const ref = body.reference_inputs();
@@ -129,7 +130,7 @@ export const processTxFromCbor = (
           amount: [
             ...convertCMLMultiAsset(o.amount().multi_asset()),
             {
-              unit: "lovelace",
+              unit: 'lovelace',
               quantity: Number(o.amount().coin()).toString(),
             },
           ],

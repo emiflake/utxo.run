@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from 'react';
 
 // Sun icon component
-function SunIcon({ className = "h-4 w-4" }) {
+function SunIcon({ className = 'h-4 w-4' }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -27,7 +27,7 @@ function SunIcon({ className = "h-4 w-4" }) {
 }
 
 // Moon icon component
-function MoonIcon({ className = "h-4 w-4" }) {
+function MoonIcon({ className = 'h-4 w-4' }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -49,7 +49,7 @@ interface ToggleProps {
   onToggle: () => void;
   label?: string;
   disabled?: boolean;
-  size?: "sm" | "md" | "lg";
+  size?: 'sm' | 'md' | 'lg';
   className?: string;
 }
 
@@ -58,25 +58,25 @@ export function Toggle({
   onToggle,
   label,
   disabled = false,
-  size = "md",
-  className = "",
+  size = 'md',
+  className = '',
 }: ToggleProps) {
   // Size mappings
   const sizeClasses = {
     sm: {
-      toggle: "w-8 h-4",
-      circle: "w-3 h-3",
-      translateX: "translate-x-4",
+      toggle: 'w-8 h-4',
+      circle: 'w-3 h-3',
+      translateX: 'translate-x-4',
     },
     md: {
-      toggle: "w-11 h-6",
-      circle: "w-5 h-5",
-      translateX: "translate-x-5",
+      toggle: 'w-11 h-6',
+      circle: 'w-5 h-5',
+      translateX: 'translate-x-5',
     },
     lg: {
-      toggle: "w-14 h-7",
-      circle: "w-6 h-6",
-      translateX: "translate-x-7",
+      toggle: 'w-14 h-7',
+      circle: 'w-6 h-6',
+      translateX: 'translate-x-7',
     },
   };
 
@@ -96,18 +96,18 @@ export function Toggle({
         className={`
           relative inline-flex flex-shrink-0 items-center rounded-full
           ${toggle}
-          ${isOn ? "bg-gray-500 dark:bg-gray-600" : "bg-gray-200 dark:bg-gray-700"}
+          ${isOn ? 'bg-gray-500 dark:bg-gray-600' : 'bg-gray-200 dark:bg-gray-700'}
           transition-colors duration-300 ease-in-out
           focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-opacity-75
-          ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
+          ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
         `}
         aria-pressed={isOn}
-        aria-label={label || "Toggle"}
+        aria-label={label || 'Toggle'}
       >
-        <span className="sr-only">{label || "Toggle"}</span>
+        <span className="sr-only">{label || 'Toggle'}</span>
         <span
           className={`
-            ${isOn ? translateX : "translate-x-0.5"}
+            ${isOn ? translateX : 'translate-x-0.5'}
             ${circle}
             bg-white dark:bg-gray-100
             rounded-full shadow transform
@@ -122,20 +122,21 @@ export function Toggle({
 
 const useTheme = () => {
   const [isDarkMode, setIsDarkMode] = useState(
-    localStorage.theme === "dark" ||
-      (!("theme" in localStorage) && window.matchMedia("(prefers-color-scheme: dark)").matches)
+    localStorage.theme === 'dark' ||
+      (!('theme' in localStorage) &&
+        window.matchMedia('(prefers-color-scheme: dark)').matches),
   );
 
   useEffect(() => {
-    document.documentElement.classList.toggle("dark", isDarkMode);
+    document.documentElement.classList.toggle('dark', isDarkMode);
   }, [isDarkMode]);
 
   const setDarkMode = useCallback((mode: boolean) => {
     setIsDarkMode(mode);
 
-    document.documentElement.classList.toggle("dark", mode);
+    document.documentElement.classList.toggle('dark', mode);
 
-    localStorage.theme = mode ? "dark" : "light";
+    localStorage.theme = mode ? 'dark' : 'light';
   }, []);
 
   const toggleDarkMode = useCallback(() => {
@@ -153,14 +154,18 @@ export function ThemeToggle() {
 
   return (
     <div className="flex items-center gap-1.5">
-      <SunIcon className={`h-4 w-4 ${isDarkMode ? 'text-gray-400' : 'text-amber-500 filter drop-shadow-[0_0_3px_rgba(251,191,36,0.5)]'} transition-all duration-300`} />
+      <SunIcon
+        className={`h-4 w-4 ${isDarkMode ? 'text-gray-400' : 'text-amber-500 filter drop-shadow-[0_0_3px_rgba(251,191,36,0.5)]'} transition-all duration-300`}
+      />
       <Toggle
         isOn={isDarkMode}
         onToggle={toggleDarkMode}
         size="sm"
         className="mx-1"
       />
-      <MoonIcon className={`h-4 w-4 ${isDarkMode ? 'text-indigo-300 filter drop-shadow-[0_0_3px_rgba(165,180,252,0.5)]' : 'text-gray-400'} transition-all duration-300`} />
+      <MoonIcon
+        className={`h-4 w-4 ${isDarkMode ? 'text-indigo-300 filter drop-shadow-[0_0_3px_rgba(165,180,252,0.5)]' : 'text-gray-400'} transition-all duration-300`}
+      />
     </div>
   );
 }

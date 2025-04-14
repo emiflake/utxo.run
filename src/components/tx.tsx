@@ -2,13 +2,13 @@ import {
   TransactionAmount,
   useTxByHash,
   useTxUtxosByHash,
-} from "../betterfrost";
+} from '../betterfrost';
 
-import { useMemo } from "react";
-import { useRegistry } from "../registry";
-import { Transaction, TransactionInput, TransactionOutput } from "../tx";
-import { Link } from "react-router";
-import { ClipboardButton } from "./ActionButtons";
+import { useMemo } from 'react';
+import { useRegistry } from '../registry';
+import { Transaction, TransactionInput, TransactionOutput } from '../tx';
+import { Link } from 'react-router';
+import { ClipboardButton } from './ActionButtons';
 
 export const ViewTransactionHash = ({ hash }: { hash: string }) => {
   const { data: tx, isLoading } = useTxByHash(hash);
@@ -30,12 +30,14 @@ export const ViewTransactionHash = ({ hash }: { hash: string }) => {
           <ul className="list-disc ml-4 text-xs text-gray-500 dark:text-gray-300">
             <li className="text-xs text-gray-500 dark:text-gray-300">
               <span>Block: </span>
-              <span className="font-medium">
-                {tx.block_height}
-              </span>
+              <span className="font-medium">{tx.block_height}</span>
             </li>
-            <li className="text-xs text-gray-500 dark:text-gray-300">{tx?.size} bytes</li>
-            <li className="text-xs text-gray-500 dark:text-gray-300">Slot #{tx?.slot}</li>
+            <li className="text-xs text-gray-500 dark:text-gray-300">
+              {tx?.size} bytes
+            </li>
+            <li className="text-xs text-gray-500 dark:text-gray-300">
+              Slot #{tx?.slot}
+            </li>
           </ul>
         </div>
       );
@@ -83,7 +85,7 @@ export const ViewUnit = ({
   const resolvedUnitName = useMemo(() => {
     if (isLoading || isError) {
       return <span> {showPrefix(unit)} </span>;
-    } else if (unit === "lovelace") {
+    } else if (unit === 'lovelace') {
       return <span className="text-sm">Ada</span>;
     } else {
       const liqwidName = registry?.scriptInfos.find(
@@ -109,14 +111,12 @@ export const ViewUnit = ({
           </span>
         );
       } else {
-        return <span className="font-mono">
-          {showPrefix(unit)}
-        </span>;
+        return <span className="font-mono">{showPrefix(unit)}</span>;
       }
     }
   }, [registry, unit, isLoading, isError]);
   const decimals = useMemo(() => {
-    if (unit === "lovelace") {
+    if (unit === 'lovelace') {
       return 6;
     } else {
       return 0;
@@ -130,12 +130,20 @@ export const ViewUnit = ({
   return (
     <div className="flex flex-row justify-between gap-4 border-3 border-dotted border-gray-400 dark:border-gray-600 p-2 bg-white/50 dark:bg-gray-800/50 break-all">
       <span className="text-sm self-center">
-        {unit === "lovelace" ? <span className="font-mono dark:text-white">{resolvedUnitName}</span> : <Link to={`/policy/${unit}`} className="text-indigo-500 dark:text-indigo-300 font-mono md:hover:underline">
-          {resolvedUnitName}
-        </Link>}
-
+        {unit === 'lovelace' ? (
+          <span className="font-mono dark:text-white">{resolvedUnitName}</span>
+        ) : (
+          <Link
+            to={`/policy/${unit}`}
+            className="text-indigo-500 dark:text-indigo-300 font-mono md:hover:underline"
+          >
+            {resolvedUnitName}
+          </Link>
+        )}
       </span>
-      <span className="text-md justify-self-end dark:text-white">{adjustedQuantity}</span>
+      <span className="text-md justify-self-end dark:text-white">
+        {adjustedQuantity}
+      </span>
     </div>
   );
 };
@@ -186,13 +194,19 @@ export const ViewTransactionInput = ({
     if (isLoading) {
       return <ShimmerBox />;
     } else if (isError) {
-      return <div className="text-red-900 dark:text-red-400">Error loading input data</div>;
+      return (
+        <div className="text-red-900 dark:text-red-400">
+          Error loading input data
+        </div>
+      );
     } else if (inputUtxo) {
       return (
         <>
           {inputUtxo?.address && (
             <div className="flex flex-1 gap-2">
-              <span className="text-xs self-center dark:text-white">Address:</span>
+              <span className="text-xs self-center dark:text-white">
+                Address:
+              </span>
               <ViewAddress address={inputUtxo?.address} />
             </div>
           )}
@@ -226,7 +240,9 @@ export const ViewTransactionInput = ({
 
 // A box that pulses to indicate loading
 export const ShimmerBox = () => {
-  return <div className="flex flex-col p-2 bg-gray-200 dark:bg-gray-700 animate-pulse"></div>;
+  return (
+    <div className="flex flex-col p-2 bg-gray-200 dark:bg-gray-700 animate-pulse"></div>
+  );
 };
 
 export const MiniButton = ({
@@ -239,7 +255,7 @@ export const MiniButton = ({
   children: React.ReactNode;
 }) => {
   return (
-    <a href={href ?? "#"} onClick={onClick ?? (() => { })}>
+    <a href={href ?? '#'} onClick={onClick ?? (() => {})}>
       <button className="flex flex-col gap-2 border-black dark:border-gray-400 bg-slate-100 dark:bg-slate-700 dark:text-white border-2 p-2 rounded-md break-all max-w-auto text-xs">
         {children}
       </button>
@@ -247,7 +263,10 @@ export const MiniButton = ({
   );
 };
 
-function ExternalLinkButton({ href, className = 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200' }: { href: string, className?: string }) {
+function ExternalLinkButton({
+  href,
+  className = 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200',
+}: { href: string; className?: string }) {
   return (
     <a
       href={href}
@@ -289,11 +308,19 @@ export const ViewDatum = ({ datum }: { datum: string }) => {
       <div className="border-black border-1 bg-gray-900 text-white overflow-hidden">
         <div className="flex items-start">
           <div className="flex-grow p-2">
-            <span className="text-xs font-mono break-all dark:text-white">{datum}</span>
+            <span className="text-xs font-mono break-all dark:text-white">
+              {datum}
+            </span>
           </div>
           <div className="p-1 flex-shrink-0 flex gap-1">
-            <ExternalLinkButton href={cborNemo} className="text-white hover:text-blue-300" />
-            <ClipboardButton text={datum} className="text-white hover:text-blue-300" />
+            <ExternalLinkButton
+              href={cborNemo}
+              className="text-white hover:text-blue-300"
+            />
+            <ClipboardButton
+              text={datum}
+              className="text-white hover:text-blue-300"
+            />
           </div>
         </div>
       </div>
@@ -342,24 +369,33 @@ export const TxViewer = ({ tx }: { tx: Transaction }) => {
       <div className="flex flex-initial gap-4 border-1 border-gray-400 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 dark:text-white p-2">
         Fee: {tx.fee} lovelace
       </div>
-      {tx.ttl && <div className="flex flex-initial gap-4 border-1 border-gray-400 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 dark:text-white p-2">
-        TTL: {tx.ttl}
-      </div>}
-      {tx.requiredSigners.length > 0 && <div className="flex flex-initial gap-4 border-1 border-gray-400 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 dark:text-white p-2">
-        Required Signers:
-        {tx.requiredSigners.map((s) => (
-          <span key={s} className="text-indigo-500 dark:text-indigo-300 md:hover:underline">
-            {s}
-          </span>
-        ))}
-      </div>}
+      {tx.ttl && (
+        <div className="flex flex-initial gap-4 border-1 border-gray-400 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 dark:text-white p-2">
+          TTL: {tx.ttl}
+        </div>
+      )}
+      {tx.requiredSigners.length > 0 && (
+        <div className="flex flex-initial gap-4 border-1 border-gray-400 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 dark:text-white p-2">
+          Required Signers:
+          {tx.requiredSigners.map((s) => (
+            <span
+              key={s}
+              className="text-indigo-500 dark:text-indigo-300 md:hover:underline"
+            >
+              {s}
+            </span>
+          ))}
+        </div>
+      )}
       <div className="flex flex-col lg:flex-row gap-2">
         <div className="flex flex-col lg:w-1/2 gap-2">
           <h1 className="text-xl text-slate-900 dark:text-white">Inputs</h1>
           {inputs}
           {referenceInputs.length > 0 && (
             <div className="flex flex-col gap-2 bg-amber-50 dark:bg-amber-50/20 p-2">
-              <h1 className="text-xl text-slate-900 dark:text-white">Reference Inputs</h1>
+              <h1 className="text-xl text-slate-900 dark:text-white">
+                Reference Inputs
+              </h1>
               {referenceInputs}
             </div>
           )}
@@ -369,14 +405,18 @@ export const TxViewer = ({ tx }: { tx: Transaction }) => {
           {outputs}
         </div>
       </div>
-      {tx.mint.length > 0 && <div className="flex flex-col gap-2 bg-blue-100 dark:bg-blue-700/40 p-2">
-        <h1 className="text-xl text-slate-900 dark:text-white">Mint</h1>
-        <ViewValue value={tx.mint} />
-      </div>}
-      {tx.burn.length > 0 && <div className="flex flex-col gap-2 bg-rose-50 dark:bg-red-700/30 p-2">
-        <h1 className="text-xl text-slate-900 dark:text-white">Burn</h1>
-        <ViewValue value={tx.burn} />
-      </div>}
+      {tx.mint.length > 0 && (
+        <div className="flex flex-col gap-2 bg-blue-100 dark:bg-blue-700/40 p-2">
+          <h1 className="text-xl text-slate-900 dark:text-white">Mint</h1>
+          <ViewValue value={tx.mint} />
+        </div>
+      )}
+      {tx.burn.length > 0 && (
+        <div className="flex flex-col gap-2 bg-rose-50 dark:bg-red-700/30 p-2">
+          <h1 className="text-xl text-slate-900 dark:text-white">Burn</h1>
+          <ViewValue value={tx.burn} />
+        </div>
+      )}
     </div>
   );
 };

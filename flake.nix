@@ -70,6 +70,7 @@
               pkgs.prettierd
               pkgs.vscode-js-debug
               pkgs.nodePackages.ts-node
+              pkgs.biome
             ];
 
             # We unset NODE_PATH here, because it means node_modules is local, 
