@@ -30,6 +30,7 @@ export type Transaction = {
   requiredSigners: string[];
   mint: TransactionAmount[];
   burn: TransactionAmount[];
+  cbor: string;
 };
 
 type CMLListLike<T> = {
@@ -144,6 +145,7 @@ export const processTxFromCbor = (
       requiredSigners,
       mint,
       burn,
+      cbor: cmlTx.to_cbor_hex(),
     };
 
     return success(transaction);

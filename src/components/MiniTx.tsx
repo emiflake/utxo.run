@@ -89,7 +89,7 @@ export const MiniTransactionCard = ({ txHash }: { txHash: string }) => {
                   </span>
                 )}
                 {txData.mint && txData.mint.length > 0 && (
-                  <span className="text-xs px-1.5 py-0.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300">
+                  <span className="text-xs px-1.5 py-0.5 bg-blue-100 dark:bg-blue-700 text-blue-700 dark:text-gray-200">
                     Mint
                   </span>
                 )}

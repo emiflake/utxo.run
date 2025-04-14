@@ -19,7 +19,7 @@ const config = convict({
     port: {
         doc: 'The port to bind the proxy server to',
         format: 'port',
-        default: 3900,
+        default: 5173,
         env: 'PORT',
     },
     distDir: {
