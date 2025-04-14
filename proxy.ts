@@ -10,8 +10,6 @@
 
 import * as Bun from 'bun'
 import * as path from 'path'
-import { registrySchema } from './src/registry'
-import { z } from 'zod'
 
 const distDir = process.env.PROXY_DIST_DIR || './dist'
 
@@ -30,29 +28,6 @@ const proxyTo = (req: Request, rewriteRule: RewriteRule, targetUrl: string): Pro
 const isAsset = (pathname: string): boolean => {
     return !!pathname.match(/\.(svg|png|jpg|jpeg|gif?)$/);
 }
-
-// A wrapper for the registry, so that we can dynamically register new policies.
-// This is useful for local devnet testing. So that we can get rich metadata for policies
-// as they are created during tests.
-const createRegistryHandler = async () => {
-    const baseRegistryUrl = process.env.VITE_REGISTRY_URL || 'https://public.liqwid.finance/v4/'
-    const registry = await fetch(`${baseRegistryUrl}/registry.json`).then(res => res.json())
-    const parsedRegistry = registrySchema.parse(registry)
-    return {
-        registry: parsedRegistry,
-        registerPolicy: (scriptHash: string, userFriendlyName: string) => {
-            parsedRegistry.scriptInfos.push({
-                type: 'MintingPolicy',
-                name: userFriendlyName,
-                tag: 'syntheticProxy',
-                scriptHash,
-                componentName: userFriendlyName,
-            })
-        }
-    }
-}
-
-const registryHandler = await createRegistryHandler()
 
 const server = Bun.serve({
     port: Number(process.env.PORT) || 5173,
@@ -79,33 +54,6 @@ const server = Bun.serve({
                     throw new Error('Missing environment variable: VITE_OGMIOS_URL')
                 }
                 return proxyTo(req, { from: /^\/ogmios/, to: '' }, process.env.VITE_OGMIOS_URL)
-            }
-            // GET /registry-proxy/registry.json
-            // Get the registry
-            else if (url.pathname.startsWith('/registry-proxy/registry.json')) {
-                return new Response(JSON.stringify(registryHandler.registry), {
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                })
-            }
-            // POST /registry-proxy/register-policy
-            // Register a new policy
-            // Request body: { scriptHash: string, name: string }
-            else if (url.pathname.startsWith('/registry-proxy/register-policy') && req.method === 'POST') {
-                const requestSchema = z.object({
-                    scriptHash: z.string(),
-                    name: z.string(),
-                })
-                const reqBody = requestSchema.safeParse(await req.json())
-                if (reqBody.success) {
-                    registryHandler.registerPolicy(reqBody.data.scriptHash, reqBody.data.name)
-                    return new Response(JSON.stringify({ success: true }))
-                } else {
-                    return new Response(JSON.stringify({ success: false, errors: reqBody.error.errors }), {
-                        status: 400
-                    })
-                }
             }
             // GET /assets/**
             // Serve asset from './dist'
