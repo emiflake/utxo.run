@@ -28,3 +28,5 @@ workers
 
 tsconfig.app.tsbuildinfo
 tsconfig.node.tsbuildinfo
+
+.windsurfrules

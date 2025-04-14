@@ -68,6 +68,6 @@ export const useRegistry = () => {
   return useQuery({
     queryKey: ['registry'],
     queryFn: () => getRegistry(),
-    staleTime: 60_000,
+    staleTime: 10_000,
   });
 };

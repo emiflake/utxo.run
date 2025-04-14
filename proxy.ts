@@ -5,100 +5,120 @@
  * but we don't want to run vite in the container. Additionally, we would like to build the app
  * when the container is built.
  *
- * Bun.serve is perfectly suited for this task.
+ * This implementation uses Hono for a more structured approach to routing.
  */
 
-import * as Bun from 'bun';
+import { Hono } from 'hono';
+import { proxy } from 'hono/proxy';
+import { logger } from 'hono/logger';
+import { serveStatic } from 'hono/bun';
 import * as path from 'path';
+import convict from 'convict';
 
-const distDir = process.env.PROXY_DIST_DIR || './dist';
-
-type RewriteRule = {
-  from: RegExp;
-  to: string;
-};
-
-// Proxy a request to a target URL
-const proxyTo = (
-  req: Request,
-  rewriteRule: RewriteRule,
-  targetUrl: string,
-): Promise<Response> => {
-  const originalPath = new URL(req.url).pathname;
-  const proxiedUrl = new URL(
-    originalPath.replace(rewriteRule.from, rewriteRule.to),
-    targetUrl,
-  );
-  return Bun.fetch(proxiedUrl, req);
-};
-
-const isAsset = (pathname: string): boolean => {
-  return !!pathname.match(/\.(svg|png|jpg|jpeg|gif?)$/);
-};
-
-const server = Bun.serve({
-  port: Number(process.env.PORT) || 5173,
-  hostname: '0.0.0.0',
-  async fetch(req) {
-    const url = new URL(req.url);
-
-    const handle = async () => {
-      // GET /betterfrost/**
-      // Proxy to betterfrost
-      if (url.pathname.startsWith('/betterfrost')) {
-        if (!process.env.VITE_BETTERFROST_URL) {
-          throw new Error('Missing environment variable: VITE_BETTERFROST_URL');
-        }
-        return proxyTo(
-          req,
-          { from: /^\/betterfrost/, to: '' },
-          process.env.VITE_BETTERFROST_URL,
-        );
-      }
-      // GET /ogmios/**
-      // Proxy to ogmios
-      else if (url.pathname.startsWith('/ogmios')) {
-        if (!process.env.VITE_OGMIOS_URL) {
-          throw new Error('Missing environment variable: VITE_OGMIOS_URL');
-        }
-        return proxyTo(
-          req,
-          { from: /^\/ogmios/, to: '' },
-          process.env.VITE_OGMIOS_URL,
-        );
-      }
-      // GET /assets/**
-      // Serve asset from './dist'
-      else if (url.pathname.startsWith('/assets') || isAsset(url.pathname)) {
-        return new Response(Bun.file(path.join(distDir, url.pathname)));
-      }
-      // GET /**
-      // Serve the app. This means that implicitly, any other request is a GET request for a page.
-      // This means that 404s will never be returned, but the app will handle the 404s.
-      else {
-        return new Response(Bun.file(path.join(distDir, '/index.html')));
-      }
-    };
-
-    const t0 = performance.now();
-
-    const handled = await handle();
-
-    const t1 = performance.now();
-
-    console.log(
-      `${req.method} ${url.pathname} -> ${handled?.status} (handled in ${(t1 - t0).toFixed(2)}ms)`,
-    );
-
-    return handled;
-  },
+const config = convict({
+    port: {
+        doc: 'The port to bind the proxy server to',
+        format: 'port',
+        default: 3900,
+        env: 'PORT',
+    },
+    distDir: {
+        doc: 'Directory containing built static files',
+        format: String,
+        default: './dist',
+        env: 'PROXY_DIST_DIR',
+    },
+    betterfrostUrl: {
+        doc: 'URL for the Betterfrost API',
+        format: String,
+        default: 'http://0.0.0.0:3001',
+        env: 'VITE_BETTERFROST_URL',
+    },
+    ogmiosUrl: {
+        doc: 'URL for the Ogmios service',
+        format: String,
+        default: 'http://0.0.0.0:1337',
+        env: 'VITE_OGMIOS_URL',
+    },
+    registryUrl: {
+        doc: 'URL for the token registry service',
+        format: String,
+        default: 'https://public.liqwid.finance/v4',
+        env: 'VITE_REGISTRY_URL',
+    },
 });
 
-console.log(`
-    Proxy started on ${server.url} 🚀
 
-    Requests for /betterfrost => ${process.env.VITE_BETTERFROST_URL}
-    Requests for /ogmios      => ${process.env.VITE_OGMIOS_URL}
-    Requests for assets       => ${path.join(distDir)}
-    Any other request         => ${path.join(distDir, '/index.html')}
+config.validate({ allowed: 'strict' });
+
+const app = new Hono();
+
+
+app.use(logger());
+
+// Proxy routes
+app.all('/betterfrost/*', async (c) => {
+    const targetUrl = c.req.path.replace('/betterfrost', '');
+    return proxy(`${config.get('betterfrostUrl')}${targetUrl}`, {
+        ...c.req
+    })
+});
+
+app.all('/ogmios/*', async (c) => {
+    const targetUrl = c.req.path.replace('/ogmios', '');
+
+    return proxy(`${config.get('ogmiosUrl')}${targetUrl}`, {
+        ...c.req
+    })
+});
+
+app.all('/ogmios/:path', async (c) => {
+    console.log(`Proxying to ${config.get('ogmiosUrl')}/${c.req.param('path')}`);
+    return proxy(`${config.get('ogmiosUrl')}/${c.req.param('path')}`, {
+        headers: {
+            ...c.req.header()
+        },
+    })
+});
+
+
+app.get('/registry-proxy/:path', async (c) => {
+    return proxy(`${config.get('registryUrl')}/${c.req.param('path')}`)
+});
+
+app.get('/assets/*', serveStatic({ root: config.get('distDir') }));
+
+app.use(':file.svg', serveStatic({ root: config.get('distDir') }));
+app.use(':file.png', serveStatic({ root: config.get('distDir') }));
+app.use(':file.jpg', serveStatic({ root: config.get('distDir') }));
+app.use(':file.ico', serveStatic({ root: config.get('distDir') }));
+app.use(':file.json', serveStatic({ root: config.get('distDir') }));
+app.use(':file.js', serveStatic({ root: config.get('distDir') }));
+app.use(':file.css', serveStatic({ root: config.get('distDir') }));
+
+
+
+// // SPA fallback - must be last as it's the catch-all
+app.get('*', async (c) => {
+    const file = Bun.file(path.join(config.get('distDir'), '/index.html'));
+    const content = await file.text();
+    return c.html(content);
+});
+
+
+
+console.log(`
+    Proxy started on http://0.0.0.0:${config.get('port')} 🚀
+
+    Requests for /betterfrost    => ${config.get('betterfrostUrl')}
+    Requests for /ogmios         => ${config.get('ogmiosUrl')}
+    Requests for /registry-proxy => ${config.get('registryUrl')}
+    Requests for assets          => ${path.join(config.get('distDir'))}
+    Any other request            => ${path.join(config.get('distDir'), '/index.html')}
 `);
+
+// Start the server
+export default {
+    port: config.get('port'),
+    fetch: app.fetch,
+}

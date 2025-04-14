@@ -26,7 +26,7 @@ const TxHashForm = () => {
   );
 
   return (
-    <div className="mb-6 mt-4 mx-auto w-full bg-white dark:bg-gray-800 border border-2 border-gray-200 dark:border-gray-700 overflow-hidden">
+    <div className="mb-6 mt-4 mx-auto w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 overflow-hidden">
       <div className="p-4">
         <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-3">
           Transaction Lookup
