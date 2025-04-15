@@ -1,175 +1,200 @@
-import Fuse from 'fuse.js';
-import { useMemo, useState } from 'react';
+import {
+  createColumnHelper,
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from '@tanstack/react-table';
 import { NavBar } from '../components/nav';
-import { registryJSONURL, ScriptInfo, useRegistry } from '../registry';
+import { ScriptInfo, useRegistry } from '../registry';
 import { ShimmerBox } from '../components/tx';
 import { ErrorBox } from '../App';
+import { Link } from 'react-router';
+import { ScriptTypeTag } from '../components/MiniTag';
 
-const ViewScriptInfo = ({ scriptInfo }: { scriptInfo: ScriptInfo }) => {
-  const Field = ({
-    name,
-    value,
-  }: {
-    name: string;
-    value: string | undefined;
-  }) => {
-    if (value === undefined) {
-      return (
-        <tr>
-          <td className="p-2 dark:text-white">{name}</td>
-          <td className="text-gray-500 dark:text-gray-400">N/A</td>
-        </tr>
-      );
-    }
-    return (
-      <tr>
-        <td className="p-2 dark:text-white">{name}</td>
-        <td className="dark:text-white">{value}</td>
-      </tr>
-    );
-  };
+// Column helper for TanStack Table
+const columnHelper = createColumnHelper<ScriptInfo>();
 
-  return (
-    <table className="table-auto border-2 border-gray-200 dark:border-gray-700 p-2">
-      <thead>
-        <tr className="border-b-2 border-gray-200 dark:border-gray-700">
-          <th className="p-2 text-left dark:text-white">Property</th>
-          <th className="text-left dark:text-white">Value</th>
-        </tr>
-      </thead>
-      <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-        <Field name="Type" value={scriptInfo.type} />
-        <Field name="Name" value={scriptInfo.name} />
-        <Field name="Tag" value={scriptInfo.tag} />
-        <Field name="Network" value={scriptInfo.network?.tag} />
-        <Field name="Description" value={scriptInfo.description} />
-        <Field name="Script Hash" value={scriptInfo.scriptHash} />
-        <Field name="Component Name" value={scriptInfo.componentName} />
-        <Field name="Market" value={scriptInfo.market} />
-      </tbody>
-    </table>
-  );
-};
-
-export type Network = 'Mainnet' | 'Preview';
-
-export const NetworkSelector = ({
-  network,
-  setNetwork,
-}: {
-  network: Network;
-  setNetwork: (network: Network) => void;
-}) => {
-  return (
-    <div className="flex flex-1 gap-2 max-h-10">
-      <span className="self-center text-xs text-gray-500 dark:text-gray-400">
-        Network:
-      </span>
-      <select
-        className="border-2 border-gray-200 dark:border-gray-700 p-2 dark:bg-gray-800 dark:text-white"
-        onChange={(e) =>
-          ['Mainnet', 'Preview'].includes(e.target.value) &&
-          setNetwork(e.target.value as Network)
-        }
-        value={network}
-      >
-        <option value="Mainnet">Mainnet</option>
-        <option value="Preview">Preview</option>
-      </select>
-    </div>
-  );
-};
-
-export const SearchBar = ({
-  search,
-  setSearch,
-}: {
-  search: string;
-  setSearch: (search: string) => void;
-}) => {
-  return (
-    <div className="flex flex-1 gap-2 max-h-10">
-      <span className="self-center text-xs text-gray-500 dark:text-gray-400">
-        Search:
-      </span>
-      <input
-        className="border-2 border-gray-200 dark:border-gray-700 p-2 dark:bg-gray-800 dark:text-white"
-        onChange={(e) => setSearch(e.target.value)}
-        value={search}
-      />
-    </div>
-  );
-};
+// Define table columns
+const columns = [
+  columnHelper.accessor('type', {
+    header: 'Type',
+    cell: (info) => info.getValue() || 'N/A',
+    size: 120,
+  }),
+  columnHelper.accessor('name', {
+    header: 'Name',
+    cell: (info) => info.getValue() || 'N/A',
+    size: 150,
+  }),
+  columnHelper.accessor('scriptHash', {
+    header: 'Script Hash',
+    cell: (info) => info.getValue() || 'N/A',
+    size: 200,
+  }),
+  columnHelper.accessor('componentName', {
+    header: 'Component Name',
+    cell: (info) => info.getValue() || 'N/A',
+    size: 150,
+  }),
+  columnHelper.accessor('market', {
+    header: 'Market',
+    cell: (info) => info.getValue() || 'N/A',
+    size: 120,
+  }),
+];
 
 export const RegistryPage = () => {
-  const { data: registry, isLoading, isError } = useRegistry();
+  const registryQuery = useRegistry();
 
-  const [network, setNetwork] = useState<Network>('Mainnet');
-
-  const [search, setSearch] = useState('');
-
-  const filteredScriptInfos = useMemo(() => {
-    if (registry) {
-      const networkId = network === 'Mainnet' ? 'MainnetId' : 'TestnetId';
-      const options = registry.scriptInfos.filter((scriptInfo: ScriptInfo) => {
-        return scriptInfo.network?.tag === networkId;
-      });
-
-      if (search === '') {
-        return options;
-      }
-      const fuse = new Fuse(options, {
-        keys: ['name', 'tag', 'description'],
-      });
-
-      return fuse.search(search).map((r) => r.item);
-    }
-  }, [registry, search, network]);
-
-  const scriptInfoViews = useMemo(() => {
-    if (registry && filteredScriptInfos !== undefined) {
-      return filteredScriptInfos.map((scriptInfo: ScriptInfo) => (
-        <ViewScriptInfo
-          key={
-            scriptInfo.scriptHash +
-            '-' +
-            scriptInfo.type +
-            '-' +
-            scriptInfo.name +
-            '-' +
-            scriptInfo.tag
-          }
-          scriptInfo={scriptInfo}
-        />
-      ));
-    } else if (isLoading) {
-      return <ShimmerBox />;
-    }
-  }, [registry, filteredScriptInfos, isLoading]);
+  // Create table instance
+  const table = useReactTable({
+    data: registryQuery.data?.scriptInfos || [],
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    state: {},
+  });
 
   return (
     <div className="min-h-screen flex flex-col p-1 gap-5 dark:bg-gray-900">
       <NavBar />
 
       <div className="flex-1 flex flex-col sm:flex-row">
-        <main className="flex-1 flex flex-col gap-2 border-2 border-gray-200 dark:border-gray-700 p-4 dark:text-white">
-          <h2 className="dark:text-white">Registry</h2>
-          <div className="flex flex-col gap-2">
-            <span className="text-xs text-gray-500 dark:text-gray-400">
-              URL: {registryJSONURL}
-            </span>
-          </div>
+        <main className="flex-1 flex flex-col gap-2">
+          <h2 className="dark:text-white">Script Registry</h2>
 
-          <NetworkSelector network={network} setNetwork={setNetwork} />
-          <SearchBar search={search} setSearch={setSearch} />
+          {registryQuery.isLoading && <ShimmerBox />}
 
-          <div className="flex flex-col gap-2">{scriptInfoViews}</div>
-          {isError && <ErrorBox message={'Could not load registry'} />}
+          {registryQuery.isError && (
+            <ErrorBox message="Failed to load registry data. Please try again later." />
+          )}
+
+          {registryQuery.isSuccess && (
+            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 overflow-x-scroll">
+              <div className="max-w-[calc(100vw-12rem)] h-[calc(100vh-12rem)] relative">
+                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                  <thead className="bg-gray-50 dark:bg-gray-700 sticky top-0 z-10">
+                    {table.getHeaderGroups().map((headerGroup) => (
+                      <tr key={headerGroup.id}>
+                        {headerGroup.headers.map((header) => (
+                          <th
+                            key={header.id}
+                            scope="col"
+                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+                            style={{
+                              width: `${header.column.getSize()}px`,
+                              minWidth: `${header.column.getSize()}px`,
+                            }}
+                          >
+                            {header.isPlaceholder
+                              ? null
+                              : flexRender(
+                                  header.column.columnDef.header,
+                                  header.getContext(),
+                                )}
+                          </th>
+                        ))}
+                      </tr>
+                    ))}
+                  </thead>
+                  <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700 overflow-y-auto">
+                    {table.getRowModel().rows.map((row) => (
+                      <tr
+                        key={row.id}
+                        className="hover:bg-gray-50/80 dark:hover:bg-gray-700/80 transition-all duration-200 hover:shadow-sm"
+                      >
+                        {row.getVisibleCells().map((cell) => {
+                          const columnId = cell.column.id;
+
+                          // Special styling for type column
+                          if (columnId === 'type') {
+                            const type = cell.getValue() as
+                              | 'MintingPolicy'
+                              | 'Validator'
+                              | 'StakeValidator';
+                            return (
+                              <td
+                                key={cell.id}
+                                className="px-6 py-4 overflow-hidden text-ellipsis"
+                                style={{
+                                  width: `${cell.column.getSize()}px`,
+                                  minWidth: `${cell.column.getSize()}px`,
+                                }}
+                              >
+                                <ScriptTypeTag scriptType={type} />
+                              </td>
+                            );
+                          }
+
+                          // Special styling for scriptHash column
+                          if (columnId === 'scriptHash') {
+                            const hash = cell.getValue() as string;
+                            return (
+                              <td
+                                key={cell.id}
+                                className="px-6 py-4 overflow-hidden text-ellipsis"
+                                style={{
+                                  width: `${cell.column.getSize()}px`,
+                                  minWidth: `${cell.column.getSize()}px`,
+                                }}
+                              >
+                                <Link
+                                  to={`/policy/${hash}`}
+                                  className="text-indigo-500 dark:text-indigo-300 font-mono text-sm hover:underline"
+                                  title={hash}
+                                >
+                                  {hash.slice(0, 10)}...{hash.slice(-6)}
+                                </Link>
+                              </td>
+                            );
+                          }
+
+                          // Special styling for name column
+                          if (columnId === 'name') {
+                            return (
+                              <td
+                                key={cell.id}
+                                className="px-6 py-4 overflow-hidden text-ellipsis"
+                                style={{
+                                  width: `${cell.column.getSize()}px`,
+                                  minWidth: `${cell.column.getSize()}px`,
+                                }}
+                              >
+                                <span className="font-medium text-gray-800 dark:text-white">
+                                  {cell.getValue() as string}
+                                </span>
+                              </td>
+                            );
+                          }
+
+                          // Default styling for other columns
+                          return (
+                            <td
+                              key={cell.id}
+                              className="px-6 py-4 text-sm text-gray-500 dark:text-gray-300 overflow-hidden text-ellipsis"
+                              style={{
+                                width: `${cell.column.getSize()}px`,
+                                minWidth: `${cell.column.getSize()}px`,
+                              }}
+                            >
+                              {flexRender(
+                                cell.column.columnDef.cell,
+                                cell.getContext(),
+                              )}
+                            </td>
+                          );
+                        })}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
         </main>
         <aside className="order-first md:w-16 lg:w-32"></aside>
         <aside className="md:w-16 lg:w-32"></aside>
       </div>
-      <footer className="bg-gray-100 dark:bg-gray-800"></footer>
+      <footer className=""></footer>
     </div>
   );
 };
