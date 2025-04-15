@@ -47,7 +47,7 @@ export type ScriptInfo = z.infer<typeof scriptInfoSchema>;
 
 export const registrySchema = z.object({
   scriptInfos: z.array(scriptInfoSchema),
-  other: otherInfoSchema,
+  other: otherInfoSchema.optional(),
 });
 
 export type Registry = z.infer<typeof registrySchema>;

@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router';
 import { AnimatedSearchInput } from './AnimatedSearchInput';
 import { SettingsModal } from './SettingsModal';
 import { ThemeToggle } from './Toggle';
+import { IconButton } from './Button';
 
 // Icon components
 function LogoIcon({ className = 'h-6 w-6 text-orange-500' }) {
@@ -263,13 +264,13 @@ export function NavBar() {
             </div>
             <div className="flex items-center gap-3 p-3">
               <ThemeToggle />
-              <button
+              <IconButton
                 onClick={() => setIsSettingsOpen(!isSettingsOpen)}
-                className="h-10 ml-2 px-3 flex items-center justify-center rounded border-2 border-gray-200 dark:border-gray-700 bg-background dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700 focus:outline-none text-sm font-medium dark:text-white transition-all duration-200 disabled:pointer-events-none disabled:opacity-50"
+                disabled={isSettingsOpen}
+                ariaLabel="Settings"
               >
                 <SettingsIcon />
-                <span className="sr-only">Settings</span>
-              </button>
+              </IconButton>
             </div>
           </div>
         </div>
