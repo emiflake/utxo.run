@@ -63,12 +63,12 @@ export const ViewTxRef = ({ txref }: { txref: string }) => {
   );
 };
 
-const showPrefix = (
+const showShorthand = (
   unit: string,
-  { threshold = 32 }: { threshold?: number } = {},
+  { threshold = 10 }: { threshold?: number } = {},
 ) => {
   if (unit.length > threshold) {
-    return `${unit.slice(0, threshold)}...`;
+    return `${unit.slice(0, threshold)}...${unit.slice(-threshold)}`;
   } else {
     return unit;
   }
@@ -81,40 +81,18 @@ export const ViewUnit = ({
   unit: string;
   quantity: string;
 }) => {
-  const { data: registry, isLoading, isError } = useRegistry();
-  const resolvedUnitName = useMemo(() => {
-    if (isLoading || isError) {
-      return <span> {showPrefix(unit)} </span>;
-    } else if (unit === 'lovelace') {
-      return <span className="text-sm">Ada</span>;
-    } else {
-      const liqwidName = registry?.scriptInfos.find(
-        (s) => s.scriptHash === unit,
-      )?.name;
+  const registryQuery = useRegistry();
 
-      if (liqwidName) {
-        return (
-          <span className="flex gap-2">
-            {/* TODO: Use local link */}
-            <a
-              className="text-indigo-500 dark:text-indigo-300 font-mono md:hover:underline"
-              href="#"
-            >
-              {showPrefix(unit)}
-            </a>
-            <span
-              className="text-sm text-green-800 dark:text-green-400 md:hover:underline"
-              title="Click to go to registry"
-            >
-              ({liqwidName})
-            </span>
-          </span>
-        );
-      } else {
-        return <span className="font-mono">{showPrefix(unit)}</span>;
-      }
+  const resolvedUnitName = useMemo(() => {
+    if (registryQuery.isLoading || registryQuery.isError) {
+      return <span> {showShorthand(unit)} </span>;
+    } else if (unit === 'lovelace') {
+      return 'Ada';
+    } else {
+      return showShorthand(unit);
     }
-  }, [registry, unit, isLoading, isError]);
+  }, [unit, registryQuery.isLoading, registryQuery.isError]);
+
   const decimals = useMemo(() => {
     if (unit === 'lovelace') {
       return 6;
@@ -127,18 +105,53 @@ export const ViewUnit = ({
     return Number(parseInt(quantity, 10) / 10 ** decimals).toFixed(decimals);
   }, [quantity, decimals]);
 
+  const metadataName = useMemo(() => {
+    if (registryQuery.isLoading || registryQuery.isError) {
+      return;
+    } else if (unit === 'lovelace') {
+      return;
+    } else {
+      const scriptInfo = registryQuery.data?.scriptInfos.find(
+        (s) => s.scriptHash === unit,
+      );
+
+      if (!scriptInfo) {
+        return;
+      }
+
+      return scriptInfo.name;
+    }
+  }, [
+    unit,
+    registryQuery.isLoading,
+    registryQuery.isError,
+    registryQuery.data?.scriptInfos,
+  ]);
+
   return (
     <div className="flex flex-row justify-between gap-4 border-3 border-dotted border-gray-400 dark:border-gray-600 p-2 bg-white/50 dark:bg-gray-800/50 break-all">
       <span className="text-sm self-center">
         {unit === 'lovelace' ? (
           <span className="font-mono dark:text-white">{resolvedUnitName}</span>
         ) : (
-          <Link
-            to={`/policy/${unit}`}
-            className="text-indigo-500 dark:text-indigo-300 font-mono md:hover:underline"
-          >
-            {resolvedUnitName}
-          </Link>
+          <div className="flex flex-row gap-1">
+            {metadataName && (
+              <Link
+                to={`/policy/${unit}`}
+                className="text-sm text-indigo-500 dark:text-indigo-300 font-medium md:hover:underline"
+              >
+                {metadataName}
+              </Link>
+            )}
+            {!metadataName && (
+              <Link
+                to={`/policy/${unit}`}
+                className="text-sm text-indigo-500 dark:text-indigo-300 font-mono md:hover:underline"
+              >
+                {resolvedUnitName}
+              </Link>
+            )}
+          </div>
         )}
       </span>
       <span className="text-md justify-self-end dark:text-white">
