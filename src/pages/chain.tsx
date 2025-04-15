@@ -3,9 +3,8 @@ import { betterfrostURL, Block, useLatestBlock } from '../betterfrost';
 import { MiniTransactionCard } from '../components/MiniTx';
 import { NavBar } from '../components/nav';
 import { ShimmerBox } from '../components/tx';
-import { useState, useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useQueryLedgerStateUtxos } from '../ogmios';
-import { IconButton } from '../components/Button';
 import { Paginate } from '../components/Pagination';
 
 export const ViewBlock = ({ block }: { block: Block }) => {

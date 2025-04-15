@@ -14,6 +14,8 @@ import {
 import { ShimmerBox } from '../components/tx';
 import { ErrorBox } from '../App';
 import { MiniTransactionCard } from '../components/MiniTx';
+import { useRegistry } from '../registry';
+import { ScriptInfo } from '../components/ScriptInfo';
 
 const ViewAssetTransactions = ({
   assetTransactions,
@@ -136,6 +138,14 @@ export const PolicyPage = () => {
     isError: isErrorTransactions,
   } = useAssetTransactions(policy);
 
+  const registryQuery = useRegistry();
+
+  const relevantScript = useMemo(() => {
+    return registryQuery.data?.scriptInfos.find(
+      (script) => script.scriptHash === policy,
+    );
+  }, [registryQuery.data, policy]);
+
   return (
     <div className="min-h-screen flex flex-col p-1 gap-5 dark:bg-gray-900">
       <NavBar></NavBar>
@@ -157,6 +167,11 @@ export const PolicyPage = () => {
               className="opacity-70 hover:opacity-100 dark:text-white"
             />
           </div>
+
+          {/* Token information, if available */}
+          {registryQuery.data && relevantScript && (
+            <ScriptInfo script={relevantScript} />
+          )}
 
           <div className="flex flex-col lg:flex-row lg:flex-1 gap-2">
             <div className="flex flex-col lg:w-1/2 gap-2 border-1 border-gray-200 dark:border-gray-700 p-4 dark:text-white">

@@ -37,7 +37,39 @@ export const scriptInfoSchema = z.object({
     .optional(),
   description: z.string().optional(),
   scriptHash: z.string(),
-  deployment: z.unknown().optional(),
+  deployment: z.union([
+    z.object({
+      type: z.literal('lockedAt'),
+      referenceUtxo: z.object({
+        output: z.object({
+          scriptRef: z.object({
+            tag: z.literal('PlutusScriptRef'),
+            contents: z.tuple([z.string(), z.literal('PlutusV2')]),
+          }),
+          output: z.object({
+            referenceScript: z.string(),
+            datum: z.unknown().optional(),
+            address: z.object({
+              addressStakingCredential: z.null(),
+              addressCredential: z.object({
+                tag: z.enum(['ScriptCredential', 'PubKeyCredential']),
+                contents: z.string(),
+              }),
+            }),
+          }),
+        }),
+        input: z.object({
+          transactionId: z.string(),
+          index: z.number(),
+        }),
+      }),
+    }),
+    z.object({
+      type: z.literal('notDeployed'),
+      version: z.literal('PlutusV2'),
+      rawHex: z.string(),
+    }),
+  ]),
   componentName: z.string().optional(),
   domain: z.unknown().optional(),
   market: z.string().optional(),
