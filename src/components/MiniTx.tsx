@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 import { Link } from 'react-router';
 import { ShimmerBox } from '../components/tx';
 import { ErrorBox } from '../App';
+import { BurnTag, FeeTag, MintTag, MultisigTag } from './MiniTag';
 
 export const MiniTransactionCard = ({ txHash }: { txHash: string }) => {
   const {
@@ -83,27 +84,11 @@ export const MiniTransactionCard = ({ txHash }: { txHash: string }) => {
               </div>
 
               <div className="flex flex-wrap gap-1 mt-1">
-                {txData.fee > 0 && (
-                  <span className="text-xs px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
-                    {(Number(txData.fee) / 1000000).toFixed(2)}₳
-                  </span>
-                )}
-                {txData.mint && txData.mint.length > 0 && (
-                  <span className="text-xs px-1.5 py-0.5 bg-blue-100 dark:bg-blue-700 text-blue-700 dark:text-gray-200">
-                    Mint
-                  </span>
-                )}
-                {txData.burn && txData.burn.length > 0 && (
-                  <span className="text-xs px-1.5 py-0.5 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300">
-                    Burn
-                  </span>
-                )}
+                {txData.fee > 0 && <FeeTag fee={Number(txData.fee)} />}
+                {txData.mint && txData.mint.length > 0 && <MintTag />}
+                {txData.burn && txData.burn.length > 0 && <BurnTag />}
                 {txData.requiredSigners &&
-                  txData.requiredSigners.length >= 2 && (
-                    <span className="text-xs px-1.5 py-0.5 bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300">
-                      Multisig
-                    </span>
-                  )}
+                  txData.requiredSigners.length >= 2 && <MultisigTag />}
               </div>
             </>
           )}

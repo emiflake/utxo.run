@@ -1,5 +1,6 @@
 import * as Registry from '../registry';
 import { Link } from 'react-router';
+import { ScriptTypeTag } from './MiniTag';
 
 // Tag component for displaying tag-like elements
 const Tag = ({ label, value }: { label: string; value: React.ReactNode }) => {
@@ -113,35 +114,15 @@ export const DeploymentInfo = ({
   );
 };
 
-// Get color scheme based on script type
-const getTypeColorScheme = (type: string | undefined) => {
-  switch (type) {
-    case 'MintingPolicy':
-      return 'bg-blue-100 text-blue-700 dark:bg-blue-700 dark:text-gray-200 border-blue-100 dark:border-blue-700';
-    case 'Validator':
-      return 'bg-green-100 text-green-700 dark:bg-green-700 dark:text-gray-200 border-green-200 dark:border-green-800';
-    case 'StakeValidator':
-      return 'bg-green-100 text-green-700 dark:bg-green-700 dark:text-gray-200 border-green-200 dark:border-green-800';
-    default:
-      return 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600';
-  }
-};
-
 // TokenInfo component for displaying all token information
 export const ScriptInfo = ({ script }: { script: Registry.ScriptInfo }) => {
   if (!script) return null;
-
-  const typeColorScheme = getTypeColorScheme(script.type);
 
   return (
     <div className="border border-gray-200 dark:border-gray-700 p-4 mb-2 bg-white dark:bg-gray-800">
       <div className="flex items-center justify-between mb-1">
         <div className="flex items-center gap-1">
-          <span
-            className={`px-1.5 py-0.5 text-xs ${typeColorScheme} border mr-1`}
-          >
-            {script.type || 'MintingPolicy'}
-          </span>
+          <ScriptTypeTag scriptType={script.type} />
           <h3 className="text-sm font-medium dark:text-white">{script.name}</h3>
           {script.tag && (
             <span className="text-xs text-gray-500 dark:text-gray-400">
