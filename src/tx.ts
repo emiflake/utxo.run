@@ -12,11 +12,20 @@ export type TransactionInput = {
   outputIndex: bigint;
 };
 
+export type ScriptLanguage = 'PlutusV1' | 'PlutusV2' | 'PlutusV3';
+
+export type ScriptRef = {
+  language: ScriptLanguage | undefined;
+  hash: string;
+};
+
 export type TransactionOutput = {
   tx_hash: string;
+  index: bigint;
   address: string;
   coin: bigint;
   amount: TransactionAmount[];
+  script_ref?: ScriptRef;
   cbor_datum?: string;
 };
 
@@ -42,6 +51,20 @@ const convertCMLList = function <T>(list: CMLListLike<T>): T[] {
   return Array(list.len())
     .fill(0)
     .map((_, i) => list.get(i));
+};
+
+const scriptRefFromCML = (script: CML.Script): ScriptRef => {
+  return {
+    language:
+      script.language() !== undefined
+        ? ({
+            0: 'PlutusV1',
+            1: 'PlutusV2',
+            2: 'PlutusV3',
+          }[script.language() ?? 0] as ScriptLanguage)
+        : undefined,
+    hash: script.hash().to_hex(),
+  };
 };
 
 const convertCMLMultiAsset = (
@@ -118,16 +141,16 @@ export const processTxFromCbor = (
       }
     })();
 
-    const transaction: Transaction = {
-      inputs: inputs.map((i) => ({
-        transactionId: i.transaction_id().to_hex(),
-        outputIndex: i.index(),
-      })),
-      outputs: convertCMLList<CML.TransactionOutput>(body.outputs()).map(
-        (o) => ({
+    const outputs = convertCMLList<CML.TransactionOutput>(body.outputs()).map(
+      (o, i) => {
+        return {
+          index: BigInt(i),
           address: o.address().to_bech32(),
           coin: o.amount().coin(),
           tx_hash,
+          script_ref: o.script_ref()
+            ? scriptRefFromCML(o.script_ref()!)
+            : undefined,
           amount: [
             ...convertCMLMultiAsset(o.amount().multi_asset()),
             {
@@ -136,8 +159,16 @@ export const processTxFromCbor = (
             },
           ],
           cbor_datum: o.datum()?.to_cbor_hex(),
-        }),
-      ),
+        };
+      },
+    );
+
+    const transaction: Transaction = {
+      inputs: inputs.map((i) => ({
+        transactionId: i.transaction_id().to_hex(),
+        outputIndex: i.index(),
+      })),
+      outputs,
       referenceInputs,
       fee: body.fee(),
       hash: tx_hash,

@@ -1,11 +1,20 @@
+import { ExternalLinkIcon } from './Icons';
+
 export const MiniTag = ({
   text,
   className,
+  children,
 }: {
   text: string;
   className?: string;
+  children?: React.ReactNode;
 }) => {
-  return <span className={`text-xs px-1.5 py-0.5 ${className}`}>{text}</span>;
+  return (
+    <span className={`text-xs px-1.5 py-0.5 ${className}`}>
+      {text}
+      {children}
+    </span>
+  );
 };
 
 export const MintTag = () => {
@@ -23,6 +32,17 @@ export const BurnTag = () => {
       text="Burn"
       className="bg-red-100 text-red-700 dark:bg-red-700/50 dark:text-red-300"
     />
+  );
+};
+
+export const SpentTag = () => {
+  return (
+    <MiniTag
+      text="Spent"
+      className="bg-red-100 text-red-800 dark:bg-red-900/70 dark:text-red-200 flex items-center gap-1"
+    >
+      <ExternalLinkIcon />
+    </MiniTag>
   );
 };
 

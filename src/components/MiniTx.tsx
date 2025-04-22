@@ -4,6 +4,7 @@ import { Link } from 'react-router';
 import { ShimmerBox } from '../components/tx';
 import { ErrorBox } from '../App';
 import { BurnTag, FeeTag, MintTag, MultisigTag } from './MiniTag';
+import { shorten } from '../utils';
 
 export const MiniTransactionCard = ({ txHash }: { txHash: string }) => {
   const {
@@ -41,7 +42,7 @@ export const MiniTransactionCard = ({ txHash }: { txHash: string }) => {
               className="text-indigo-500 dark:text-indigo-300 font-mono text-sm hover:underline truncate"
               title={txHash}
             >
-              {txHash.slice(0, 10)}...{txHash.slice(-6)}
+              {shorten(txHash)}
             </Link>
 
             {!isError && txInfo && (

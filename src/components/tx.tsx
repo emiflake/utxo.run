@@ -3,12 +3,15 @@ import {
   useTxByHash,
   useTxUtxosByHash,
 } from '../betterfrost';
+import { SpentTag } from './MiniTag';
 
 import { useMemo } from 'react';
-import { useRegistry } from '../registry';
 import { Transaction, TransactionInput, TransactionOutput } from '../tx';
 import { Link } from 'react-router';
 import { ClipboardButton } from './ActionButtons';
+import { useRegistry } from '../registry';
+import { shorten } from '../utils';
+import { MonoTag, Tag } from './ScriptInfo';
 
 export const ViewTransactionHash = ({ hash }: { hash: string }) => {
   const { data: tx, isLoading } = useTxByHash(hash);
@@ -63,17 +66,6 @@ export const ViewTxRef = ({ txref }: { txref: string }) => {
   );
 };
 
-const showShorthand = (
-  unit: string,
-  { threshold = 10 }: { threshold?: number } = {},
-) => {
-  if (unit.length > threshold) {
-    return `${unit.slice(0, threshold)}...${unit.slice(-threshold)}`;
-  } else {
-    return unit;
-  }
-};
-
 export const ViewUnit = ({
   unit,
   quantity,
@@ -85,11 +77,11 @@ export const ViewUnit = ({
 
   const resolvedUnitName = useMemo(() => {
     if (registryQuery.isLoading || registryQuery.isError) {
-      return <span> {showShorthand(unit)} </span>;
+      return <span> {shorten(unit)} </span>;
     } else if (unit === 'lovelace') {
       return 'Ada';
     } else {
-      return showShorthand(unit);
+      return shorten(unit);
     }
   }, [unit, registryQuery.isLoading, registryQuery.isError]);
 
@@ -189,11 +181,7 @@ export const ViewTransactionInput = ({
 }: {
   input: TransactionInput;
 }) => {
-  const {
-    data: txUtxos,
-    isLoading,
-    isError,
-  } = useTxUtxosByHash(input.transactionId);
+  const { data: txUtxos, isLoading } = useTxUtxosByHash(input.transactionId);
 
   const inputUtxo = useMemo(() => {
     if (isLoading) {
@@ -203,50 +191,37 @@ export const ViewTransactionInput = ({
     }
   }, [txUtxos, input.outputIndex, isLoading]);
 
-  const extraData = useMemo(() => {
-    if (isLoading) {
-      return <ShimmerBox />;
-    } else if (isError) {
-      return (
-        <div className="text-red-900 dark:text-red-400">
-          Error loading input data
-        </div>
-      );
-    } else if (inputUtxo) {
-      return (
-        <>
-          {inputUtxo?.address && (
-            <div className="flex flex-1 gap-2">
-              <span className="text-xs self-center dark:text-white">
-                Address:
-              </span>
-              <ViewAddress address={inputUtxo?.address} />
-            </div>
-          )}
-          {inputUtxo.amount !== undefined && inputUtxo.amount !== null && (
-            <>
-              <SeparatorLine />
-              <ViewValue value={inputUtxo.amount} />
-            </>
-          )}
-          {inputUtxo.inline_datum && (
-            <>
-              <SeparatorLine />
-              <ViewDatum datum={inputUtxo.inline_datum} />
-            </>
-          )}
-        </>
-      );
-    }
-  }, [inputUtxo, isError, isLoading]);
-
   return (
-    <div className="inline-flex flex-col p-2 border-1 gap-2 border-gray-400 dark:border-gray-600 bg-gray-50 dark:bg-gray-800">
-      <div className="flex flex-1 gap-4">
-        <h2 className="self-center dark:text-white">Input</h2>
-        <ViewTxRef txref={`${input.transactionId}#${input.outputIndex}`} />
+    <div className="inline-flex flex-col p-2 border-1 border-gray-400 dark:border-gray-600 gap-2 bg-gray-50 dark:bg-gray-800 break-all">
+      <h2 className="dark:text-white">Input</h2>
+      <div className="flex flex-1 gap-2">
+        <MonoTag
+          label="Ref"
+          href={`/submitted-tx/${input.transactionId}`}
+          value={`${input.transactionId}#${input.outputIndex}`}
+        />
       </div>
-      {extraData}
+      {inputUtxo?.address && (
+        <div className="flex flex-1 gap-2">
+          <Tag
+            label="Address"
+            href={`/address/${inputUtxo.address}`}
+            value={inputUtxo.address}
+          />
+        </div>
+      )}
+      {inputUtxo?.amount !== undefined && inputUtxo?.amount !== null && (
+        <>
+          <SeparatorLine />
+          <ViewValue value={inputUtxo.amount} />
+        </>
+      )}
+      {inputUtxo?.inline_datum && (
+        <>
+          <SeparatorLine />
+          <ViewDatum datum={inputUtxo.inline_datum} />
+        </>
+      )}
     </div>
   );
 };
@@ -289,22 +264,7 @@ function ExternalLinkButton({
       title="View in CBOR decoder"
     >
       <div className="relative w-3.5 h-3.5 flex items-center justify-center">
-        <div className="absolute inset-0">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            className="h-3.5 w-3.5"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-            <polyline points="15 3 21 3 21 9"></polyline>
-            <line x1="10" y1="14" x2="21" y2="3"></line>
-          </svg>
-        </div>
+        <div className="absolute inset-0"></div>
       </div>
     </a>
   );
@@ -341,6 +301,27 @@ export const ViewDatum = ({ datum }: { datum: string }) => {
   );
 };
 
+const inputKey = (input: TransactionInput) => {
+  return `in-${input.transactionId}#${input.outputIndex}`;
+};
+
+const outputKey = (output: TransactionOutput) => {
+  return `out-${output.address}#${output.index}`;
+};
+
+/**
+ * A component that displays a transaction output.
+ *
+ * For the `key`, you should use the output's address combined with the output's index.
+ *
+ * @example
+ * ```tsx
+ * <ViewTransactionOutput
+ *   key={outputKey(output)}
+ *   output={output}
+ * />
+ * ```
+ */
 export const ViewTransactionOutput = ({
   output,
   showTxHash = false,
@@ -348,11 +329,49 @@ export const ViewTransactionOutput = ({
   output: TransactionOutput;
   showTxHash?: boolean;
 }) => {
+  const utxosByHashQuery = useTxUtxosByHash(output.tx_hash);
+
+  const consumedByTx = useMemo(() => {
+    if (utxosByHashQuery.data) {
+      const utxo = utxosByHashQuery.data.outputs[Number(output.index)];
+      return utxo?.consumed_by_tx || undefined;
+    }
+    return undefined;
+  }, [utxosByHashQuery.data, output.index]);
+
   return (
     <div className="inline-flex flex-col p-2 border-1 border-gray-400 dark:border-gray-600 gap-2 bg-gray-50 dark:bg-gray-800 break-all">
-      <h2 className="dark:text-white">Output</h2>
-      <ViewAddress address={output.address} />
-      {showTxHash && <ViewTxRef txref={output.tx_hash} />}
+      <div className="flex items-center gap-2">
+        <h2 className="dark:text-white">Output</h2>
+        {consumedByTx && (
+          <Link
+            to={`/submitted-tx/${consumedByTx}`}
+            className="hover:opacity-80 transition-opacity"
+            title="Click to view transaction that spent this output"
+          >
+            <SpentTag />
+          </Link>
+        )}
+      </div>
+      <div className="flex flex-1 gap-2">
+        <Tag
+          label="Address"
+          href={`/address/${output.address}`}
+          value={output.address}
+        />
+      </div>
+      {output.script_ref && (
+        <div className="flex flex-1 gap-2">
+          <MonoTag label="Script Ref" value={output.script_ref.hash} />
+        </div>
+      )}
+      {showTxHash && (
+        <MonoTag
+          label="Ref"
+          value={`${output.tx_hash}#${output.index}`}
+          href={`/submitted-tx/${output.tx_hash}`}
+        />
+      )}
       <SeparatorLine />
       <ViewValue value={output.amount} />
       {output.cbor_datum && (
@@ -365,15 +384,54 @@ export const ViewTransactionOutput = ({
   );
 };
 
+/**
+ * A component that displays a generic label and value inline, similar to MonoTag in ScriptInfo.
+ *
+ * @param label - The label to display
+ * @param value - The value to display
+ * @param href - Optional link URL
+ * @returns A styled inline label-value pair component
+ */
+export const GenericInfo = ({
+  label,
+  value,
+  href,
+}: {
+  label: string;
+  value: string;
+  href?: string;
+}) => {
+  return (
+    <span className="inline-flex items-stretch text-xs mr-2 mb-1 border border-gray-100 dark:border-gray-700 w-full">
+      <span className="bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-300 px-1.5 py-0.5 flex-shrink-0">
+        {label}
+      </span>
+      {href && (
+        <Link
+          to={href}
+          className="bg-gray-50 dark:bg-gray-800 text-indigo-500 dark:text-indigo-300 hover:underline px-1.5 py-0.5 font-mono flex-grow"
+        >
+          {value}
+        </Link>
+      )}
+      {!href && (
+        <span className="bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-200 px-1.5 py-0.5 font-mono flex-grow">
+          {value}
+        </span>
+      )}
+    </span>
+  );
+};
+
 export const TxViewer = ({ tx }: { tx: Transaction }) => {
   const inputs = tx.inputs.map((input) => (
-    <ViewTransactionInput key={input.transactionId} input={input} />
+    <ViewTransactionInput key={inputKey(input)} input={input} />
   ));
   const outputs = tx.outputs.map((output) => (
-    <ViewTransactionOutput key={output.address} output={output} />
+    <ViewTransactionOutput key={outputKey(output)} output={output} />
   ));
   const referenceInputs = tx.referenceInputs.map((input) => (
-    <ViewTransactionInput key={input.transactionId} input={input} />
+    <ViewTransactionInput key={inputKey(input)} input={input} />
   ));
 
   return (
@@ -388,16 +446,23 @@ export const TxViewer = ({ tx }: { tx: Transaction }) => {
         </div>
       )}
       {tx.requiredSigners.length > 0 && (
-        <div className="flex flex-initial gap-4 border-1 border-gray-400 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 dark:text-white p-2">
-          Required Signers:
-          {tx.requiredSigners.map((s) => (
-            <span
-              key={s}
-              className="text-indigo-500 dark:text-indigo-300 md:hover:underline"
-            >
-              {s}
+        <div className="flex flex-col gap-2 border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-2">
+          <span className="text-md text-slate-900 dark:text-white">
+            Required Signers{' '}
+            <span className="text-xs text-gray-500 dark:text-gray-300">
+              ({tx.requiredSigners.length})
             </span>
-          ))}
+          </span>
+          <div className="flex flex-wrap gap-2">
+            {tx.requiredSigners.map((s) => (
+              <span
+                key={s}
+                className="bg-indigo-100 dark:bg-indigo-400/20 text-indigo-700 dark:text-indigo-200 text-xs font-mono px-3 py-1 select-all border border-indigo-300 dark:border-indigo-300/50"
+              >
+                {s}
+              </span>
+            ))}
+          </div>
         </div>
       )}
       <div className="flex flex-col lg:flex-row gap-2">
