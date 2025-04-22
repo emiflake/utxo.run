@@ -10,6 +10,7 @@ import { ShimmerBox } from '../components/tx';
 import { ErrorBox } from '../App';
 import { Link } from 'react-router';
 import { ScriptTypeTag } from '../components/MiniTag';
+import { shorten } from '../utils';
 
 // Column helper for TanStack Table
 const columnHelper = createColumnHelper<ScriptInfo>();
@@ -142,7 +143,7 @@ export const RegistryPage = () => {
                                   className="text-indigo-500 dark:text-indigo-300 font-mono text-sm hover:underline"
                                   title={hash}
                                 >
-                                  {hash.slice(0, 10)}...{hash.slice(-6)}
+                                  {shorten(hash)}
                                 </Link>
                               </td>
                             );

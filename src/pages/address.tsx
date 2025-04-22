@@ -59,13 +59,17 @@ export const AddressPage = () => {
 
   const processedUtxos: TransactionOutput[] = useMemo(() => {
     if (utxos) {
-      return utxos.map((utxo) => ({
-        address: utxo.address,
-        coin: 0n,
-        amount: utxo.amount,
-        tx_hash: utxo.tx_hash,
-        cbor_datum: utxo.data_hash ?? '',
-      }));
+      return utxos.map(
+        (utxo, i) =>
+          ({
+            address: utxo.address,
+            coin: 0n,
+            amount: utxo.amount,
+            tx_hash: utxo.tx_hash,
+            cbor_datum: utxo.data_hash ?? '',
+            index: BigInt(i),
+          }) satisfies TransactionOutput,
+      );
     } else {
       return [];
     }

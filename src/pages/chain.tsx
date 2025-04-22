@@ -6,6 +6,7 @@ import { ShimmerBox } from '../components/tx';
 import { useMemo } from 'react';
 import { useQueryLedgerStateUtxos } from '../ogmios';
 import { Paginate } from '../components/Pagination';
+import { shorten } from '../utils';
 
 export const ViewBlock = ({ block }: { block: Block }) => {
   const formattedDate = block?.time
@@ -19,7 +20,7 @@ export const ViewBlock = ({ block }: { block: Block }) => {
         <div className="flex items-center justify-between">
           {/* Not a link yet */}
           <div className="font-mono text-sm truncate" title={block?.hash}>
-            {block?.hash.slice(0, 10)}...{block?.hash.slice(-6)}
+            {shorten(block?.hash)}
           </div>
           <div className="flex items-center gap-1">
             <span className="text-xs text-gray-500 dark:text-gray-400">
