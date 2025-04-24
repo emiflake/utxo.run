@@ -1,6 +1,8 @@
 import React, { useMemo } from 'react';
 import { ogmiosURL } from '../ogmios';
 import { betterfrostURL, useLatestBlock } from '../betterfrost';
+import { SettingsIcon } from './Icons';
+import { RegistryUrlSetting } from '../registry_context';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -27,18 +29,26 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-transparent bg-opacity-50"
+      className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-transparent bg-opacity-60"
       onClick={onClose}
     >
       <div
-        className="bg-white dark:bg-gray-800 p-5 rounded-md shadow-lg"
+        className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl max-w-2xl w-full mx-4"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex flex-col gap-2">
-          <h2 className="text-lg font-bold mb-4 dark:text-white">Settings</h2>
-          <p className="text-gray-500 dark:text-gray-400">Current settings:</p>
-          <div className="flex flex-col">
-            <label htmlFor="ogmios-url" className="dark:text-white">
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-bold dark:text-white">Settings</h2>
+            <SettingsIcon className="h-5 w-5 text-gray-500 dark:text-gray-400" />
+          </div>
+          <p className="text-gray-600 dark:text-gray-400 text-sm">
+            Configure your application settings below:
+          </p>
+          <div className="flex flex-col gap-2">
+            <label
+              htmlFor="ogmios-url"
+              className="text-sm font-medium dark:text-white"
+            >
               Ogmios URL:
             </label>
             <input
@@ -64,6 +74,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             />
             <ConnectionState connectionState={betterfrostConnectionState} />
           </div>
+          {/* Registry URL setting */}
+          <RegistryUrlSetting />
           <button
             onClick={onClose}
             className="mt-4 border px-4 py-2 rounded text-sm text-indigo-500 dark:text-indigo-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:border-gray-600"
