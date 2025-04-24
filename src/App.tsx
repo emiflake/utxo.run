@@ -12,6 +12,7 @@ import { SubmittedTxPage } from './pages/submitted_tx';
 import { AddressPage } from './pages/address';
 import { TxViewPage } from './pages/transaction_cbor';
 import { PolicyPage } from './pages/policy';
+import { RegistryProvider } from './registry_context';
 
 const queryClient = new QueryClient();
 
@@ -25,19 +26,24 @@ function App() {
       client={queryClient}
       persistOptions={{ persister }}
     >
-      <Router>
-        <Routes>
-          <Route path="/" element={<TxViewPage />} />
+      <RegistryProvider>
+        <Router>
+          <Routes>
+            <Route path="/" element={<TxViewPage />} />
 
-          <Route path="/tx/:txCbor?" element={<TxViewPage />} />
-          <Route path="/registry" element={<RegistryPage />} />
-          <Route path="/chain" element={<ChainPage />} />
-          <Route path="/policy/:unit" element={<PolicyPage />} />
-          <Route path="/submitted-tx/:txHash?" element={<SubmittedTxPage />} />
-          <Route path="/address/:address" element={<AddressPage />} />
-        </Routes>
-      </Router>
-      <ReactQueryDevtools initialIsOpen />
+            <Route path="/tx/:txCbor?" element={<TxViewPage />} />
+            <Route path="/registry" element={<RegistryPage />} />
+            <Route path="/chain" element={<ChainPage />} />
+            <Route path="/policy/:unit" element={<PolicyPage />} />
+            <Route
+              path="/submitted-tx/:txHash?"
+              element={<SubmittedTxPage />}
+            />
+            <Route path="/address/:address" element={<AddressPage />} />
+          </Routes>
+        </Router>
+        <ReactQueryDevtools initialIsOpen />
+      </RegistryProvider>
     </PersistQueryClientProvider>
   );
 }

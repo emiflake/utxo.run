@@ -1,8 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
+import { useContext } from 'react';
 import * as z from 'zod';
-
-export const registryURL = '/registry-proxy';
-export const registryJSONURL = `${registryURL}/registry.json`;
+import { RegistryContext } from './registry_context';
 
 export const otherInfoSchema = z.object({
   agoraTestnetParams: z.unknown(),
@@ -84,8 +83,8 @@ export const registrySchema = z.object({
 
 export type Registry = z.infer<typeof registrySchema>;
 
-export const getRegistry = async (): Promise<Registry> => {
-  const response = await fetch(`${registryURL}/registry.json`);
+export const getRegistry = async (url: string): Promise<Registry> => {
+  const response = await fetch(`${url}`);
   const json = await response.json();
 
   const res = registrySchema.safeParse(json);
@@ -97,9 +96,11 @@ export const getRegistry = async (): Promise<Registry> => {
 };
 
 export const useRegistry = () => {
+  const registry = useContext(RegistryContext);
+
   return useQuery({
-    queryKey: ['registry'],
-    queryFn: () => getRegistry(),
-    staleTime: 10_000,
+    queryKey: ['registry', registry?.registryURL],
+    queryFn: () =>
+      getRegistry(registry?.registryURL || '/registry-proxy/registry.json'),
   });
 };

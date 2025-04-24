@@ -63,6 +63,14 @@ export const RegistryPage = () => {
         <main className="flex-1 flex flex-col gap-2">
           <h2 className="dark:text-white">Script Registry</h2>
 
+          {registryQuery.isSuccess &&
+            registryQuery.data.scriptInfos.length > 0 && (
+              <div className="text-gray-500 dark:text-gray-400 text-sm">
+                {registryQuery.data.scriptInfos.length} scripts found in the
+                registry.
+              </div>
+            )}
+
           {registryQuery.isLoading && <ShimmerBox />}
 
           {registryQuery.isError && (
