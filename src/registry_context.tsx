@@ -74,6 +74,7 @@ export const RegistryUrlSetting = () => {
   const registryId = getRegistryId(registryContext?.registryURL);
 
   const handleFocus = () => setIsExpanded(true);
+  const handleBlur = () => setIsExpanded(false);
 
   return (
     <div className="flex flex-col space-y-1">
@@ -81,8 +82,11 @@ export const RegistryUrlSetting = () => {
         Registry URL:
       </label>
       {isExpanded ? (
-        <div className="flex flex-wrap items-center border rounded bg-gray-100 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-all duration-300 ease-in-out overflow-hidden">
-          <span className="pl-2 py-2 text-gray-500 dark:text-gray-400 transition-all duration-300 whitespace-nowrap">
+        <div
+          className="flex flex-wrap items-center min-h-[44px] border-2 rounded bg-white dark:bg-gray-800 border-gray-200 
+            dark:border-gray-700 overflow-hidden group focus-within:border-gray-300 dark:focus-within:border-gray-600 shadow-sm"
+        >
+          <span className="pl-3 py-2 text-gray-500 dark:text-gray-400 whitespace-nowrap select-none">
             /registry-proxy/
           </span>
           <input
@@ -90,20 +94,20 @@ export const RegistryUrlSetting = () => {
             id="registry-id"
             value={registryId}
             onChange={(e) => handleIdChange(e.target.value)}
-            onBlur={() => setIsExpanded(false)}
+            onBlur={handleBlur}
             autoFocus
-            className="flex-1 min-w-[150px] p-2 bg-transparent outline-none transition-all duration-300 font-mono text-sm overflow-x-auto"
+            className="flex-1 min-w-[150px] h-10 px-2 py-1 bg-transparent dark:bg-transparent outline-none font-mono text-base text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 border-none focus:ring-0 focus:outline-none"
             aria-label="Registry ID"
             placeholder="registry ID here"
           />
-          <span className="pr-2 py-2 text-gray-500 dark:text-gray-400 transition-all duration-300 whitespace-nowrap">
+          <span className="pr-3 py-2 text-gray-500 dark:text-gray-400 whitespace-nowrap select-none">
             /registry.json
           </span>
         </div>
       ) : (
         <div
           onClick={handleFocus}
-          className="flex items-center border rounded p-2 bg-gray-100 dark:bg-gray-700 dark:border-gray-600 dark:text-white cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-300 ease-in-out"
+          className="flex items-center min-h-[44px] border-2 rounded bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 shadow-sm p-2 cursor-pointer hover:border-gray-300 dark:hover:border-gray-600"
           role="button"
           tabIndex={0}
           onKeyDown={(e) => e.key === 'Enter' && handleFocus()}
