@@ -12,6 +12,7 @@ import { ClipboardButton } from './ActionButtons';
 import { useRegistry } from '../registry';
 import { shorten } from '../utils';
 import { MonoTag, Tag } from './ScriptInfo';
+import { ExternalLinkIcon } from './Icons';
 
 export const ViewTransactionHash = ({ hash }: { hash: string }) => {
   const { data: tx, isLoading } = useTxByHash(hash);
@@ -264,7 +265,9 @@ function ExternalLinkButton({
       title="View in CBOR decoder"
     >
       <div className="relative w-3.5 h-3.5 flex items-center justify-center">
-        <div className="absolute inset-0"></div>
+        <div className="absolute inset-0">
+          <ExternalLinkIcon />
+        </div>
       </div>
     </a>
   );
