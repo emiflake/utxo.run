@@ -47,10 +47,22 @@ function App() {
     </PersistQueryClientProvider>
   );
 }
-export const ErrorBox = ({ message }: { message: string }) => {
+
+const isJSON = (str: string) => {
+  try {
+    JSON.parse(str);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+export type ErrorBoxProps = { message: string };
+
+export const ErrorBox = ({ message }: ErrorBoxProps) => {
   // Card for error messages
   return (
-    <div className="border border-red-200 dark:border-red-800 p-3 bg-red-50 dark:bg-red-900/30 flex items-center gap-2">
+    <div className="border border-red-200 dark:border-red-800 p-3 bg-red-50 dark:bg-red-900/30 flex items-begin gap-2">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         className="h-5 w-5 text-red-500 dark:text-red-400"
@@ -63,7 +75,13 @@ export const ErrorBox = ({ message }: { message: string }) => {
           clipRule="evenodd"
         />
       </svg>
-      <div className="text-red-700 dark:text-red-300 text-sm">{message}</div>
+      {isJSON(message) ? (
+        <pre className="text-red-700 dark:text-red-300 text-sm font-mono">
+          {JSON.stringify(JSON.parse(message), null, 2)}
+        </pre>
+      ) : (
+        <div className="text-red-700 dark:text-red-300 text-sm">{message}</div>
+      )}
     </div>
   );
 };

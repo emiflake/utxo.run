@@ -15,19 +15,21 @@ import {
   SettingsIcon,
 } from './Icons';
 
-type SearchType = 'hash' | 'cbor';
+type SearchType = 'hash' | 'cbor' | 'address';
 
 // TODO: We could support more types of search if we are clever enough
 const classifySearch = (searchValue: string): SearchType => {
+  if (searchValue.startsWith('addr')) {
+    return 'address';
+  }
   if (searchValue.length === 64) {
     return 'hash';
   }
   return 'cbor';
 };
 
-export function NavBar() {
+export function SearchBar() {
   const [searchValue, setSearchValue] = useState('');
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   const navigate = useNavigate();
 
@@ -35,10 +37,34 @@ export function NavBar() {
     const searchType = classifySearch(searchValue);
     if (searchType === 'hash') {
       navigate(`/submitted-tx/${searchValue}`);
+    } else if (searchType === 'address') {
+      navigate(`/address/${searchValue}`);
     } else {
       navigate(`/tx/${searchValue}`);
     }
   }, [searchValue, navigate]);
+
+  return (
+    <div className="relative w-full md:w-64 lg:w-80">
+      <SearchIcon
+        className="absolute left-2.5 top-1/2 transform -translate-y-1/2 h-4 w-4 z-20"
+        color="#9ca3af"
+      />
+      <AnimatedSearchInput
+        value={searchValue}
+        onChange={(e) => setSearchValue(e.target.value)}
+        onSubmit={handleSearch}
+        placeholder="Enter your transaction hash here..."
+        title="Addresses, tx CBORs and tx hashes all work!"
+        type="search"
+        inputClassName="pl-8 h-9 text-sm border border-gray-200 dark:border-gray-700"
+      />
+    </div>
+  );
+}
+
+export function NavBar() {
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   return (
     <>
@@ -107,20 +133,7 @@ export function NavBar() {
           </nav>
 
           <div className="flex items-center ml-auto">
-            <div className="relative w-full md:w-64 lg:w-80">
-              <SearchIcon
-                className="absolute left-2.5 top-1/2 transform -translate-y-1/2 h-4 w-4 z-20"
-                color="#9ca3af"
-              />
-              <AnimatedSearchInput
-                value={searchValue}
-                onChange={(e) => setSearchValue(e.target.value)}
-                onSubmit={handleSearch}
-                placeholder="Enter your transaction hash here..."
-                type="search"
-                inputClassName="pl-8 h-9 text-sm border border-gray-200 dark:border-gray-700"
-              />
-            </div>
+            <SearchBar />
             <div className="flex items-center gap-3 p-3">
               <ThemeToggle />
               <IconButton

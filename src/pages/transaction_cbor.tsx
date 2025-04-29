@@ -22,7 +22,7 @@ const TxViewForm = () => {
   );
 
   return (
-    <div className="mb-6 mt-4 mx-auto w-full bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 overflow-hidden">
+    <div className="mb-6 mt-4 mx-auto w-full bg-white dark:bg-gray-800 border-1 border-gray-200 dark:border-gray-700 overflow-hidden">
       <div className="p-4">
         <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-3">
           Transaction Viewer
@@ -67,7 +67,7 @@ export function TxViewPage() {
       return <TxViewer tx={processedCbor.value} />;
     } else if (txCbor.length === 0) {
       return (
-        <div className="flex flex-col p-4 border-2 border-gray-200 dark:border-gray-700 gap-2 dark:text-white">
+        <div className="flex flex-col p-4 border border-gray-200 dark:border-gray-700 gap-2 dark:text-white">
           Please enter a CBOR transaction to view it!
         </div>
       );

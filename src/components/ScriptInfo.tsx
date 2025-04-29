@@ -7,12 +7,20 @@ export const Tag = ({
   label,
   value,
   href,
-}: { label: string; value: React.ReactNode; href?: string }) => {
+  labelColor = 'bg-gray-100 dark:bg-gray-700',
+}: {
+  label: string;
+  value: React.ReactNode;
+  href?: string;
+  labelColor?: string;
+}) => {
   if (!value) return null;
 
   return (
     <span className="inline-flex items-stretch text-xs mr-2 mb-1 border border-gray-100 dark:border-gray-700">
-      <span className="bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-300 px-1.5 py-0.5 flex-shrink-0">
+      <span
+        className={`text-gray-500 dark:text-gray-300 px-1.5 py-0.5 flex-shrink-0 ${labelColor}`}
+      >
         {label}
       </span>
       {href && (

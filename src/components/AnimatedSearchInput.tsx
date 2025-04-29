@@ -8,6 +8,7 @@ interface AnimatedSearchInputProps {
   id?: string;
   name?: string;
   type?: string;
+  title?: string;
   buttonText?: string;
   className?: string;
   inputClassName?: string;
@@ -21,14 +22,22 @@ export function AnimatedSearchInput({
   id,
   name,
   type = 'text',
+  title,
   buttonText = 'Search',
   className = '',
   inputClassName = '',
 }: AnimatedSearchInputProps) {
   const [isInputFocused, setIsInputFocused] = useState(false);
 
+  // This is required so that the form doesn't submit when the user hits enter or clicks the button.
+  // This way navigation happens much more smoothly.
+  const localOnSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    onSubmit(e);
+  };
+
   return (
-    <form onSubmit={onSubmit} className={`flex items-center ${className}`}>
+    <form onSubmit={localOnSubmit} className={`flex items-center ${className}`}>
       <div className="relative flex-grow group">
         <input
           type={type}
@@ -39,6 +48,7 @@ export function AnimatedSearchInput({
           onFocus={() => setIsInputFocused(true)}
           onBlur={() => setIsInputFocused(false)}
           placeholder={placeholder}
+          title={title}
           className={`h-10 w-full 
             ${
               isInputFocused ? 'rounded-l' : 'rounded'

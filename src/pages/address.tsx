@@ -9,8 +9,7 @@ import {
   ClipboardButton,
   LinkClipboardButton,
 } from '../components/ActionButtons';
-import * as CML from '@dcspark/cardano-multiplatform-lib-browser';
-import { useRegistry } from '../registry';
+import { scriptInfoByAddress, useRegistry } from '../registry';
 import { ScriptInfo } from '../components/ScriptInfo';
 
 export const AddressPage = () => {
@@ -26,18 +25,14 @@ export const AddressPage = () => {
 
   const { data: utxos, isLoading, isError } = useUtxosByAddress(address);
 
-  const addressT = useMemo(() => {
-    return CML.Address.from_bech32(address);
-  }, [address]);
-
   const registryQuery = useRegistry();
 
   const scriptInfo = useMemo(() => {
-    if (!addressT) return null;
-    return registryQuery.data?.scriptInfos.find(
-      (s) => s.scriptHash === addressT.payment_cred()?.as_script()?.to_hex(),
-    );
-  }, [addressT, registryQuery.data?.scriptInfos]);
+    if (registryQuery.data) {
+      return scriptInfoByAddress(registryQuery.data, address);
+    }
+    return undefined;
+  }, [address, registryQuery.data]);
 
   const totalValue = useMemo(() => {
     // Map from unit to amount

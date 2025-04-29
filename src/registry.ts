@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useContext } from 'react';
 import * as z from 'zod';
 import { RegistryContext } from './registry_context';
+import * as CML from '@dcspark/cardano-multiplatform-lib-browser';
 
 export const otherInfoSchema = z.object({
   agoraTestnetParams: z.unknown(),
@@ -95,6 +96,13 @@ export const getRegistry = async (url: string): Promise<Registry> => {
   return registrySchema.parse(json);
 };
 
+export const registryBaseURL: string = import.meta.env.VITE_REGISTRY_URL;
+
+export const dynamicRegistry = !(
+  import.meta.env.VITE_DYN_REGISTRY === 'false' ||
+  import.meta.env.VITE_DYN_REGISTRY === 'FALSE'
+);
+
 export const useRegistry = () => {
   const registry = useContext(RegistryContext);
 
@@ -103,4 +111,23 @@ export const useRegistry = () => {
     queryFn: () =>
       getRegistry(registry?.registryURL || '/registry-proxy/registry.json'),
   });
+};
+
+/**
+ *
+ * @param registry The registry to search in.
+ * @param address The address to search for, encoded as bech32.
+ * @returns The script info for the given address, or undefined if not found.
+ */
+export const scriptInfoByAddress = (
+  registry: Registry,
+  address: string,
+): ScriptInfo | undefined => {
+  const cmlAddress = CML.Address.from_bech32(address);
+
+  return registry.scriptInfos.find(
+    (scriptInfo) =>
+      scriptInfo.scriptHash ===
+      cmlAddress.payment_cred()?.as_script()?.to_hex(),
+  );
 };

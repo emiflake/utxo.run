@@ -9,7 +9,7 @@ import { useMemo } from 'react';
 import { Transaction, TransactionInput, TransactionOutput } from '../tx';
 import { Link } from 'react-router';
 import { ClipboardButton } from './ActionButtons';
-import { useRegistry } from '../registry';
+import { scriptInfoByAddress, useRegistry } from '../registry';
 import { shorten } from '../utils';
 import { MonoTag, Tag } from './ScriptInfo';
 import { ExternalLinkIcon } from './Icons';
@@ -342,6 +342,15 @@ export const ViewTransactionOutput = ({
     return undefined;
   }, [utxosByHashQuery.data, output.index]);
 
+  const registryQuery = useRegistry();
+
+  const addressInfo = useMemo(() => {
+    if (registryQuery.data) {
+      return scriptInfoByAddress(registryQuery.data, output.address);
+    }
+    return undefined;
+  }, [registryQuery.data, output.address]);
+
   return (
     <div className="inline-flex flex-col p-2 border-1 border-gray-400 dark:border-gray-600 gap-2 bg-gray-50 dark:bg-gray-800 break-all">
       <div className="flex items-center gap-2">
@@ -363,6 +372,15 @@ export const ViewTransactionOutput = ({
           value={output.address}
         />
       </div>
+      {addressInfo && (
+        <div className="flex flex-1 gap-2">
+          <Tag
+            label="Script"
+            value={addressInfo.name}
+            labelColor="bg-green-100 dark:bg-green-700/50"
+          />
+        </div>
+      )}
       {output.script_ref && (
         <div className="flex flex-1 gap-2">
           <MonoTag label="Script Ref" value={output.script_ref.hash} />
@@ -460,7 +478,7 @@ export const TxViewer = ({ tx }: { tx: Transaction }) => {
             {tx.requiredSigners.map((s) => (
               <span
                 key={s}
-                className="bg-indigo-100 dark:bg-indigo-400/20 text-indigo-700 dark:text-indigo-200 text-xs font-mono px-3 py-1 select-all border border-indigo-300 dark:border-indigo-300/50"
+                className="bg-indigo-100 dark:bg-indigo-400/20 text-indigo-700 dark:text-indigo-200 text-xs font-mono px-3 py-1 border border-indigo-300 dark:border-indigo-300/50"
               >
                 {s}
               </span>

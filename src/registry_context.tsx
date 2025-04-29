@@ -1,6 +1,8 @@
 import { useLocalStorage } from 'react-use';
 import { createContext, useContext, useState } from 'react';
-import { useRegistry } from './registry';
+import { dynamicRegistry, useRegistry } from './registry';
+import { ShimmerBox } from './components/tx';
+import { ErrorBox } from './App';
 
 export type RegistryContextInterface = {
   registryURL: string | undefined;
@@ -11,13 +13,25 @@ export const RegistryContext = createContext<
   RegistryContextInterface | undefined
 >(undefined);
 
+const defaultRegistryURL = '/registry-proxy/registry.json';
+
 export const RegistryProvider = ({
   children,
 }: { children: React.ReactNode }) => {
   const [registryURL, setRegistryURL] = useLocalStorage<string>(
     'registry-url',
-    '/registry-proxy/registry.json',
+    defaultRegistryURL,
   );
+
+  if (!dynamicRegistry) {
+    return (
+      <RegistryContext.Provider
+        value={{ registryURL: defaultRegistryURL, setRegistryURL }}
+      >
+        {children}
+      </RegistryContext.Provider>
+    );
+  }
 
   return (
     <RegistryContext.Provider value={{ registryURL, setRegistryURL }}>
@@ -26,15 +40,13 @@ export const RegistryProvider = ({
   );
 };
 
-export const registryBaseURL: string = import.meta.env.VITE_REGISTRY_URL;
-
 export const RegistryUrlSetting = () => {
   const registryContext = useContext(RegistryContext);
   const [isExpanded, setIsExpanded] = useState(false);
   const registryQuery = useRegistry();
 
   // This is a hack to allow the user to set the registry URL key in devnet environment.
-  if (!registryBaseURL.match(/:7100/)) {
+  if (!dynamicRegistry) {
     return (
       <div className="flex flex-col space-y-1">
         <label htmlFor="registry-url" className="dark:text-white">
@@ -46,7 +58,7 @@ export const RegistryUrlSetting = () => {
           value={registryContext?.registryURL}
           disabled
           className="border rounded p-2 bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-300"
-          title="This is disabled because it is set in the environment"
+          title="This is disabled because `VITE_DYN_REGISTRY` is set to `false`"
         />
       </div>
     );
@@ -62,7 +74,7 @@ export const RegistryUrlSetting = () => {
   const handleIdChange = (id: string) => {
     const safeId = id || '';
     if (safeId === '') {
-      registryContext?.setRegistryURL('/registry-proxy/registry.json');
+      registryContext?.setRegistryURL(defaultRegistryURL);
     } else {
       registryContext?.setRegistryURL(
         `/registry-proxy/${safeId}/registry.json`,
@@ -145,10 +157,13 @@ export const RegistryUrlSetting = () => {
           )}
         </div>
       )}
+      {registryQuery.isLoading && (
+        <div className="flex flex-col max-w-[200px] space-y-1">
+          <ShimmerBox />
+        </div>
+      )}
       {registryQuery.error && (
-        <span className="text-red-800 dark:text-red-400">
-          {registryQuery.error.message}
-        </span>
+        <ErrorBox message={registryQuery.error.message} />
       )}
     </div>
   );
