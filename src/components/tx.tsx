@@ -11,7 +11,7 @@ import { Link } from 'react-router';
 import { ClipboardButton } from './ActionButtons';
 import { scriptInfoByAddress, useRegistry } from '../registry';
 import { shorten } from '../utils';
-import { MonoTag, Tag } from './ScriptInfo';
+import { MonoTag, Tag } from './MiniTag';
 import { ExternalLinkIcon } from './Icons';
 
 export const ViewTransactionHash = ({ hash }: { hash: string }) => {
@@ -228,9 +228,11 @@ export const ViewTransactionInput = ({
 };
 
 // A box that pulses to indicate loading
-export const ShimmerBox = () => {
+export const ShimmerBox = ({ className = '' }: { className?: string }) => {
   return (
-    <div className="flex flex-col p-2 bg-gray-200 dark:bg-gray-700 animate-pulse"></div>
+    <div
+      className={`flex flex-col p-2 bg-gray-200 dark:bg-gray-700 animate-pulse ${className}`}
+    ></div>
   );
 };
 
@@ -344,7 +346,7 @@ export const ViewTransactionOutput = ({
 
   const registryQuery = useRegistry();
 
-  const addressInfo = useMemo(() => {
+  const addressScriptInfo = useMemo(() => {
     if (registryQuery.data) {
       return scriptInfoByAddress(registryQuery.data, output.address);
     }
@@ -372,11 +374,11 @@ export const ViewTransactionOutput = ({
           value={output.address}
         />
       </div>
-      {addressInfo && (
+      {addressScriptInfo && (
         <div className="flex flex-1 gap-2">
           <Tag
-            label="Script"
-            value={addressInfo.name}
+            label="Validator"
+            value={addressScriptInfo.name}
             labelColor="bg-green-100 dark:bg-green-700/50"
           />
         </div>
