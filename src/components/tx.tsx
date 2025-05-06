@@ -13,7 +13,8 @@ import { ClipboardButton } from './ActionButtons';
 import { scriptInfoByAddress, useRegistry } from '../registry';
 import { shorten } from '../utils';
 import { MonoTag, Tag } from './MiniTag';
-import { ExternalLinkIcon } from './Icons';
+import { ExternalLinkIcon, ChevronUpIcon, ChevronDownIcon } from './Icons';
+import { parseRawDatum } from '../cbor/raw_datum';
 
 export const ViewTransactionHash = ({ hash }: { hash: string }) => {
   const { data: tx, isLoading } = useTxByHash(hash);
@@ -303,10 +304,18 @@ export const ViewDatum = ({ datum }: { datum: string }) => {
     return cbor2.decode(datum);
   }, [datum]);
 
-  const [viewMode, setViewMode] = useState<'hex' | 'json' | 'diag'>('diag');
+  const [viewMode, setViewMode] = useState<
+    'hex' | 'json' | 'diag' | 'raw_datum'
+  >('raw_datum');
+
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const handleViewModeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setViewMode(e.target.value as 'hex' | 'json');
+    setViewMode(e.target.value as 'hex' | 'json' | 'diag' | 'raw_datum');
+  };
+
+  const toggleExpand = () => {
+    setIsExpanded(!isExpanded);
   };
 
   const datumJson = useMemo(() => {
@@ -321,39 +330,61 @@ export const ViewDatum = ({ datum }: { datum: string }) => {
         return datumJson;
       case 'diag':
         return cbor2.diagnose(datum);
+      case 'raw_datum':
+        return JSON.stringify(parseRawDatum(parsedDatum), null, 2);
     }
-  }, [viewMode, datum, datumJson]);
+  }, [viewMode, datum, datumJson, parsedDatum]);
 
   return (
     <div className="flex p-1 flex-col gap-2">
-      <div className="flex justify-between items-center">
-        <span className="text-sm dark:text-white">Datum:</span>
-        <select
-          value={viewMode}
-          onChange={handleViewModeChange}
-          className="text-xs bg-gray-50 dark:bg-gray-800 dark:text-white border dark:border-gray-700 border-gray-200 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
-        >
-          <option value="hex">Hex</option>
-          <option value="json">JSON</option>
-          <option value="diag">Diagnostic</option>
-        </select>
-      </div>
+      <span className="text-sm dark:text-white">Datum:</span>
       <div className="border-black border-1 bg-gray-900 text-white overflow-hidden">
-        <div className="flex items-start">
-          <div className="flex-grow p-2">
-            <span className="text-xs font-mono break-all dark:text-white">
-              {textToDisplay}
-            </span>
+        <div className="flex flex-col">
+          {/* Toolbar with buttons always visible at the top */}
+          <div className="flex justify-between items-center p-1 border-b border-gray-800">
+            <select
+              value={viewMode}
+              onChange={handleViewModeChange}
+              className="text-xs text-gray-800 text-white border-r border-gray-700 px-2 py-1 focus:outline-none bg-transparent"
+            >
+              <option value="hex">Hex</option>
+              <option value="json">JSON</option>
+              <option value="diag">Diagnostic</option>
+              <option value="raw_datum">Raw Datum</option>
+            </select>
+            <div className="flex gap-1">
+              <button
+                onClick={toggleExpand}
+                className="text-white hover:text-blue-300 p-1"
+                title={isExpanded ? 'Collapse' : 'Expand'}
+              >
+                {isExpanded ? (
+                  <ChevronUpIcon className="h-3.5 w-3.5" />
+                ) : (
+                  <ChevronDownIcon className="h-3.5 w-3.5" />
+                )}
+              </button>
+              <ExternalLinkButton
+                href={cborNemo}
+                className="text-white hover:text-blue-300"
+              />
+              <ClipboardButton
+                text={textToDisplay}
+                className="text-white hover:text-blue-300"
+              />
+            </div>
           </div>
-          <div className="p-1 flex-shrink-0 flex gap-1">
-            <ExternalLinkButton
-              href={cborNemo}
-              className="text-white hover:text-blue-300"
-            />
-            <ClipboardButton
-              text={textToDisplay}
-              className="text-white hover:text-blue-300"
-            />
+          {/* Content area */}
+          <div className="p-2">
+            {isExpanded ? (
+              <pre className="text-xs font-mono whitespace-pre-wrap break-words dark:text-white w-full overflow-x-auto">
+                {textToDisplay}
+              </pre>
+            ) : (
+              <span className="text-xs font-mono break-all dark:text-white">
+                {textToDisplay}
+              </span>
+            )}
           </div>
         </div>
       </div>
