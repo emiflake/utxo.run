@@ -61,7 +61,7 @@ export const AddressPage = () => {
             coin: 0n,
             amount: utxo.amount,
             tx_hash: utxo.tx_hash,
-            cbor_datum: utxo.data_hash ?? '',
+            cbor_datum: utxo.inline_datum ? utxo.inline_datum : undefined,
             index: BigInt(i),
           }) satisfies TransactionOutput,
       );

@@ -5,6 +5,39 @@ import { NavBar } from '../components/nav';
 import * as z from 'zod';
 import { BlueprintIcon, FileIcon, TrashIcon } from '../components/Icons';
 import { MiniTag } from '../components/MiniTag';
+import { ViewDatum } from '../components/Datum';
+
+// Component for testing datums against blueprints
+const DatumTester = () => {
+  const [datumInput, setDatumInput] = useState('');
+  const [error, setError] = useState<string | null>(null);
+
+  // Handle input change
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setDatumInput(e.target.value.trim());
+    setError(null);
+  };
+
+  return (
+    <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-1">
+        <textarea
+          className="w-full h-24 p-2 border-1 border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-mono text-sm"
+          placeholder="Enter datum in hexadecimal format"
+          value={datumInput}
+          onChange={handleInputChange}
+        />
+        <div className="flex justify-between">
+          {error && (
+            <span className="text-xs text-red-500 self-center">{error}</span>
+          )}
+        </div>
+      </div>
+
+      {datumInput && <ViewDatum datum={datumInput} />}
+    </div>
+  );
+};
 
 export const BlueprintPage = () => {
   const blueprints = useLiveQuery(async () => {
@@ -52,6 +85,7 @@ export const BlueprintPage = () => {
             await db.plutusJson.add({
               rawJson: text,
               title,
+              schema: result.data,
               description,
             });
             setErrorMessage(null);
@@ -219,15 +253,25 @@ export const BlueprintPage = () => {
             </div>
 
             <div className="flex flex-col lg:w-1/2 gap-2 border-1 border-gray-200 dark:border-gray-700 p-4 dark:text-white">
-              <span className="text-md dark:text-white">
-                Upload Instructions
-              </span>
-              <div className="text-sm text-gray-600 dark:text-gray-300">
-                <ul className="list-disc ml-4 space-y-1">
-                  <li>Upload JSON files containing plutus.json blueprints</li>
-                  <li>Files will be stored locally in your browser</li>
-                  <li>Blueprint files are used for parsing datums</li>
-                </ul>
+              <div className="flex flex-col gap-2">
+                <span className="text-md dark:text-white">
+                  Upload Instructions
+                </span>
+                <div className="text-sm text-gray-600 dark:text-gray-300">
+                  <ul className="list-disc ml-4 space-y-1">
+                    <li>Upload JSON files containing plutus.json blueprints</li>
+                    <li>Files will be stored locally in your browser</li>
+                    <li>Blueprint files are used for parsing datums</li>
+                  </ul>
+                </div>
+              </div>
+              <div className="flex flex-col gap-2">
+                <span className="text-md dark:text-white">Datum Tester</span>
+                <div className="text-sm text-gray-600 dark:text-gray-300 mb-2">
+                  Test your datums against the loaded blueprints
+                </div>
+
+                <DatumTester />
               </div>
             </div>
           </div>

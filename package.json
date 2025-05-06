@@ -25,6 +25,7 @@
     "dexie": "^4.0.11",
     "dexie-react-hooks": "^1.1.7",
     "fuse.js": "^7.1.0",
+    "hast-util-to-jsx-runtime": "^2.3.6",
     "hono": "^4.7.6",
     "http-proxy": "^1.18.1",
     "json-bigint": "^1.0.0",
@@ -32,6 +33,7 @@
     "react-dom": "^19.0.0",
     "react-router": "^7.4.0",
     "react-use": "^17.6.0",
+    "refractor": "^5.0.0",
     "tailwindcss": "^4.0.14",
     "zod": "^3.24.2"
   },
