@@ -13,6 +13,7 @@ import { AddressPage } from './pages/address';
 import { TxViewPage } from './pages/transaction_cbor';
 import { PolicyPage } from './pages/policy';
 import { RegistryProvider } from './registry_context';
+import { BlueprintPage } from './pages/blueprint';
 
 const queryClient = new QueryClient();
 
@@ -40,6 +41,7 @@ function App() {
               element={<SubmittedTxPage />}
             />
             <Route path="/address/:address" element={<AddressPage />} />
+            <Route path="/blueprint" element={<BlueprintPage />} />
           </Routes>
         </Router>
         <ReactQueryDevtools initialIsOpen />
