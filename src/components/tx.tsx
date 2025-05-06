@@ -4,8 +4,9 @@ import {
   useTxUtxosByHash,
 } from '../betterfrost';
 import { SpentTag } from './MiniTag';
+import * as cbor2 from 'cbor2';
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Transaction, TransactionInput, TransactionOutput } from '../tx';
 import { Link } from 'react-router';
 import { ClipboardButton } from './ActionButtons';
@@ -184,6 +185,8 @@ export const ViewTransactionInput = ({
 }) => {
   const { data: txUtxos, isLoading } = useTxUtxosByHash(input.transactionId);
 
+  const registryQuery = useRegistry();
+
   const inputUtxo = useMemo(() => {
     if (isLoading) {
       return null;
@@ -191,6 +194,13 @@ export const ViewTransactionInput = ({
       return txUtxos.outputs[Number(input.outputIndex)];
     }
   }, [txUtxos, input.outputIndex, isLoading]);
+
+  const addressScriptInfo = useMemo(() => {
+    if (registryQuery.data && inputUtxo?.address) {
+      return scriptInfoByAddress(registryQuery.data, inputUtxo.address);
+    }
+    return undefined;
+  }, [registryQuery.data, inputUtxo?.address]);
 
   return (
     <div className="inline-flex flex-col p-2 border-1 border-gray-400 dark:border-gray-600 gap-2 bg-gray-50 dark:bg-gray-800 break-all">
@@ -208,6 +218,15 @@ export const ViewTransactionInput = ({
             label="Address"
             href={`/address/${inputUtxo.address}`}
             value={inputUtxo.address}
+          />
+        </div>
+      )}
+      {addressScriptInfo && (
+        <div className="flex flex-1 gap-2">
+          <Tag
+            label="Validator"
+            value={addressScriptInfo.name}
+            labelColor="bg-green-100 dark:bg-green-700/50"
           />
         </div>
       )}
@@ -280,14 +299,50 @@ export const ViewDatum = ({ datum }: { datum: string }) => {
     return `https://cbor.nemo157.com/#type=hex&value=${datum}`;
   }, [datum]);
 
+  const parsedDatum = useMemo(() => {
+    return cbor2.decode(datum);
+  }, [datum]);
+
+  const [viewMode, setViewMode] = useState<'hex' | 'json' | 'diag'>('diag');
+
+  const handleViewModeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setViewMode(e.target.value as 'hex' | 'json');
+  };
+
+  const datumJson = useMemo(() => {
+    return JSON.stringify(parsedDatum, null, 2);
+  }, [parsedDatum]);
+
+  const textToDisplay = useMemo(() => {
+    switch (viewMode) {
+      case 'hex':
+        return datum;
+      case 'json':
+        return datumJson;
+      case 'diag':
+        return cbor2.diagnose(datum);
+    }
+  }, [viewMode, datum, datumJson]);
+
   return (
     <div className="flex p-1 flex-col gap-2">
-      <span className="text-sm dark:text-white">Datum:</span>
+      <div className="flex justify-between items-center">
+        <span className="text-sm dark:text-white">Datum:</span>
+        <select
+          value={viewMode}
+          onChange={handleViewModeChange}
+          className="text-xs bg-gray-50 dark:bg-gray-800 dark:text-white border dark:border-gray-700 border-gray-200 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
+        >
+          <option value="hex">Hex</option>
+          <option value="json">JSON</option>
+          <option value="diag">Diagnostic</option>
+        </select>
+      </div>
       <div className="border-black border-1 bg-gray-900 text-white overflow-hidden">
         <div className="flex items-start">
           <div className="flex-grow p-2">
             <span className="text-xs font-mono break-all dark:text-white">
-              {datum}
+              {textToDisplay}
             </span>
           </div>
           <div className="p-1 flex-shrink-0 flex gap-1">
@@ -296,7 +351,7 @@ export const ViewDatum = ({ datum }: { datum: string }) => {
               className="text-white hover:text-blue-300"
             />
             <ClipboardButton
-              text={datum}
+              text={textToDisplay}
               className="text-white hover:text-blue-300"
             />
           </div>
