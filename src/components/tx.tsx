@@ -4,17 +4,14 @@ import {
   useTxUtxosByHash,
 } from '../betterfrost';
 import { SpentTag } from './MiniTag';
-import * as cbor2 from 'cbor2';
 
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { Transaction, TransactionInput, TransactionOutput } from '../tx';
 import { Link } from 'react-router';
-import { ClipboardButton } from './ActionButtons';
 import { scriptInfoByAddress, useRegistry } from '../registry';
 import { shorten } from '../utils';
 import { MonoTag, Tag } from './MiniTag';
-import { ExternalLinkIcon, ChevronUpIcon, ChevronDownIcon } from './Icons';
-import { parseRawDatum } from '../cbor/raw_datum';
+import { ViewDatum } from './Datum';
 
 export const ViewTransactionHash = ({ hash }: { hash: string }) => {
   const { data: tx, isLoading } = useTxByHash(hash);
@@ -271,124 +268,6 @@ export const MiniButton = ({
         {children}
       </button>
     </a>
-  );
-};
-
-function ExternalLinkButton({
-  href,
-  className = 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200',
-}: { href: string; className?: string }) {
-  return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      className={`inline-flex items-center justify-center gap-1.5 p-1 text-xs focus:outline-none transition-colors duration-200 ${className}`}
-      title="View in CBOR decoder"
-    >
-      <div className="relative w-3.5 h-3.5 flex items-center justify-center">
-        <div className="absolute inset-0">
-          <ExternalLinkIcon />
-        </div>
-      </div>
-    </a>
-  );
-}
-
-export const ViewDatum = ({ datum }: { datum: string }) => {
-  const cborNemo = useMemo(() => {
-    return `https://cbor.nemo157.com/#type=hex&value=${datum}`;
-  }, [datum]);
-
-  const parsedDatum = useMemo(() => {
-    return cbor2.decode(datum);
-  }, [datum]);
-
-  const [viewMode, setViewMode] = useState<
-    'hex' | 'json' | 'diag' | 'raw_datum'
-  >('raw_datum');
-
-  const [isExpanded, setIsExpanded] = useState(false);
-
-  const handleViewModeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setViewMode(e.target.value as 'hex' | 'json' | 'diag' | 'raw_datum');
-  };
-
-  const toggleExpand = () => {
-    setIsExpanded(!isExpanded);
-  };
-
-  const datumJson = useMemo(() => {
-    return JSON.stringify(parsedDatum, null, 2);
-  }, [parsedDatum]);
-
-  const textToDisplay = useMemo(() => {
-    switch (viewMode) {
-      case 'hex':
-        return datum;
-      case 'json':
-        return datumJson;
-      case 'diag':
-        return cbor2.diagnose(datum);
-      case 'raw_datum':
-        return JSON.stringify(parseRawDatum(parsedDatum), null, 2);
-    }
-  }, [viewMode, datum, datumJson, parsedDatum]);
-
-  return (
-    <div className="flex p-1 flex-col gap-2">
-      <span className="text-sm dark:text-white">Datum:</span>
-      <div className="border-black border-1 bg-gray-900 text-white overflow-hidden">
-        <div className="flex flex-col">
-          {/* Toolbar with buttons always visible at the top */}
-          <div className="flex justify-between items-center p-1 border-b border-gray-800">
-            <select
-              value={viewMode}
-              onChange={handleViewModeChange}
-              className="text-xs text-gray-800 text-white border-r border-gray-700 px-2 py-1 focus:outline-none bg-transparent"
-            >
-              <option value="hex">Hex</option>
-              <option value="json">JSON</option>
-              <option value="diag">Diagnostic</option>
-              <option value="raw_datum">Raw Datum</option>
-            </select>
-            <div className="flex gap-1">
-              <button
-                onClick={toggleExpand}
-                className="text-white hover:text-blue-300 p-1"
-                title={isExpanded ? 'Collapse' : 'Expand'}
-              >
-                {isExpanded ? (
-                  <ChevronUpIcon className="h-3.5 w-3.5" />
-                ) : (
-                  <ChevronDownIcon className="h-3.5 w-3.5" />
-                )}
-              </button>
-              <ExternalLinkButton
-                href={cborNemo}
-                className="text-white hover:text-blue-300"
-              />
-              <ClipboardButton
-                text={textToDisplay}
-                className="text-white hover:text-blue-300"
-              />
-            </div>
-          </div>
-          {/* Content area */}
-          <div className="p-2">
-            {isExpanded ? (
-              <pre className="text-xs font-mono whitespace-pre-wrap break-words dark:text-white w-full overflow-x-auto">
-                {textToDisplay}
-              </pre>
-            ) : (
-              <span className="text-xs font-mono break-all dark:text-white">
-                {textToDisplay}
-              </span>
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
   );
 };
 

@@ -5,6 +5,7 @@ import { SettingsModal } from './SettingsModal';
 import { ThemeToggle } from './Toggle';
 import { IconButton } from './Button';
 import {
+  BlueprintIcon,
   ChevronDownIcon,
   ExplorerIcon,
   FileIcon,
@@ -120,14 +121,36 @@ export function NavBar() {
                   </div>
                 </div>
               </li>
+
               <li>
-                <Link
-                  to="/chain"
-                  className="group inline-flex h-9 w-max items-center justify-center bg-background dark:bg-gray-800 px-4 py-2 text-sm font-medium dark:text-white transition-colors hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700 focus:outline-none disabled:pointer-events-none disabled:opacity-50 rounded"
-                >
-                  <ExplorerIcon />
-                  Chain Explorer
-                </Link>
+                <div className="relative group">
+                  <button className="inline-flex h-9 w-max items-center justify-center bg-background dark:bg-gray-800 px-4 py-2 text-sm font-medium dark:text-white transition-colors hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700 focus:outline-none disabled:pointer-events-none disabled:opacity-50 rounded">
+                    Other
+                    <ChevronDownIcon />
+                  </button>
+                  <div className="absolute left-0 mt-2 w-[200px] bg-white dark:bg-gray-800 shadow-md border border-gray-200 dark:border-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                    <ul className="py-1">
+                      <li>
+                        <Link
+                          to="/blueprint"
+                          className="flex items-center gap-2 px-4 py-2 text-sm font-medium dark:text-white no-underline outline-none transition-colors hover:bg-gray-100 dark:hover:bg-gray-700"
+                        >
+                          <BlueprintIcon />
+                          plutus.json
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          to="/chain"
+                          className="flex items-center gap-2 px-4 py-2 text-sm font-medium dark:text-white no-underline outline-none transition-colors hover:bg-gray-100 dark:hover:bg-gray-700"
+                        >
+                          <ExplorerIcon />
+                          Chain Explorer
+                        </Link>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
               </li>
             </ul>
           </nav>

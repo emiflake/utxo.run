@@ -13,6 +13,8 @@ import { AddressPage } from './pages/address';
 import { TxViewPage } from './pages/transaction_cbor';
 import { PolicyPage } from './pages/policy';
 import { RegistryProvider } from './registry_context';
+import { BlueprintPage } from './pages/blueprint';
+import { DatumProvider } from './context/Providers';
 
 const queryClient = new QueryClient();
 
@@ -20,13 +22,21 @@ const persister = createSyncStoragePersister({
   storage: window.localStorage,
 });
 
+function Providers({ children }: { children: React.ReactNode }) {
+  return (
+    <RegistryProvider>
+      <DatumProvider>{children}</DatumProvider>
+    </RegistryProvider>
+  );
+}
+
 function App() {
   return (
     <PersistQueryClientProvider
       client={queryClient}
       persistOptions={{ persister }}
     >
-      <RegistryProvider>
+      <Providers>
         <Router>
           <Routes>
             <Route path="/" element={<TxViewPage />} />
@@ -40,10 +50,11 @@ function App() {
               element={<SubmittedTxPage />}
             />
             <Route path="/address/:address" element={<AddressPage />} />
+            <Route path="/blueprint" element={<BlueprintPage />} />
           </Routes>
         </Router>
         <ReactQueryDevtools initialIsOpen />
-      </RegistryProvider>
+      </Providers>
     </PersistQueryClientProvider>
   );
 }

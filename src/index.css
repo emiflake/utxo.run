@@ -198,3 +198,24 @@
   --color-violet-100: var(--violet-100);
   --color-violet-50: var(--violet-50);
 }
+
+/**
+ * Syntax highlighting
+ * using refactor.
+ */
+.token.property,
+.token.key {
+  @apply text-amber-200;
+}
+
+.token.number {
+  @apply text-blue-200;
+}
+
+.token.string {
+  @apply text-green-200;
+}
+
+.token.comment {
+  @apply text-gray-200;
+}

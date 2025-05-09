@@ -15,19 +15,18 @@ export const parseByteString = (rawDatum: {
 };
 
 // See: https://github.com/aiken-lang/aiken/blob/6d2e38851eb9b14cf5ea04fdc4722405b5c1544a/crates/uplc/src/ast.rs#L437
-// eslint-disable-next-line
-const computeCborTag = (index: number): number => {
-  if (index < 7) {
-    return 121 + index;
-  } else if (index < 128) {
-    return 1280 + index - 7;
-  } else {
-    throw new Error(
-      "Constructors with more than 128 fields are not (yet) supported, you have " +
-        index
-    );
-  }
-};
+// const computeCborTag = (index: number): number => {
+//   if (index < 7) {
+//     return 121 + index;
+//   } else if (index < 128) {
+//     return 1280 + index - 7;
+//   } else {
+//     throw new Error(
+//       "Constructors with more than 128 fields are not (yet) supported, you have " +
+//         index
+//     );
+//   }
+// };
 
 // See: https://github.com/aiken-lang/aiken/blob/6d2e38851eb9b14cf5ea04fdc4722405b5c1544a/crates/uplc/src/ast.rs#L437
 // Inverse of computeCborTag
@@ -37,7 +36,7 @@ const remapTag = (tag: number): number => {
   } else if (tag >= 1280 && tag < 1280 + 128) {
     return tag - 1280 + 7;
   } else {
-    throw new Error("Invalid tag: " + tag);
+    throw new Error('Invalid tag: ' + tag);
   }
 };
 
@@ -46,25 +45,25 @@ export const parseRawDatum = (rawDatum: unknown): RawDatum => {
     return null;
   }
 
-  if (typeof rawDatum === "number") {
+  if (typeof rawDatum === 'number') {
     return rawDatum;
-  } else if (typeof rawDatum === "string") {
+  } else if (typeof rawDatum === 'string') {
     return rawDatum;
   } else if (Array.isArray(rawDatum)) {
     return rawDatum.map(parseRawDatum).filter((d) => d !== null);
-  } else if (typeof rawDatum === "object") {
-    if ("0" in rawDatum) {
+  } else if (typeof rawDatum === 'object') {
+    if ('0' in rawDatum) {
       const parsed = parseByteString(rawDatum as { [k: string]: number });
 
       // Convert to hex
-      return parsed.map((b) => b.toString(16).padStart(2, "0")).join("");
+      return parsed.map((b) => b.toString(16).padStart(2, '0')).join('');
     }
 
     if (
-      "tag" in rawDatum &&
-      typeof rawDatum.tag === "number" &&
-      "contents" in rawDatum &&
-      typeof rawDatum.contents === "object" &&
+      'tag' in rawDatum &&
+      typeof rawDatum.tag === 'number' &&
+      'contents' in rawDatum &&
+      typeof rawDatum.contents === 'object' &&
       Array.isArray(rawDatum.contents)
     ) {
       return {
