@@ -29,39 +29,10 @@
             overlays = [ ];
           };
 
-          bun = pkgs.bun.overrideAttrs (_: rec {
-            version = "1.2.5";
-            src = passthru.sources.${system} or (throw
-              "Unsupported system: ${system}");
-            passthru = {
-              sources = {
-                "aarch64-darwin" = pkgs.fetchurl {
-                  url =
-                    "https://github.com/oven-sh/bun/releases/download/bun-v${version}/bun-darwin-aarch64.zip";
-                  hash = "";
-                };
-                "aarch64-linux" = pkgs.fetchurl {
-                  url =
-                    "https://github.com/oven-sh/bun/releases/download/bun-v${version}/bun-linux-aarch64.zip";
-                  hash = "";
-                };
-                "x86_64-darwin" = pkgs.fetchurl {
-                  url =
-                    "https://github.com/oven-sh/bun/releases/download/bun-v${version}/bun-darwin-x64-baseline.zip";
-                  hash = "";
-                };
-                "x86_64-linux" = pkgs.fetchurl {
-                  url =
-                    "https://github.com/oven-sh/bun/releases/download/bun-v${version}/bun-linux-x64.zip";
-                  hash = "sha256-iPZL7e4zD/TWMo4+kMZpvHrFMUknxgT4XjKeoqHRl5s=";
-                };
-              };
-            };
-          });
         in {
           devShells.default = pkgs.mkShell {
             buildInputs = [
-              bun
+              pkgs.bun
               pkgs.nodejs
               pkgs.typescript-language-server
               pkgs.vscode-langservers-extracted

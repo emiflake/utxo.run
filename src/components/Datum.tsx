@@ -12,6 +12,9 @@ import { refractor } from 'refractor';
 import { toJsxRuntime } from 'hast-util-to-jsx-runtime';
 import { jsx, jsxs } from 'react/jsx-runtime';
 import { DatumContext } from '../context/DatumContext';
+import jsonBigInt from 'json-bigint';
+
+const JSONbig = jsonBigInt();
 
 function ExternalLinkButton({
   href,
@@ -92,7 +95,7 @@ export const ViewDatum = ({ datum }: { datum: string }) => {
   };
 
   const datumJson = useMemo(() => {
-    return JSON.stringify(parsedDatum, null, 2);
+    return JSONbig.stringify(parsedDatum, null, 2);
   }, [parsedDatum]);
 
   const textToDisplay = useMemo(() => {
