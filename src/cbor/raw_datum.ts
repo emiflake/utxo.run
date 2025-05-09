@@ -36,7 +36,7 @@ const remapTag = (tag: number): number => {
   } else if (tag >= 1280 && tag < 1280 + 128) {
     return tag - 1280 + 7;
   } else {
-    throw new Error("Invalid tag: " + tag);
+    throw new Error('Invalid tag: ' + tag);
   }
 };
 
@@ -45,25 +45,25 @@ export const parseRawDatum = (rawDatum: unknown): RawDatum => {
     return null;
   }
 
-  if (typeof rawDatum === "number") {
+  if (typeof rawDatum === 'number') {
     return rawDatum;
-  } else if (typeof rawDatum === "string") {
+  } else if (typeof rawDatum === 'string') {
     return rawDatum;
   } else if (Array.isArray(rawDatum)) {
     return rawDatum.map(parseRawDatum).filter((d) => d !== null);
-  } else if (typeof rawDatum === "object") {
-    if ("0" in rawDatum) {
+  } else if (typeof rawDatum === 'object') {
+    if ('0' in rawDatum) {
       const parsed = parseByteString(rawDatum as { [k: string]: number });
 
       // Convert to hex
-      return parsed.map((b) => b.toString(16).padStart(2, "0")).join("");
+      return parsed.map((b) => b.toString(16).padStart(2, '0')).join('');
     }
 
     if (
-      "tag" in rawDatum &&
-      typeof rawDatum.tag === "number" &&
-      "contents" in rawDatum &&
-      typeof rawDatum.contents === "object" &&
+      'tag' in rawDatum &&
+      typeof rawDatum.tag === 'number' &&
+      'contents' in rawDatum &&
+      typeof rawDatum.contents === 'object' &&
       Array.isArray(rawDatum.contents)
     ) {
       return {

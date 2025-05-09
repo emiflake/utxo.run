@@ -1,6 +1,6 @@
 import { useLiveQuery } from 'dexie-react-hooks';
-import { db } from '../cbor/plutus_json';
-import { Fragment, useMemo, useState } from 'react';
+import { db, renderToJSON, renderToYaml } from '../cbor/plutus_json';
+import { Fragment, useContext, useMemo, useState } from 'react';
 import * as cbor2 from 'cbor2';
 import { parseRawDatum } from '../cbor/raw_datum';
 import { createParsingContext } from '../cbor/plutus_json';
@@ -11,6 +11,7 @@ import { ErrorBox } from '../App';
 import { refractor } from 'refractor';
 import { toJsxRuntime } from 'hast-util-to-jsx-runtime';
 import { jsx, jsxs } from 'react/jsx-runtime';
+import { DatumContext } from '../context/DatumContext';
 
 function ExternalLinkButton({
   href,
@@ -67,28 +68,22 @@ export const ViewDatum = ({ datum }: { datum: string }) => {
 
     const enrichedDatum = parseAgainstSchema(rawDatum, context);
 
-    if ('error' in enrichedDatum) {
-      setError(enrichedDatum.error);
-      return null;
-    }
-
-    return enrichedDatum.value;
+    return enrichedDatum;
   }, [parsedDatum, blueprints]);
 
-  const [viewMode, setViewMode] = useState<
-    'hex' | 'json' | 'diag' | 'raw_datum' | 'enriched_datum'
-  >('enriched_datum');
+  const datumContext = useContext(DatumContext);
 
   const [isExpanded, setIsExpanded] = useState(true);
 
   const handleViewModeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setViewMode(
+    datumContext?.setViewMode(
       e.target.value as
         | 'hex'
         | 'json'
         | 'diag'
         | 'raw_datum'
-        | 'enriched_datum',
+        | 'enriched_datum'
+        | 'enriched_yaml',
     );
   };
 
@@ -101,23 +96,33 @@ export const ViewDatum = ({ datum }: { datum: string }) => {
   }, [parsedDatum]);
 
   const textToDisplay = useMemo(() => {
-    switch (viewMode) {
+    switch (datumContext?.viewMode || 'enriched_yaml') {
       case 'hex':
         return datum;
       case 'json':
         return datumJson;
       case 'diag':
-        return cbor2.diagnose(datum);
+        return cbor2.diagnose(datum, {
+          pretty: true,
+        });
       case 'raw_datum':
         return JSON.stringify(parseRawDatum(parsedDatum), null, 2);
       case 'enriched_datum':
-        return JSON.stringify(enrichedDatum, null, 2);
+        return renderToJSON(enrichedDatum);
+      case 'enriched_yaml':
+        return renderToYaml(enrichedDatum);
     }
-  }, [viewMode, datum, datumJson, parsedDatum, enrichedDatum]);
+  }, [datum, datumJson, parsedDatum, enrichedDatum, datumContext?.viewMode]);
 
   const hastTree = useMemo(() => {
+    if (datumContext?.viewMode === 'enriched_yaml') {
+      return refractor.highlight(textToDisplay, 'yaml');
+    } else if (datumContext?.viewMode === 'diag') {
+      // R works nicely for diagnostics
+      return refractor.highlight(textToDisplay, 'r');
+    }
     return refractor.highlight(textToDisplay, 'json');
-  }, [textToDisplay]);
+  }, [textToDisplay, datumContext?.viewMode]);
 
   const jsxRuntime = useMemo(() => {
     return toJsxRuntime(hastTree, { Fragment, jsx, jsxs });
@@ -131,7 +136,7 @@ export const ViewDatum = ({ datum }: { datum: string }) => {
           {/* Toolbar with buttons always visible at the top */}
           <div className="flex justify-between items-center p-1 border-b border-gray-800">
             <select
-              value={viewMode}
+              value={datumContext?.viewMode || 'enriched_yaml'}
               onChange={handleViewModeChange}
               className="text-xs text-white border-r border-gray-700 px-2 py-1 focus:outline-none bg-transparent"
             >
@@ -140,6 +145,7 @@ export const ViewDatum = ({ datum }: { datum: string }) => {
               <option value="diag">Diagnostic</option>
               <option value="raw_datum">Raw Datum</option>
               <option value="enriched_datum">Enriched Datum</option>
+              <option value="enriched_yaml">Enriched Datum (YAML)</option>
             </select>
             <div className="flex gap-1">
               <button
@@ -164,16 +170,12 @@ export const ViewDatum = ({ datum }: { datum: string }) => {
             </div>
           </div>
           {/* Content area */}
-          <div className="p-2 overflow-x-auto">
-            {isExpanded ? (
-              <pre className="text-xs font-mono break-all dark:text-white">
-                {jsxRuntime}
-              </pre>
-            ) : (
-              <span className="text-xs font-mono break-all dark:text-white">
-                {jsxRuntime}
-              </span>
-            )}
+          <div className="p-2 overflow-x-auto leading-none">
+            <span
+              className={`text-xs font-mono break-all dark:text-white ${isExpanded ? 'whitespace-pre-wrap' : ''}`}
+            >
+              {jsxRuntime}
+            </span>
           </div>
 
           {error && <ErrorBox message={error} />}

@@ -1,7 +1,7 @@
-import * as CML from "@dcspark/cardano-multiplatform-lib-browser";
+import * as CML from '@dcspark/cardano-multiplatform-lib-browser';
 
-import { TransactionAmount } from "./betterfrost";
-import { failure, Result, success } from "./result";
+import { TransactionAmount } from './betterfrost';
+import { failure, Result, success } from './result';
 
 export type TxProcessError = {
   message: string;
@@ -12,7 +12,7 @@ export type TransactionInput = {
   outputIndex: bigint;
 };
 
-export type ScriptLanguage = "PlutusV1" | "PlutusV2" | "PlutusV3";
+export type ScriptLanguage = 'PlutusV1' | 'PlutusV2' | 'PlutusV3';
 
 export type ScriptRef = {
   language: ScriptLanguage | undefined;
@@ -58,9 +58,9 @@ const scriptRefFromCML = (script: CML.Script): ScriptRef => {
     language:
       script.language() !== undefined
         ? ({
-            0: "PlutusV1",
-            1: "PlutusV2",
-            2: "PlutusV3",
+            0: 'PlutusV1',
+            1: 'PlutusV2',
+            2: 'PlutusV3',
           }[script.language() ?? 0] as ScriptLanguage)
         : undefined,
     hash: script.hash().to_hex(),
@@ -68,7 +68,7 @@ const scriptRefFromCML = (script: CML.Script): ScriptRef => {
 };
 
 const convertCMLMultiAsset = (
-  multiAsset: CML.MultiAsset
+  multiAsset: CML.MultiAsset,
 ): TransactionAmount[] => {
   const policyIds = convertCMLList<CML.ScriptHash>(multiAsset.keys());
 
@@ -81,7 +81,7 @@ const convertCMLMultiAsset = (
     }
 
     for (const assetName of convertCMLList<CML.AssetName>(
-      assetNameToCoin.keys()
+      assetNameToCoin.keys(),
     )) {
       const quantity = assetNameToCoin.get(assetName);
       if (quantity === undefined) {
@@ -99,7 +99,7 @@ const convertCMLMultiAsset = (
 };
 
 export const processTxFromCbor = (
-  txCbor: string
+  txCbor: string,
 ): Result<Transaction, TxProcessError> => {
   try {
     const cmlTx = CML.Transaction.from_cbor_hex(txCbor);
@@ -154,13 +154,13 @@ export const processTxFromCbor = (
           amount: [
             ...convertCMLMultiAsset(o.amount().multi_asset()),
             {
-              unit: "lovelace",
+              unit: 'lovelace',
               quantity: Number(o.amount().coin()).toString(),
             },
           ],
           cbor_datum: o.datum()?.as_datum()?.to_cbor_hex(),
         };
-      }
+      },
     );
 
     const transaction: Transaction = {

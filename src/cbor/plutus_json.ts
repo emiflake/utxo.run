@@ -1,6 +1,7 @@
 import Dexie, { type EntityTable } from "dexie";
 import * as z from "zod";
 import { RawDatum } from "./raw_datum";
+import * as yaml from "yaml";
 
 export interface PlutusJsonEntity {
   id: number;
@@ -169,8 +170,14 @@ export const createParsingContext = (
   const listSchemas: ListSchema[] = Object.values(defs).filter(
     (d): d is ListSchema => "dataType" in d && d.dataType === "list"
   );
+
+  const listSchemasWithAnyOf: ListSchema[] = Object.values(defs)
+    .filter((d) => "anyOf" in d)
+    .flatMap((d) => d.anyOf)
+    .filter((d): d is ListSchema => "dataType" in d && d.dataType === "list");
+
   return {
-    listSchemas,
+    listSchemas: [...listSchemas, ...listSchemasWithAnyOf],
     definitions: defs,
   };
 };
@@ -272,7 +279,7 @@ export const enrichListWithSchema = (
   return Object.fromEntries(
     datum.map((item, i) => {
       const parsed = parseAgainstSchema(item, ctx);
-      const valueToShow = "error" in parsed ? item : parsed.value;
+      const valueToShow = parsed;
       if (schema.items[i] && "title" in schema.items[i]) {
         return [schema.items[i].title, valueToShow];
       }
@@ -324,7 +331,152 @@ export const parseAgainstSchema = (
     }
 
     return { value: datum, typeName: "list" };
+  } else if (typeof datum === "object" && datum !== null) {
+    if ("tag" in datum && "fields" in datum && Array.isArray(datum.fields)) {
+      const parsed = datum.fields.map((field) => {
+        const parsed = parseAgainstSchema(field, context);
+
+        return parsed;
+      });
+      return {
+        value: { tag: datum.tag, fields: parsed },
+        typeName: "constructor",
+      };
+    }
   }
 
   return { value: datum, typeName: "unknown" };
+};
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Conversion to useful formats
+
+export const renderToYaml = (datum: ParseResult | null): string => {
+  if (!datum) {
+    return "";
+  }
+
+  if ("error" in datum) {
+    return datum.error;
+  }
+
+  const document = new yaml.Document(datum.value, (_, v) => {
+    if (v === null) {
+      return null;
+    }
+    // If it's a hex string, let's add a `0x` prefix
+    if (typeof v === "object" && "value" in v) {
+      if (
+        typeof v.value === "object" &&
+        v.value !== null &&
+        "numerator" in v.value &&
+        v.value.numerator !== null &&
+        "denominator" in v.value &&
+        v.value.denominator !== null &&
+        typeof v.value.numerator === "object" &&
+        "value" in v.value.numerator &&
+        typeof v.value.denominator === "object" &&
+        "value" in v.value.denominator &&
+        typeof v.value.numerator.value === "number" &&
+        typeof v.value.denominator.value === "number"
+      ) {
+        return {
+          ...v.value,
+        };
+      }
+      return v.value;
+    }
+    return v;
+  });
+
+  function decodeHex(str: string): string {
+    return Array.from({ length: str.length / 2 }, (_, i) => {
+      return String.fromCharCode(parseInt(str.slice(i * 2, i * 2 + 2), 16));
+    }).join("");
+  }
+
+  function isAlphaNumeric(str: string): boolean {
+    for (const c of str) {
+      if (
+        !(
+          (c.charCodeAt(0) > "a".charCodeAt(0) &&
+            c.charCodeAt(0) < "z".charCodeAt(0)) ||
+          (c.charCodeAt(0) > "A".charCodeAt(0) &&
+            c.charCodeAt(0) < "Z".charCodeAt(0)) ||
+          (c.charCodeAt(0) > "0".charCodeAt(0) &&
+            c.charCodeAt(0) < "9".charCodeAt(0))
+        )
+      ) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  // Prevent infinite loops. This is a little heavy handed, but I'd rather be safe than sorry.
+  let steps = 0;
+  const MAX_STEPS = 1024;
+  // Find instances of `numerator` and `denominator` and add a comment
+  yaml.visit(document, {
+    Node(key, node) {
+      if (steps++ > MAX_STEPS) return yaml.visit.BREAK;
+      const json = node.toJSON();
+
+      if (
+        typeof json === "object" &&
+        "numerator" in json &&
+        "denominator" in json
+      ) {
+        const value = json.numerator / json.denominator;
+        node.commentBefore = ` ≈ ${value}`;
+        return yaml.visit.SKIP;
+      }
+      if (yaml.isScalar(node)) {
+        if (typeof node.value === "string" && key === "value") {
+          const bytes = decodeHex(node.value);
+          if (isAlphaNumeric(bytes)) {
+            node.comment = ` ${bytes}`;
+          }
+        }
+        return yaml.visit.SKIP;
+      }
+      if (yaml.isMap(node)) {
+        // I don't know how to fix this.
+        // But it looks like it works just fine.
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return node.items as any;
+      }
+      if (yaml.isCollection(node)) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return node.items as any;
+      }
+      return yaml.visit.SKIP;
+    },
+  });
+  return yaml.stringify(document);
+};
+
+export const renderToJSON = (datum: ParseResult | null): string => {
+  if (!datum) {
+    return "";
+  }
+
+  if ("error" in datum) {
+    return datum.error;
+  }
+
+  return JSON.stringify(
+    datum.value,
+    (_, v) => {
+      if (v === null) {
+        return null;
+      }
+      // If it's a hex string, let's add a `0x` prefix
+      if (typeof v === "object" && "value" in v) {
+        return v.value;
+      }
+      return v;
+    },
+    2
+  );
 };
