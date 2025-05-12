@@ -5,6 +5,10 @@ import { ErrorBox } from '../App';
 import { useNavigate, useParams } from 'react-router';
 import { NavBar } from '../components/nav';
 import { AnimatedSearchInput } from '../components/AnimatedSearchInput';
+import {
+  ClipboardButton,
+  LinkClipboardButton,
+} from '../components/ActionButtons';
 
 const TxViewForm = () => {
   const navigate = useNavigate();
@@ -64,7 +68,25 @@ export function TxViewPage() {
 
   const view = useMemo(() => {
     if (processedCbor.success) {
-      return <TxViewer tx={processedCbor.value} />;
+      return (
+        <div>
+          <h2 className="dark:text-white">Transaction</h2>
+          <div className="flex items-center gap-1">
+            <span className="text-xs text-gray-500 dark:text-gray-300 font-mono">
+              {processedCbor.value.hash}
+            </span>
+            <ClipboardButton
+              text={processedCbor.value.hash}
+              className="opacity-70 hover:opacity-100 dark:text-white"
+            />
+            <LinkClipboardButton
+              text={window.location.href}
+              className="opacity-70 hover:opacity-100 dark:text-white"
+            />
+          </div>
+          <TxViewer tx={processedCbor.value} />;
+        </div>
+      );
     } else if (txCbor.length === 0) {
       return (
         <div className="flex flex-col p-4 border border-gray-200 dark:border-gray-700 gap-2 dark:text-white">

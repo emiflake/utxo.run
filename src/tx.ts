@@ -2,6 +2,7 @@ import * as CML from '@dcspark/cardano-multiplatform-lib-browser';
 
 import { TransactionAmount } from './betterfrost';
 import { failure, Result, success } from './result';
+import { mapRecord } from './utils';
 
 export type TxProcessError = {
   message: string;
@@ -40,6 +41,7 @@ export type Transaction = {
   mint: TransactionAmount[];
   burn: TransactionAmount[];
   cbor: string;
+  withdrawals: Record<string, bigint>;
 };
 
 type CMLListLike<T> = {
@@ -98,6 +100,31 @@ const convertCMLMultiAsset = (
   return res;
 };
 
+type CMLMapLike<K, V> = {
+  len: () => number;
+  get: (key: K) => V;
+  keys: () => CMLListLike<K>;
+};
+
+export const convertCMLMap = <K, V>(map: CMLMapLike<K, V>): Map<K, V> => {
+  const res = new Map<K, V>();
+  for (const key of convertCMLList<K>(map.keys())) {
+    res.set(key, map.get(key));
+  }
+  return res;
+};
+
+export const convertCMLMapToRecord = <KP, K extends string, V>(
+  map: CMLMapLike<KP, V>,
+  keyConverter: (key: KP) => K,
+): Record<K, V> => {
+  const res: Record<K, V> = {} as Record<K, V>;
+  for (const key of convertCMLList<KP>(map.keys())) {
+    res[keyConverter(key)] = map.get(key);
+  }
+  return res;
+};
+
 export const processTxFromCbor = (
   txCbor: string,
 ): Result<Transaction, TxProcessError> => {
@@ -110,6 +137,15 @@ export const processTxFromCbor = (
     const inputs = convertCMLList<CML.TransactionInput>(body.inputs());
 
     const ttl = body.ttl();
+
+    const withdrawals = body.withdrawals();
+
+    const withdrawalsMap: Record<string, bigint> = withdrawals
+      ? mapRecord(
+          convertCMLMapToRecord(withdrawals, (k) => k.to_js_value()),
+          (_, v) => v ?? BigInt(0),
+        )
+      : {};
 
     const { mint, burn } = (() => {
       const m = body.mint();
@@ -177,6 +213,7 @@ export const processTxFromCbor = (
       mint,
       burn,
       cbor: cmlTx.to_cbor_hex(),
+      withdrawals: withdrawalsMap,
     };
 
     return success(transaction);

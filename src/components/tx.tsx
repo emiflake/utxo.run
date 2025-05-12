@@ -14,7 +14,7 @@ import { MonoTag, Tag } from './MiniTag';
 import { ViewDatum } from './Datum';
 
 export const ViewTransactionHash = ({ hash }: { hash: string }) => {
-  const { data: tx, isLoading } = useTxByHash(hash);
+  const { data: tx, isLoading, isError } = useTxByHash(hash);
 
   const extraData = useMemo(() => {
     if (isLoading) {
@@ -49,8 +49,25 @@ export const ViewTransactionHash = ({ hash }: { hash: string }) => {
 
   return (
     <>
-      {isLoading && <ShimmerBox />}
+      {isLoading && (
+        <div className="flex flex-col break-all border-1 border-gray-300 dark:border-gray-700 p-2 h-full">
+          <span className="dark:text-white">
+            Checking if transaction is on-chain...
+          </span>
+          <ShimmerBox />
+        </div>
+      )}
       {extraData}
+      {isError && (
+        <div className="flex flex-col break-all border-1 border-gray-300 dark:border-gray-700 p-2 h-full">
+          <span className="dark:text-white">
+            Transaction not found on-chain
+          </span>
+          <span className="dark:text-gray-300 text-gray-500 text-xs">
+            Likely this is because the transaction is not yet submitted.
+          </span>
+        </div>
+      )}
     </>
   );
 };
@@ -424,62 +441,108 @@ export const TxViewer = ({ tx }: { tx: Transaction }) => {
 
   return (
     <div className="flex flex-col p-4 border-1 border-gray-200 dark:border-gray-700 gap-2 dark:bg-gray-900">
-      <ViewTransactionHash hash={tx.hash} />
-      <div className="flex flex-initial gap-4 border-1 border-gray-400 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 dark:text-white p-2">
-        Fee: {tx.fee} lovelace
-      </div>
-      {tx.ttl && (
-        <div className="flex flex-initial gap-4 border-1 border-gray-400 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 dark:text-white p-2">
-          TTL: {tx.ttl}
-        </div>
-      )}
-      {tx.requiredSigners.length > 0 && (
-        <div className="flex flex-col gap-2 border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-2">
-          <span className="text-md text-slate-900 dark:text-white">
-            Required Signers{' '}
-            <span className="text-xs text-gray-500 dark:text-gray-300">
-              ({tx.requiredSigners.length})
-            </span>
-          </span>
-          <div className="flex flex-wrap gap-2">
-            {tx.requiredSigners.map((s) => (
-              <span
-                key={s}
-                className="bg-indigo-100 dark:bg-indigo-400/20 text-indigo-700 dark:text-indigo-200 text-xs font-mono px-3 py-1 border border-indigo-300 dark:border-indigo-300/50"
-              >
-                {s}
-              </span>
-            ))}
+      <div className="flex flex-col gap-2">
+        <div className="flex flex-row gap-2">
+          <div className="flex flex-col w-1/2">
+            <ViewTransactionHash hash={tx.hash} />
+          </div>
+          <div className="flex flex-col w-1/2 gap-2 border border-gray-300 dark:border-gray-700 p-2">
+            <h2 className="text-md text-slate-900 dark:text-white">
+              Transaction stats
+            </h2>
+            <div className="flex flex-row gap-2">
+              <MonoTag label="Fee" value={`${tx.fee} lovelace`} />
+              {tx.ttl && <MonoTag label="TTL" value={`${tx.ttl}`} />}
+            </div>
           </div>
         </div>
-      )}
+        {tx.requiredSigners.length > 0 && (
+          <div className="flex flex-col gap-2 border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-2">
+            <span className="text-md text-slate-900 dark:text-white">
+              Required Signers{' '}
+              <span className="text-xs text-gray-500 dark:text-gray-300">
+                ({tx.requiredSigners.length})
+              </span>
+            </span>
+            <div className="flex flex-wrap gap-2">
+              {tx.requiredSigners.map((s) => (
+                <span
+                  key={s}
+                  className="bg-indigo-100 dark:bg-indigo-400/20 text-indigo-700 dark:text-indigo-200 text-xs font-mono px-3 py-1 border border-indigo-300 dark:border-indigo-300/50"
+                >
+                  {s}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+        {Object.keys(tx.withdrawals).length > 0 && (
+          <div className="flex flex-col bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 gap-2 p-2">
+            <h2 className="text-md text-slate-900 dark:text-white">
+              Withdrawals{' '}
+              <span className="text-xs text-gray-500 dark:text-gray-300">
+                ({Object.keys(tx.withdrawals).length})
+              </span>
+            </h2>
+            {Object.entries(tx.withdrawals).map(([address, amount]) => (
+              <div className="flex-1 flex-col gap-2" key={address}>
+                <MonoTag label={address} value={`${amount} lovelace`} />
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
       <div className="flex flex-col lg:flex-row gap-2">
         <div className="flex flex-col lg:w-1/2 gap-2">
-          <h1 className="text-xl text-slate-900 dark:text-white">Inputs</h1>
+          <h1 className="text-xl text-slate-900 dark:text-white">
+            Inputs{' '}
+            <span className="text-xs text-gray-500 dark:text-gray-300">
+              ({tx.inputs.length})
+            </span>
+          </h1>
           {inputs}
           {referenceInputs.length > 0 && (
             <div className="flex flex-col gap-2 bg-amber-50 dark:bg-amber-50/20 p-2">
               <h1 className="text-xl text-slate-900 dark:text-white">
-                Reference Inputs
+                Reference Inputs{' '}
+                <span className="text-xs text-gray-500 dark:text-gray-300">
+                  ({referenceInputs.length})
+                </span>
               </h1>
               {referenceInputs}
             </div>
           )}
         </div>
         <div className="flex flex-col lg:w-1/2 gap-2">
-          <h1 className="text-xl text-slate-900 dark:text-white">Outputs</h1>
+          <h1 className="text-xl text-slate-900 dark:text-white">
+            Outputs{' '}
+            <span className="text-xs text-gray-500 dark:text-gray-300">
+              ({tx.outputs.length})
+            </span>
+          </h1>
           {outputs}
         </div>
       </div>
       {tx.mint.length > 0 && (
         <div className="flex flex-col gap-2 bg-blue-100 dark:bg-blue-700/40 p-2">
-          <h1 className="text-xl text-slate-900 dark:text-white">Mint</h1>
+          <h1 className="text-xl text-slate-900 dark:text-white">
+            Mint{' '}
+            <span className="text-xs text-gray-500 dark:text-gray-300">
+              ({tx.mint.length})
+            </span>
+          </h1>
           <ViewValue value={tx.mint} />
         </div>
       )}
       {tx.burn.length > 0 && (
         <div className="flex flex-col gap-2 bg-rose-50 dark:bg-red-700/30 p-2">
-          <h1 className="text-xl text-slate-900 dark:text-white">Burn</h1>
+          <h1 className="text-xl text-slate-900 dark:text-white">
+            Burn{' '}
+            <span className="text-xs text-gray-500 dark:text-gray-300">
+              ({tx.burn.length})
+            </span>
+          </h1>
           <ViewValue value={tx.burn} />
         </div>
       )}

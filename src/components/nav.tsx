@@ -20,7 +20,7 @@ type SearchType = 'hash' | 'cbor' | 'address';
 
 // TODO: We could support more types of search if we are clever enough
 const classifySearch = (searchValue: string): SearchType => {
-  if (searchValue.startsWith('addr')) {
+  if (searchValue.startsWith('addr') || searchValue.startsWith('stake')) {
     return 'address';
   }
   if (searchValue.length === 64) {

@@ -1,7 +1,7 @@
-import Dexie, { type EntityTable } from "dexie";
-import * as z from "zod";
-import { RawDatum } from "./raw_datum";
-import * as yaml from "yaml";
+import Dexie, { type EntityTable } from 'dexie';
+import * as z from 'zod';
+import { RawDatum } from './raw_datum';
+import * as yaml from 'yaml';
 
 export interface PlutusJsonEntity {
   id: number;
@@ -11,12 +11,12 @@ export interface PlutusJsonEntity {
   description: string;
 }
 
-export const db = new Dexie("fine-tx") as Dexie & {
-  plutusJson: EntityTable<PlutusJsonEntity, "id">;
+export const db = new Dexie('fine-tx') as Dexie & {
+  plutusJson: EntityTable<PlutusJsonEntity, 'id'>;
 };
 
 db.version(1).stores({
-  plutusJson: "++id, rawJson, schema, title, description",
+  plutusJson: '++id, rawJson, schema, title, description',
 });
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -38,11 +38,11 @@ export const baseSchemaTypeSchema = z.object({});
 export type SchemaType = z.infer<typeof baseSchemaTypeSchema> &
   (
     | {
-        dataType: "list";
+        dataType: 'list';
         items: SchemaType[] | SchemaType;
       }
     | {
-        dataType: "constructor";
+        dataType: 'constructor';
         index: number;
         fields: SchemaType[];
       }
@@ -51,10 +51,10 @@ export type SchemaType = z.infer<typeof baseSchemaTypeSchema> &
         title?: string;
       }
     | {
-        dataType: "bytes";
+        dataType: 'bytes';
       }
     | {
-        dataType: "integer";
+        dataType: 'integer';
       }
     | object
     | {
@@ -63,11 +63,11 @@ export type SchemaType = z.infer<typeof baseSchemaTypeSchema> &
   );
 
 export const listSchema: z.ZodType<
-  SchemaType & { dataType: "list"; items: SchemaType[] | SchemaType }
+  SchemaType & { dataType: 'list'; items: SchemaType[] | SchemaType }
 > = z.object({
   title: z.string().optional(),
   description: z.string().optional(),
-  dataType: z.literal("list"),
+  dataType: z.literal('list'),
   items: z.lazy(() => z.union([schemaTypeSchema.array(), schemaTypeSchema])),
 });
 
@@ -75,19 +75,19 @@ export type ListSchema = z.infer<typeof listSchema>;
 
 export const constructorSchema: z.ZodType<SchemaType> =
   baseSchemaTypeSchema.extend({
-    dataType: z.literal("constructor"),
+    dataType: z.literal('constructor'),
     index: z.number(),
     fields: z.lazy(() => schemaTypeSchema.array()),
   });
 
 export const bytesSchema: z.ZodType<SchemaType> = baseSchemaTypeSchema.extend({
-  dataType: z.literal("bytes"),
+  dataType: z.literal('bytes'),
 });
 
 export const integerSchema: z.ZodType<SchemaType> = baseSchemaTypeSchema.extend(
   {
-    dataType: z.literal("integer"),
-  }
+    dataType: z.literal('integer'),
+  },
 );
 
 export const refSchema: z.ZodType<SchemaType> = baseSchemaTypeSchema.extend({
@@ -153,7 +153,7 @@ export type PlutusJson = z.infer<typeof plutusJsonSchema>;
 // Using schema to parse datums
 
 export const distillDefinitions = (
-  plutusJson: PlutusJson[]
+  plutusJson: PlutusJson[],
 ): Record<string, Definition> => {
   return plutusJson.reduce((acc, plutusJson) => {
     return {
@@ -164,17 +164,17 @@ export const distillDefinitions = (
 };
 
 export const createParsingContext = (
-  plutusJson: PlutusJsonEntity[]
+  plutusJson: PlutusJsonEntity[],
 ): DatumParsingContext => {
   const defs = distillDefinitions(plutusJson.map((b) => b.schema));
   const listSchemas: ListSchema[] = Object.values(defs).filter(
-    (d): d is ListSchema => "dataType" in d && d.dataType === "list"
+    (d): d is ListSchema => 'dataType' in d && d.dataType === 'list',
   );
 
   const listSchemasWithAnyOf: ListSchema[] = Object.values(defs)
-    .filter((d) => "anyOf" in d)
+    .filter((d) => 'anyOf' in d)
     .flatMap((d) => d.anyOf)
-    .filter((d): d is ListSchema => "dataType" in d && d.dataType === "list");
+    .filter((d): d is ListSchema => 'dataType' in d && d.dataType === 'list');
 
   return {
     listSchemas: [...listSchemas, ...listSchemasWithAnyOf],
@@ -203,14 +203,14 @@ export type DatumParsingContext = {
  * This function drops the `#/definitions/` prefix and replaces the `~1` with `/`.
  */
 const globalRefToLocal = (ref: string): string => {
-  return ref.replace("#/definitions/", "").replace(/~1/g, "/");
+  return ref.replace('#/definitions/', '').replace(/~1/g, '/');
 };
 
 export const resolveRef = (
   ctx: DatumParsingContext,
-  schema: { $ref: string } | SchemaType
+  schema: { $ref: string } | SchemaType,
 ): SchemaType => {
-  if ("$ref" in schema) {
+  if ('$ref' in schema) {
     const localRef = globalRefToLocal(schema.$ref);
     const def = ctx.definitions[localRef];
     if (!def) {
@@ -230,10 +230,10 @@ export const resolveRef = (
 export const matches = (
   ctx: DatumParsingContext,
   datum: RawDatum,
-  schema: SchemaType
+  schema: SchemaType,
 ): boolean => {
   // Can we drop this? We can if we ensure that all $refs are resolved before we get here.
-  if ("$ref" in schema) {
+  if ('$ref' in schema) {
     const def = ctx.definitions[globalRefToLocal(schema.$ref)];
     if (!def) {
       return false;
@@ -241,21 +241,21 @@ export const matches = (
     return matches(ctx, datum, def);
   }
 
-  if (typeof datum === "string") {
-    return "dataType" in schema && schema.dataType === "bytes";
-  } else if (typeof datum === "number") {
-    return "dataType" in schema && schema.dataType === "integer";
+  if (typeof datum === 'string') {
+    return 'dataType' in schema && schema.dataType === 'bytes';
+  } else if (typeof datum === 'number') {
+    return 'dataType' in schema && schema.dataType === 'integer';
   } else if (Array.isArray(datum)) {
-    return "dataType" in schema && schema.dataType === "list";
+    return 'dataType' in schema && schema.dataType === 'list';
   } else if (
-    typeof datum === "object" &&
-    "dataType" in schema &&
-    schema.dataType === "constructor"
+    typeof datum === 'object' &&
+    'dataType' in schema &&
+    schema.dataType === 'constructor'
   ) {
     // Technically, we are too lenient here, but unless there is ambiguity, it won't matter.
     return true;
   } else if (
-    "anyOf" in schema &&
+    'anyOf' in schema &&
     schema.anyOf.some((s) => matches(ctx, datum, s))
   ) {
     // Same as above.
@@ -274,28 +274,28 @@ export const matches = (
 export const enrichListWithSchema = (
   ctx: DatumParsingContext,
   datum: RawDatum[],
-  schema: ListSchema & { items: SchemaType[] }
+  schema: ListSchema & { items: SchemaType[] },
 ): Record<string, unknown> => {
   return Object.fromEntries(
     datum.map((item, i) => {
       const parsed = parseAgainstSchema(item, ctx);
       const valueToShow = parsed;
-      if (schema.items[i] && "title" in schema.items[i]) {
+      if (schema.items[i] && 'title' in schema.items[i]) {
         return [schema.items[i].title, valueToShow];
       }
       return [i.toString(), valueToShow];
-    })
+    }),
   );
 };
 
 export const parseAgainstSchema = (
   datum: RawDatum,
-  context: DatumParsingContext
+  context: DatumParsingContext,
 ): ParseResult => {
-  if (typeof datum === "string") {
-    return { value: datum, typeName: "string" };
-  } else if (typeof datum === "number") {
-    return { value: datum, typeName: "integer" };
+  if (typeof datum === 'string') {
+    return { value: datum, typeName: 'string' };
+  } else if (typeof datum === 'number') {
+    return { value: datum, typeName: 'integer' };
   } else if (Array.isArray(datum)) {
     // Handle `list` types in schema
 
@@ -304,10 +304,10 @@ export const parseAgainstSchema = (
     const sameLengthListSchemas = context.listSchemas.filter(
       (schema): schema is ListSchema & { items: SchemaType[] } => {
         return Array.isArray(schema.items) && schema.items.length === length;
-      }
+      },
     );
     if (sameLengthListSchemas.length === 0) {
-      return { value: datum, typeName: "list" };
+      return { value: datum, typeName: 'list' };
     }
 
     const fullyMatchingListSchemas = sameLengthListSchemas.filter(
@@ -318,7 +318,7 @@ export const parseAgainstSchema = (
           const match = matches(context, datumField, resolvedItem);
           return match;
         });
-      }
+      },
     );
 
     if (fullyMatchingListSchemas.length > 0) {
@@ -326,13 +326,13 @@ export const parseAgainstSchema = (
 
       return {
         value: enrichListWithSchema(context, datum, choice),
-        typeName: "list",
+        typeName: 'list',
       };
     }
 
-    return { value: datum, typeName: "list" };
-  } else if (typeof datum === "object" && datum !== null) {
-    if ("tag" in datum && "fields" in datum && Array.isArray(datum.fields)) {
+    return { value: datum, typeName: 'list' };
+  } else if (typeof datum === 'object' && datum !== null) {
+    if ('tag' in datum && 'fields' in datum && Array.isArray(datum.fields)) {
       const parsed = datum.fields.map((field) => {
         const parsed = parseAgainstSchema(field, context);
 
@@ -340,12 +340,12 @@ export const parseAgainstSchema = (
       });
       return {
         value: { tag: datum.tag, fields: parsed },
-        typeName: "constructor",
+        typeName: 'constructor',
       };
     }
   }
 
-  return { value: datum, typeName: "unknown" };
+  return { value: datum, typeName: 'unknown' };
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -353,10 +353,10 @@ export const parseAgainstSchema = (
 
 export const renderToYaml = (datum: ParseResult | null): string => {
   if (!datum) {
-    return "";
+    return '';
   }
 
-  if ("error" in datum) {
+  if ('error' in datum) {
     return datum.error;
   }
 
@@ -365,20 +365,20 @@ export const renderToYaml = (datum: ParseResult | null): string => {
       return null;
     }
     // If it's a hex string, let's add a `0x` prefix
-    if (typeof v === "object" && "value" in v) {
+    if (typeof v === 'object' && 'value' in v) {
       if (
-        typeof v.value === "object" &&
+        typeof v.value === 'object' &&
         v.value !== null &&
-        "numerator" in v.value &&
+        'numerator' in v.value &&
         v.value.numerator !== null &&
-        "denominator" in v.value &&
+        'denominator' in v.value &&
         v.value.denominator !== null &&
-        typeof v.value.numerator === "object" &&
-        "value" in v.value.numerator &&
-        typeof v.value.denominator === "object" &&
-        "value" in v.value.denominator &&
-        typeof v.value.numerator.value === "number" &&
-        typeof v.value.denominator.value === "number"
+        typeof v.value.numerator === 'object' &&
+        'value' in v.value.numerator &&
+        typeof v.value.denominator === 'object' &&
+        'value' in v.value.denominator &&
+        typeof v.value.numerator.value === 'number' &&
+        typeof v.value.denominator.value === 'number'
       ) {
         return {
           ...v.value,
@@ -392,19 +392,19 @@ export const renderToYaml = (datum: ParseResult | null): string => {
   function decodeHex(str: string): string {
     return Array.from({ length: str.length / 2 }, (_, i) => {
       return String.fromCharCode(parseInt(str.slice(i * 2, i * 2 + 2), 16));
-    }).join("");
+    }).join('');
   }
 
   function isAlphaNumeric(str: string): boolean {
     for (const c of str) {
       if (
         !(
-          (c.charCodeAt(0) > "a".charCodeAt(0) &&
-            c.charCodeAt(0) < "z".charCodeAt(0)) ||
-          (c.charCodeAt(0) > "A".charCodeAt(0) &&
-            c.charCodeAt(0) < "Z".charCodeAt(0)) ||
-          (c.charCodeAt(0) > "0".charCodeAt(0) &&
-            c.charCodeAt(0) < "9".charCodeAt(0))
+          (c.charCodeAt(0) > 'a'.charCodeAt(0) &&
+            c.charCodeAt(0) < 'z'.charCodeAt(0)) ||
+          (c.charCodeAt(0) > 'A'.charCodeAt(0) &&
+            c.charCodeAt(0) < 'Z'.charCodeAt(0)) ||
+          (c.charCodeAt(0) > '0'.charCodeAt(0) &&
+            c.charCodeAt(0) < '9'.charCodeAt(0))
         )
       ) {
         return false;
@@ -423,16 +423,16 @@ export const renderToYaml = (datum: ParseResult | null): string => {
       const json = node.toJSON();
 
       if (
-        typeof json === "object" &&
-        "numerator" in json &&
-        "denominator" in json
+        typeof json === 'object' &&
+        'numerator' in json &&
+        'denominator' in json
       ) {
         const value = json.numerator / json.denominator;
         node.commentBefore = ` ≈ ${value}`;
         return yaml.visit.SKIP;
       }
       if (yaml.isScalar(node)) {
-        if (typeof node.value === "string" && key === "value") {
+        if (typeof node.value === 'string' && key === 'value') {
           const bytes = decodeHex(node.value);
           if (isAlphaNumeric(bytes)) {
             node.comment = ` ${bytes}`;
@@ -458,10 +458,10 @@ export const renderToYaml = (datum: ParseResult | null): string => {
 
 export const renderToJSON = (datum: ParseResult | null): string => {
   if (!datum) {
-    return "";
+    return '';
   }
 
-  if ("error" in datum) {
+  if ('error' in datum) {
     return datum.error;
   }
 
@@ -472,11 +472,11 @@ export const renderToJSON = (datum: ParseResult | null): string => {
         return null;
       }
       // If it's a hex string, let's add a `0x` prefix
-      if (typeof v === "object" && "value" in v) {
+      if (typeof v === 'object' && 'value' in v) {
         return v.value;
       }
       return v;
     },
-    2
+    2,
   );
 };
