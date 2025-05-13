@@ -6,7 +6,12 @@ import {
 import { SpentTag } from './MiniTag';
 
 import { useMemo } from 'react';
-import { Transaction, TransactionInput, TransactionOutput } from '../tx';
+import {
+  LegacyRedeemer,
+  Transaction,
+  TransactionInput,
+  TransactionOutput,
+} from '../tx';
 import { Link } from 'react-router';
 import { scriptInfoByAddress, useRegistry } from '../registry';
 import { shorten } from '../utils';
@@ -52,9 +57,12 @@ export const ViewTransactionHash = ({ hash }: { hash: string }) => {
       {isLoading && (
         <div className="flex flex-col break-all border-1 border-gray-300 dark:border-gray-700 p-2 h-full">
           <span className="dark:text-white">
-            Checking if transaction is on-chain...
+            Transaction not found on-chain
           </span>
-          <ShimmerBox />
+          <span className="dark:text-gray-300 flex items-center gap-1 text-gray-500 text-xs">
+            <LoadingSpinner />
+            Still checking...
+          </span>
         </div>
       )}
       {extraData}
@@ -195,8 +203,10 @@ export const SeparatorLine = () => {
 
 export const ViewTransactionInput = ({
   input,
+  redeemer,
 }: {
   input: TransactionInput;
+  redeemer?: LegacyRedeemer;
 }) => {
   const { data: txUtxos, isLoading } = useTxUtxosByHash(input.transactionId);
 
@@ -254,10 +264,28 @@ export const ViewTransactionInput = ({
       {inputUtxo?.inline_datum && (
         <>
           <SeparatorLine />
+          <span className="text-sm dark:text-gray-400 text-gray-600">
+            Datum
+          </span>
           <ViewDatum datum={inputUtxo.inline_datum} />
         </>
       )}
+      {redeemer && (
+        <>
+          <SeparatorLine />
+          <span className="text-sm dark:text-gray-400 text-gray-600">
+            Redeemer
+          </span>
+          <ViewDatum datum={redeemer.data} />
+        </>
+      )}
     </div>
+  );
+};
+
+export const LoadingSpinner = () => {
+  return (
+    <div className="inline-block animate-spin duration-200 rounded-full h-3 w-3 border-2 border-gray-300 border-t-gray-600 dark:border-gray-600 dark:border-t-gray-300"></div>
   );
 };
 
@@ -382,6 +410,9 @@ export const ViewTransactionOutput = ({
       {output.cbor_datum && (
         <>
           <SeparatorLine />
+          <span className="text-sm dark:text-gray-400 text-gray-600">
+            Datum
+          </span>
           <ViewDatum datum={output.cbor_datum} />
         </>
       )}
@@ -428,10 +459,55 @@ export const GenericInfo = ({
   );
 };
 
+export const ViewWithdrawal = ({
+  address,
+  amount,
+  redeemer,
+}: {
+  address: string;
+  amount: bigint;
+  redeemer: LegacyRedeemer | undefined;
+}) => {
+  return (
+    <div
+      className="inline-flex flex-col p-2 border-1 border-gray-400 dark:border-gray-600 gap-2 bg-gray-50 dark:bg-gray-800 break-all"
+      key={address}
+    >
+      <span className="text-xs text-gray-500 dark:text-gray-300">
+        <Link
+          className="hover:underline text-indigo-500 dark:text-indigo-300"
+          to={`/address/${address}`}
+        >
+          {address}
+        </Link>{' '}
+        is withdrawing {amount} lovelace
+      </span>
+      {redeemer?.data && typeof redeemer?.data === 'string' && (
+        <>
+          <SeparatorLine />
+          <span className="text-sm dark:text-gray-400 text-gray-600">
+            Redeemer
+          </span>
+          <ViewDatum datum={redeemer.data} />
+        </>
+      )}
+    </div>
+  );
+};
+
 export const TxViewer = ({ tx }: { tx: Transaction }) => {
-  const inputs = tx.inputs.map((input) => (
-    <ViewTransactionInput key={inputKey(input)} input={input} />
-  ));
+  const inputs = tx.inputs.map((input, index) => {
+    const redeemer = tx.legacyRedeemers.find(
+      (r) => r.index === index && r.tag === 'Spend',
+    );
+    return (
+      <ViewTransactionInput
+        key={inputKey(input)}
+        input={input}
+        redeemer={redeemer}
+      />
+    );
+  });
   const outputs = tx.outputs.map((output) => (
     <ViewTransactionOutput key={outputKey(output)} output={output} />
   ));
@@ -477,19 +553,24 @@ export const TxViewer = ({ tx }: { tx: Transaction }) => {
           </div>
         )}
         {Object.keys(tx.withdrawals).length > 0 && (
-          <div className="flex flex-col bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 gap-2 p-2">
+          <>
             <h2 className="text-md text-slate-900 dark:text-white">
               Withdrawals{' '}
               <span className="text-xs text-gray-500 dark:text-gray-300">
                 ({Object.keys(tx.withdrawals).length})
               </span>
             </h2>
-            {Object.entries(tx.withdrawals).map(([address, amount]) => (
-              <div className="flex-1 flex-col gap-2" key={address}>
-                <MonoTag label={address} value={`${amount} lovelace`} />
-              </div>
+            {Object.entries(tx.withdrawals).map(([address, amount], i) => (
+              <ViewWithdrawal
+                key={address}
+                address={address}
+                amount={amount}
+                redeemer={tx.legacyRedeemers.find(
+                  (r) => r.tag === 'Reward' && r.index === i,
+                )}
+              />
             ))}
-          </div>
+          </>
         )}
       </div>
 

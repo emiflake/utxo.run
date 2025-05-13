@@ -71,7 +71,7 @@ export function TxViewPage() {
       return (
         <div>
           <h2 className="dark:text-white">Transaction</h2>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-2">
             <span className="text-xs text-gray-500 dark:text-gray-300 font-mono">
               {processedCbor.value.hash}
             </span>
@@ -103,7 +103,7 @@ export function TxViewPage() {
       <NavBar />
 
       <div className="flex-1 flex flex-col sm:flex-row">
-        <main className="flex-1 flex flex-col gap-2">
+        <main className="flex-1 flex flex-col">
           {!processedCbor.success && <TxViewForm />}
           {view}
         </main>

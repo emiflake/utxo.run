@@ -71,7 +71,7 @@ export const SubmittedTxPage = () => {
       <NavBar />
 
       <div className="flex-1 flex flex-col sm:flex-row">
-        <main className="flex-1 flex flex-col gap-2">
+        <main className="flex-1 flex flex-col">
           {txData && (
             <>
               <h2 className="dark:text-white">Transaction</h2>

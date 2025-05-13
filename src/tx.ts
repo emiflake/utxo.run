@@ -30,6 +30,13 @@ export type TransactionOutput = {
   cbor_datum?: string;
 };
 
+export type LegacyRedeemer = {
+  tag: 'Spend' | 'Mint' | 'Reward';
+  index: number;
+  data: string;
+  ex_units?: { mem: number; steps: number };
+};
+
 export type Transaction = {
   inputs: TransactionInput[];
   outputs: TransactionOutput[];
@@ -42,14 +49,16 @@ export type Transaction = {
   burn: TransactionAmount[];
   cbor: string;
   withdrawals: Record<string, bigint>;
+  redeemersMap: Record<string, CML.RedeemerVal | undefined>;
+  legacyRedeemers: LegacyRedeemer[];
 };
 
-type CMLListLike<T> = {
+export type CMLListLike<T> = {
   len: () => number;
   get: (index: number) => T;
 };
 
-const convertCMLList = function <T>(list: CMLListLike<T>): T[] {
+export const convertCMLList = function <T>(list: CMLListLike<T>): T[] {
   return Array(list.len())
     .fill(0)
     .map((_, i) => list.get(i));
@@ -100,7 +109,7 @@ const convertCMLMultiAsset = (
   return res;
 };
 
-type CMLMapLike<K, V> = {
+export type CMLMapLike<K, V> = {
   len: () => number;
   get: (key: K) => V;
   keys: () => CMLListLike<K>;
@@ -137,6 +146,27 @@ export const processTxFromCbor = (
     const inputs = convertCMLList<CML.TransactionInput>(body.inputs());
 
     const ttl = body.ttl();
+
+    const witnessSet = cmlTx.witness_set();
+    const redeemers = witnessSet.redeemers();
+
+    const legacyRedeemersList = redeemers?.as_arr_legacy_redeemer();
+    const legacyRedeemers = legacyRedeemersList
+      ? convertCMLList<CML.LegacyRedeemer>(legacyRedeemersList).map(
+          (legacyRedeemer) => {
+            return {
+              ...legacyRedeemer.to_js_value(),
+              data: legacyRedeemer.data().to_cbor_hex(),
+            };
+          },
+        )
+      : [];
+
+    const redeemersAsMap = redeemers?.as_map_redeemer_key_to_redeemer_val();
+    const redeemersMap: Record<string, CML.RedeemerVal | undefined> =
+      redeemersAsMap
+        ? convertCMLMapToRecord(redeemersAsMap, (k) => k.to_js_value())
+        : {};
 
     const withdrawals = body.withdrawals();
 
@@ -214,6 +244,9 @@ export const processTxFromCbor = (
       burn,
       cbor: cmlTx.to_cbor_hex(),
       withdrawals: withdrawalsMap,
+      // TODO: Support this properly
+      redeemersMap,
+      legacyRedeemers,
     };
 
     return success(transaction);
