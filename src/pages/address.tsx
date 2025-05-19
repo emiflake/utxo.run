@@ -3,14 +3,18 @@ import { NavBar } from '../components/nav';
 import { useUtxosByAddress } from '../betterfrost';
 import { useParams } from 'react-router';
 import { ShimmerBox, ViewTransactionOutput, ViewUnit } from '../components/tx';
-import { TransactionOutput } from '../tx';
+import { addressInfo, TransactionOutput } from '../tx';
 import { ErrorBox } from '../App';
-import {
-  ClipboardButton,
-  LinkClipboardButton,
-} from '../components/ActionButtons';
 import { scriptInfoByAddress, useRegistry } from '../registry';
 import { ScriptInfo } from '../components/ScriptInfo';
+import { CopyBody } from '../components/layout/CopyBody';
+import { Box } from '../components/layout/Box';
+import { MonoTag } from '../components/MiniTag';
+import CommandPalette from '../components/CommandPalette';
+
+const outputKey = (output: TransactionOutput) => {
+  return `${output.tx_hash}-${output.index}`;
+};
 
 export const AddressPage = () => {
   const params = useParams();
@@ -18,6 +22,10 @@ export const AddressPage = () => {
   const address = useMemo(() => {
     return params.address ?? '';
   }, [params]);
+
+  const addrInfo = useMemo(() => {
+    return addressInfo(address);
+  }, [address]);
 
   const addressUrl = useMemo(() => {
     return `${window.location.href}`;
@@ -74,25 +82,30 @@ export const AddressPage = () => {
     <div className="min-h-screen flex flex-col p-1 gap-5 dark:bg-gray-900">
       <NavBar />
 
+      <CommandPalette />
+
       <div className="flex-1 flex flex-col sm:flex-row">
         <main className="flex-1 flex flex-col gap-2">
-          <h2 className="dark:text-white">Address</h2>
-
-          <div className="flex items-center gap-1">
-            <span className="text-xs text-gray-500 dark:text-gray-300 font-mono">
-              {address}
-            </span>
-            <ClipboardButton
-              text={address}
-              className="opacity-70 hover:opacity-100 dark:text-white"
-            />
-            <LinkClipboardButton
-              text={addressUrl}
-              className="opacity-70 hover:opacity-100 dark:text-white"
-            />
-          </div>
-
+          <CopyBody title="Address" value={address} url={addressUrl} />
           {scriptInfo && <ScriptInfo script={scriptInfo} />}
+
+          <Box>
+            <span className="text-xs dark:text-gray-300">Address info</span>
+            <div className="flex flex-wrap gap-2 p-2">
+              {addrInfo.paymentCredential && (
+                <MonoTag
+                  label="Payment credential"
+                  value={addrInfo.paymentCredential}
+                />
+              )}
+              {addrInfo.stakingCredential && (
+                <MonoTag
+                  label="Staking credential"
+                  value={addrInfo.stakingCredential}
+                />
+              )}
+            </div>
+          </Box>
 
           <div className="flex flex-col lg:flex-row lg:flex-1 gap-2">
             {isLoading && <ShimmerBox />}
@@ -108,9 +121,8 @@ export const AddressPage = () => {
                   )}
                   {processedUtxos?.map((utxo) => (
                     <ViewTransactionOutput
-                      key={utxo.tx_hash}
+                      key={outputKey(utxo)}
                       output={utxo}
-                      showTxHash={true}
                     />
                   ))}
                 </div>

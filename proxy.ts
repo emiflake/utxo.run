@@ -37,7 +37,8 @@ const config = convict({
   ogmiosUrl: {
     doc: "URL for the Ogmios service",
     format: String,
-    default: "http://0.0.0.0:1337",
+    // TODO: Don't use string null
+    default: "null",
     env: "VITE_OGMIOS_URL",
   },
   registryUrl: {
@@ -57,27 +58,36 @@ app.use(logger());
 // Proxy routes
 app.all("/betterfrost/*", async (c) => {
   const targetUrl = c.req.path.replace("/betterfrost", "");
+  console.log(`Proxying to ${config.get("betterfrostUrl")}${targetUrl}`);
   return proxy(`${config.get("betterfrostUrl")}${targetUrl}`, {
     ...c.req,
   });
 });
 
-app.all("/ogmios/*", async (c) => {
-  const targetUrl = c.req.path.replace("/ogmios", "");
+if (config.get("ogmiosUrl") !== "null") {
+  app.all("/ogmios/*", async (c) => {
+    const targetUrl = c.req.path.replace("/ogmios", "");
 
-  return proxy(`${config.get("ogmiosUrl")}${targetUrl}`, {
-    ...c.req,
+    return proxy(`${config.get("ogmiosUrl")}${targetUrl}`, {
+      ...c.req,
+    });
   });
-});
 
-app.all("/ogmios/:path", async (c) => {
-  console.log(`Proxying to ${config.get("ogmiosUrl")}/${c.req.param("path")}`);
-  return proxy(`${config.get("ogmiosUrl")}/${c.req.param("path")}`, {
-    headers: {
-      ...c.req.header(),
-    },
+  app.all("/ogmios/:path", async (c) => {
+    console.log(
+      `Proxying to ${config.get("ogmiosUrl")}/${c.req.param("path")}`
+    );
+    return proxy(`${config.get("ogmiosUrl")}/${c.req.param("path")}`, {
+      headers: {
+        ...c.req.header(),
+      },
+    });
   });
-});
+} else {
+  app.all("/ogmios/*", async (c) => {
+    return c.json({ error: "OGMIOS_URL not set. Not available!" });
+  });
+}
 
 app.get("/registry-proxy/:path", async (c) => {
   return proxy(`${config.get("registryUrl")}/${c.req.param("path")}`);
@@ -104,7 +114,9 @@ console.log(`
     Proxy started on http://0.0.0.0:${config.get("port")} 🚀
 
     Requests for /betterfrost    => ${config.get("betterfrostUrl")}
-    Requests for /ogmios         => ${config.get("ogmiosUrl")}
+    Requests for /ogmios         => ${
+      config.get("ogmiosUrl") === "null" ? "Not set" : config.get("ogmiosUrl")
+    }
     Requests for /registry-proxy => ${config.get("registryUrl")}
     Requests for assets          => ${path.join(config.get("distDir"))}
     Any other request            => ${path.join(

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useTheme } from '../context/Theme';
 import { MoonIcon, SunIcon } from './Icons';
 
 interface ToggleProps {
@@ -76,33 +76,6 @@ export function Toggle({
     </div>
   );
 }
-
-const useTheme = () => {
-  const [isDarkMode, setIsDarkMode] = useState(
-    localStorage.theme === 'dark' ||
-      (!('theme' in localStorage) &&
-        window.matchMedia('(prefers-color-scheme: dark)').matches),
-  );
-
-  useEffect(() => {
-    document.documentElement.classList.toggle('dark', isDarkMode);
-  }, [isDarkMode]);
-
-  const setDarkMode = useCallback((mode: boolean) => {
-    setIsDarkMode(mode);
-
-    document.documentElement.classList.toggle('dark', mode);
-
-    localStorage.theme = mode ? 'dark' : 'light';
-  }, []);
-
-  const toggleDarkMode = useCallback(() => {
-    const newMode = !isDarkMode;
-    setDarkMode(newMode);
-  }, [isDarkMode, setDarkMode]);
-
-  return { isDarkMode, setDarkMode, toggleDarkMode };
-};
 
 // Example of a theme toggle that could be used in the app
 export function ThemeToggle() {

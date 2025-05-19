@@ -11,6 +11,7 @@ import { ErrorBox } from '../App';
 import { Link } from 'react-router';
 import { ScriptTypeTag } from '../components/MiniTag';
 import { shorten } from '../utils';
+import CommandPalette from '../components/CommandPalette';
 
 // Column helper for TanStack Table
 const columnHelper = createColumnHelper<ScriptInfo>();
@@ -58,6 +59,8 @@ export const RegistryPage = () => {
   return (
     <div className="min-h-screen flex flex-col p-1 gap-5 dark:bg-gray-900">
       <NavBar />
+
+      <CommandPalette />
 
       <div className="flex-1 flex flex-col sm:flex-row">
         <main className="flex-1 flex flex-col gap-2">

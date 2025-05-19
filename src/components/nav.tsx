@@ -15,19 +15,7 @@ import {
   SearchIcon,
   SettingsIcon,
 } from './Icons';
-
-type SearchType = 'hash' | 'cbor' | 'address';
-
-// TODO: We could support more types of search if we are clever enough
-const classifySearch = (searchValue: string): SearchType => {
-  if (searchValue.startsWith('addr') || searchValue.startsWith('stake')) {
-    return 'address';
-  }
-  if (searchValue.length === 64) {
-    return 'hash';
-  }
-  return 'cbor';
-};
+import { classifySearch } from '../search';
 
 export function SearchBar() {
   const [searchValue, setSearchValue] = useState('');
@@ -40,8 +28,10 @@ export function SearchBar() {
       navigate(`/submitted-tx/${searchValue}`);
     } else if (searchType === 'address') {
       navigate(`/address/${searchValue}`);
-    } else {
+    } else if (searchType === 'cbor') {
       navigate(`/tx/${searchValue}`);
+    } else {
+      return;
     }
   }, [searchValue, navigate]);
 

@@ -66,7 +66,7 @@ export const ScriptInfo = ({ script }: { script: Registry.ScriptInfo }) => {
   if (!script) return null;
 
   return (
-    <div className="border border-gray-200 dark:border-gray-700 p-4 mb-2 bg-white dark:bg-gray-800">
+    <div className="border border-gray-200 dark:border-gray-700 p-4 bg-white dark:bg-gray-800">
       <div className="flex items-center justify-between mb-1">
         <div className="flex items-center gap-1">
           <ScriptTypeTag scriptType={script.type} />

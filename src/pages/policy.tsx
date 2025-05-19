@@ -2,10 +2,6 @@ import { useParams } from 'react-router';
 import { NavBar } from '../components/nav';
 import { useMemo } from 'react';
 import {
-  ClipboardButton,
-  LinkClipboardButton,
-} from '../components/ActionButtons';
-import {
   AssetHistory,
   AssetTransaction,
   useAssetHistory,
@@ -16,6 +12,8 @@ import { ErrorBox } from '../App';
 import { MiniTransactionCard } from '../components/MiniTx';
 import { useRegistry } from '../registry';
 import { ScriptInfo } from '../components/ScriptInfo';
+import { CopyBody } from '../components/layout/CopyBody';
+import CommandPalette from '../components/CommandPalette';
 
 const ViewAssetTransactions = ({
   assetTransactions,
@@ -148,25 +146,13 @@ export const PolicyPage = () => {
 
   return (
     <div className="min-h-screen flex flex-col p-1 gap-5 dark:bg-gray-900">
-      <NavBar></NavBar>
+      <NavBar />
+
+      <CommandPalette />
 
       <div className="flex-1 flex flex-col sm:flex-row">
-        <main className="flex-1 flex flex-col gap-2 dark:text-white">
-          <h2 className="dark:text-white">Policy</h2>
-
-          <div className="flex items-center gap-1">
-            <span className="text-xs text-gray-500 dark:text-gray-300 font-mono">
-              {policy}
-            </span>
-            <ClipboardButton
-              text={policy}
-              className="opacity-70 hover:opacity-100 dark:text-white"
-            />
-            <LinkClipboardButton
-              text={policyUrl}
-              className="opacity-70 hover:opacity-100 dark:text-white"
-            />
-          </div>
+        <main className="flex-1 flex flex-col gap-1 dark:text-white">
+          <CopyBody title="Policy" value={policy} url={policyUrl} />
 
           {/* Token information, if available */}
           {registryQuery.data && relevantScript && (

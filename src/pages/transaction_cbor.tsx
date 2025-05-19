@@ -5,10 +5,8 @@ import { ErrorBox } from '../App';
 import { useNavigate, useParams } from 'react-router';
 import { NavBar } from '../components/nav';
 import { AnimatedSearchInput } from '../components/AnimatedSearchInput';
-import {
-  ClipboardButton,
-  LinkClipboardButton,
-} from '../components/ActionButtons';
+import { CopyBody } from '../components/layout/CopyBody';
+import CommandPalette from '../components/CommandPalette';
 
 const TxViewForm = () => {
   const navigate = useNavigate();
@@ -70,20 +68,11 @@ export function TxViewPage() {
     if (processedCbor.success) {
       return (
         <div>
-          <h2 className="dark:text-white">Transaction</h2>
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-gray-500 dark:text-gray-300 font-mono">
-              {processedCbor.value.hash}
-            </span>
-            <ClipboardButton
-              text={processedCbor.value.hash}
-              className="opacity-70 hover:opacity-100 dark:text-white"
-            />
-            <LinkClipboardButton
-              text={window.location.href}
-              className="opacity-70 hover:opacity-100 dark:text-white"
-            />
-          </div>
+          <CopyBody
+            title="Transaction"
+            value={processedCbor.value.hash}
+            url={window.location.href}
+          />
           <TxViewer tx={processedCbor.value} />;
         </div>
       );
@@ -101,6 +90,8 @@ export function TxViewPage() {
   return (
     <div className="min-h-screen flex flex-col p-1 gap-5 dark:bg-gray-900">
       <NavBar />
+
+      <CommandPalette />
 
       <div className="flex-1 flex flex-col sm:flex-row">
         <main className="flex-1 flex flex-col">

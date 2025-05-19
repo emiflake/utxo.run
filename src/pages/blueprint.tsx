@@ -6,6 +6,7 @@ import * as z from 'zod';
 import { BlueprintIcon, FileIcon, TrashIcon } from '../components/Icons';
 import { MiniTag } from '../components/MiniTag';
 import { ViewDatum } from '../components/Datum';
+import CommandPalette from '../components/CommandPalette';
 
 // Component for testing datums against blueprints
 const DatumTester = () => {
@@ -147,6 +148,8 @@ export const BlueprintPage = () => {
   return (
     <div className="min-h-screen flex flex-col p-1 gap-5 dark:bg-gray-900">
       <NavBar />
+
+      <CommandPalette />
 
       <div className="flex-1 flex flex-col sm:flex-row">
         <main className="flex-1 flex flex-col gap-2">

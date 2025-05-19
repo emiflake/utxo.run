@@ -36,10 +36,10 @@ export const BurnTag = () => {
   );
 };
 
-export const SpentTag = () => {
+export const RefTag = ({ text = 'Spent' }: { text?: string }) => {
   return (
     <MiniTag
-      text="Spent"
+      text={text}
       className="bg-red-100 text-red-800 dark:bg-red-900/70 dark:text-red-200 flex items-center gap-1"
     >
       <ExternalLinkIcon />

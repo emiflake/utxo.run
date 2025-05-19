@@ -4,9 +4,10 @@ import { MiniTransactionCard } from '../components/MiniTx';
 import { NavBar } from '../components/nav';
 import { ShimmerBox } from '../components/tx';
 import { useMemo } from 'react';
-import { useQueryLedgerStateUtxos } from '../ogmios';
+import { useOgmiosHealth, useQueryLedgerStateUtxos } from '../ogmios';
 import { Paginate } from '../components/Pagination';
 import { shorten } from '../utils';
+import CommandPalette from '../components/CommandPalette';
 
 export const ViewBlock = ({ block }: { block: Block }) => {
   const formattedDate = block?.time
@@ -106,9 +107,13 @@ export const ViewUtxos = () => {
 };
 
 export const ChainPage = () => {
+  const ogmiosHealthQuery = useOgmiosHealth();
+
   return (
     <div className="min-h-screen flex flex-col p-1 gap-5 dark:bg-gray-900">
       <NavBar />
+
+      <CommandPalette />
 
       <div className="flex-1 flex flex-col sm:flex-row">
         <main className="flex-1 flex flex-col gap-2">
@@ -135,8 +140,13 @@ export const ChainPage = () => {
               <ViewLatestBlock />
             </div>
 
-            <div className="flex flex-col gap-2 lg:w-1/2">
-              <ViewUtxos />
+            <div className="flex flex-col gap-2 lg:w-1/2 border border-gray-200 dark:border-gray-700 p-4 dark:text-white">
+              {ogmiosHealthQuery.data && <ViewUtxos />}
+              {!ogmiosHealthQuery.data && (
+                <div className="flex flex-col gap-2">
+                  Ogmios is not available! Other pages will still work.
+                </div>
+              )}
             </div>
           </div>
         </main>

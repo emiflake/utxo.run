@@ -3,10 +3,11 @@ import {
   useTxByHash,
   useTxUtxosByHash,
 } from '../betterfrost';
-import { SpentTag } from './MiniTag';
+import { RefTag } from './MiniTag';
 
 import { useMemo } from 'react';
 import {
+  addressInfo,
   LegacyRedeemer,
   Transaction,
   TransactionInput,
@@ -17,15 +18,28 @@ import { scriptInfoByAddress, useRegistry } from '../registry';
 import { shorten } from '../utils';
 import { MonoTag, Tag } from './MiniTag';
 import { ViewDatum } from './Datum';
+import { Box, BoxHeader } from './layout/Box';
+import { ThreeDots } from './layout/ThreeDots';
+import * as CML from '@dcspark/cardano-multiplatform-lib-browser';
+import * as Betterfrost from '../betterfrost';
 
-export const ViewTransactionHash = ({ hash }: { hash: string }) => {
+export const ViewTransactionLiveness = ({ hash }: { hash: string }) => {
   const { data: tx, isLoading, isError } = useTxByHash(hash);
 
-  const extraData = useMemo(() => {
-    if (isLoading) {
-      return null;
-    } else if (tx) {
-      return (
+  return (
+    <>
+      {isLoading && (
+        <div className="flex flex-col break-all border-1 border-gray-300 dark:border-gray-700 p-2 h-full">
+          <span className="dark:text-white">
+            Transaction not found on-chain
+          </span>
+          <span className="dark:text-gray-300 flex items-center gap-1 text-gray-500 text-xs">
+            <LoadingSpinner />
+            Still checking...
+          </span>
+        </div>
+      )}
+      {!isLoading && tx && (
         <div className="flex flex-col break-all border-1 border-gray-200 dark:border-gray-700 p-2 bg-green-100 dark:bg-green-900">
           <div className="flex flex-1">
             <span className="dark:text-white">Transaction is on-chain!</span>
@@ -48,24 +62,7 @@ export const ViewTransactionHash = ({ hash }: { hash: string }) => {
             </li>
           </ul>
         </div>
-      );
-    }
-  }, [tx, isLoading]);
-
-  return (
-    <>
-      {isLoading && (
-        <div className="flex flex-col break-all border-1 border-gray-300 dark:border-gray-700 p-2 h-full">
-          <span className="dark:text-white">
-            Transaction not found on-chain
-          </span>
-          <span className="dark:text-gray-300 flex items-center gap-1 text-gray-500 text-xs">
-            <LoadingSpinner />
-            Still checking...
-          </span>
-        </div>
       )}
-      {extraData}
       {isError && (
         <div className="flex flex-col break-all border-1 border-gray-300 dark:border-gray-700 p-2 h-full">
           <span className="dark:text-white">
@@ -77,17 +74,6 @@ export const ViewTransactionHash = ({ hash }: { hash: string }) => {
         </div>
       )}
     </>
-  );
-};
-
-export const ViewTxRef = ({ txref }: { txref: string }) => {
-  return (
-    <Link
-      to={`/submitted-tx/${txref}`}
-      className="text-indigo-500 dark:text-indigo-300 font-mono md:hover:underline break-all"
-    >
-      {txref}
-    </Link>
   );
 };
 
@@ -146,7 +132,7 @@ export const ViewUnit = ({
   ]);
 
   return (
-    <div className="flex flex-row justify-between gap-4 border-3 border-dotted border-gray-400 dark:border-gray-600 p-2 bg-white/50 dark:bg-gray-800/50 break-all">
+    <div className="flex flex-row justify-between gap-4 border-1 shadow-xs bg-gray-50/20 dark:bg-gray-900/20 border-gray-200 dark:border-gray-600 p-2 break-all">
       <span className="text-sm self-center">
         {unit === 'lovelace' ? (
           <span className="font-mono dark:text-white">{resolvedUnitName}</span>
@@ -179,9 +165,14 @@ export const ViewUnit = ({
 };
 
 export const ViewValue = ({ value }: { value: TransactionAmount[] }) => {
-  return value.map((v) => {
-    return <ViewUnit key={v.unit} unit={v.unit} quantity={v.quantity} />;
-  });
+  return (
+    <>
+      <span className="text-sm dark:text-gray-400 text-gray-600">Value</span>
+      {value.map((v) => {
+        return <ViewUnit key={v.unit} unit={v.unit} quantity={v.quantity} />;
+      })}
+    </>
+  );
 };
 
 export const ViewAddress = ({ address }: { address: string }) => {
@@ -195,9 +186,102 @@ export const ViewAddress = ({ address }: { address: string }) => {
   );
 };
 
-export const SeparatorLine = () => {
+export const InputExtraInfo = ({
+  utxo,
+  input,
+}: {
+  utxo: Betterfrost.TransactionOutput;
+  input: TransactionInput;
+}) => {
+  const addressInfo = useMemo(() => {
+    if (!utxo.address) {
+      return;
+    }
+    const cmlAddress = CML.Address.from_bech32(utxo.address);
+    return {
+      paymentCredential: cmlAddress.payment_cred()?.to_cbor_hex(),
+      stakingCredential: cmlAddress.staking_cred()?.to_cbor_hex(),
+    };
+  }, [utxo.address]);
+
   return (
-    <hr className="w-1/2 h-0.25 mx-auto my-1 bg-gray-200 border-0 rounded-sm dark:bg-gray-700" />
+    <div className="flex flex-col min-w-0 p-2 space-y-2 text-xs">
+      {/* Header */}
+      <div className="pb-1 mb-1 border-b border-zinc-200 dark:border-zinc-700">
+        <h3 className="text-xs font-medium text-zinc-700 dark:text-zinc-300">
+          UTXO Info
+        </h3>
+      </div>
+
+      {input.transactionId && (
+        <div className="flex items-center">
+          <span className="text-[10px] text-zinc-400 dark:text-zinc-500 w-24">
+            Transaction ID
+          </span>
+          <Link
+            to={`/submitted-tx/${input.transactionId}`}
+            className="hover:opacity-80 transition-opacity"
+            title="Click to view transaction"
+          >
+            <RefTag text={input.transactionId} />
+          </Link>
+        </div>
+      )}
+
+      {/* Output Index */}
+      {utxo.output_index !== null && (
+        <div className="flex items-center">
+          <span className="text-[10px] text-zinc-400 dark:text-zinc-500 w-24">
+            Output Index
+          </span>
+          <span className="font-mono text-zinc-700 dark:text-zinc-300">
+            {utxo.output_index}
+          </span>
+        </div>
+      )}
+
+      {/* Script Reference */}
+      {utxo.reference_script_hash && (
+        <>
+          <div className="flex flex-col">
+            <span className="text-[10px] text-zinc-400 dark:text-zinc-500">
+              Script Reference
+            </span>
+            <span className="font-mono text-[10px] text-zinc-700 dark:text-zinc-300 break-all select-all mt-0.5">
+              {utxo.reference_script_hash}
+            </span>
+          </div>
+        </>
+      )}
+
+      {/* Payment Credential */}
+      {addressInfo?.paymentCredential && (
+        <>
+          <div className="flex items-center">
+            <span className="text-[10px] text-zinc-400 dark:text-zinc-500 w-24">
+              Payment Credential
+            </span>
+            <span className="font-mono text-zinc-700 dark:text-zinc-300">
+              {addressInfo.paymentCredential}
+            </span>
+          </div>
+        </>
+      )}
+
+      {/* Staking Credential */}
+      {addressInfo?.stakingCredential && (
+        <>
+          <div className="flex items-center">
+            <span className="text-[10px] text-zinc-400 dark:text-zinc-500 w-24">
+              Staking Credential
+            </span>
+            <span className="font-mono text-zinc-700 dark:text-zinc-300">
+              {addressInfo.stakingCredential}
+            </span>
+          </div>
+        </>
+      )}
+    </div>
   );
 };
 
@@ -228,15 +312,23 @@ export const ViewTransactionInput = ({
   }, [registryQuery.data, inputUtxo?.address]);
 
   return (
-    <div className="inline-flex flex-col p-2 border-1 border-gray-400 dark:border-gray-600 gap-2 bg-gray-50 dark:bg-gray-800 break-all">
-      <h2 className="dark:text-white">Input</h2>
-      <div className="flex flex-1 gap-2">
-        <MonoTag
-          label="Ref"
-          href={`/submitted-tx/${input.transactionId}`}
-          value={`${input.transactionId}#${input.outputIndex}`}
-        />
-      </div>
+    <Box>
+      <BoxHeader title={`Input`}>
+        {inputUtxo && (
+          <ThreeDots>
+            <InputExtraInfo utxo={inputUtxo} input={input} />
+          </ThreeDots>
+        )}
+
+        <Link
+          to={`/submitted-tx/${input.transactionId}`}
+          className="hover:opacity-80 transition-opacity"
+          title="Click to view transaction"
+        >
+          <RefTag text="" />
+        </Link>
+      </BoxHeader>
+
       {inputUtxo?.address && (
         <div className="flex flex-1 gap-2">
           <Tag
@@ -257,13 +349,11 @@ export const ViewTransactionInput = ({
       )}
       {inputUtxo?.amount !== undefined && inputUtxo?.amount !== null && (
         <>
-          <SeparatorLine />
           <ViewValue value={inputUtxo.amount} />
         </>
       )}
       {inputUtxo?.inline_datum && (
         <>
-          <SeparatorLine />
           <span className="text-sm dark:text-gray-400 text-gray-600">
             Datum
           </span>
@@ -272,14 +362,13 @@ export const ViewTransactionInput = ({
       )}
       {redeemer && (
         <>
-          <SeparatorLine />
           <span className="text-sm dark:text-gray-400 text-gray-600">
             Redeemer
           </span>
           <ViewDatum datum={redeemer.data} />
         </>
       )}
-    </div>
+    </Box>
   );
 };
 
@@ -324,6 +413,95 @@ const outputKey = (output: TransactionOutput) => {
   return `out-${output.address}#${output.index}`;
 };
 
+export const OutputExtraInfo = ({
+  utxo,
+}: {
+  utxo: TransactionOutput;
+}) => {
+  const addrInfo = useMemo(() => {
+    if (!utxo.address) {
+      return;
+    }
+    return addressInfo(utxo.address);
+  }, [utxo.address]);
+
+  return (
+    <div className="flex flex-col min-w-0 p-2 space-y-2 text-xs">
+      {/* Header */}
+      <div className="pb-1 mb-1 border-b border-zinc-200 dark:border-zinc-700">
+        <h3 className="text-xs font-medium text-zinc-700 dark:text-zinc-300">
+          UTXO Info
+        </h3>
+      </div>
+
+      {utxo.tx_hash && (
+        <div className="flex items-center">
+          <span className="text-[10px] text-zinc-400 dark:text-zinc-500 w-24">
+            Transaction ID
+          </span>
+          <span className="font-mono text-zinc-700 dark:text-zinc-300">
+            <Link
+              to={`/submitted-tx/${utxo.tx_hash}`}
+              className="hover:opacity-80 transition-opacity"
+              title="Click to view transaction"
+            >
+              <RefTag text={utxo.tx_hash} />
+            </Link>
+          </span>
+        </div>
+      )}
+
+      {/* Output Index */}
+      {utxo.index !== null && (
+        <div className="flex items-center">
+          <span className="text-[10px] text-zinc-400 dark:text-zinc-500 w-24">
+            Output Index
+          </span>
+          <span className="font-mono text-zinc-700 dark:text-zinc-300">
+            {utxo.index}
+          </span>
+        </div>
+      )}
+
+      {/* Script Reference */}
+      {utxo.script_ref && (
+        <div className="flex flex-col">
+          <span className="text-[10px] text-zinc-400 dark:text-zinc-500">
+            Script Reference
+          </span>
+          <span className="font-mono text-[10px] text-zinc-700 dark:text-zinc-300 break-all select-all mt-0.5">
+            {utxo.script_ref.hash}
+          </span>
+        </div>
+      )}
+
+      {/* Payment Credential */}
+      {addrInfo?.paymentCredential && (
+        <div className="flex items-center">
+          <span className="text-[10px] text-zinc-400 dark:text-zinc-500 w-24">
+            Payment Credential
+          </span>
+          <span className="font-mono text-zinc-700 dark:text-zinc-300">
+            {addrInfo.paymentCredential}
+          </span>
+        </div>
+      )}
+
+      {/* Staking Credential */}
+      {addrInfo?.stakingCredential && (
+        <div className="flex items-center">
+          <span className="text-[10px] text-zinc-400 dark:text-zinc-500 w-24">
+            Staking Credential
+          </span>
+          <span className="font-mono text-zinc-700 dark:text-zinc-300">
+            {addrInfo.stakingCredential}
+          </span>
+        </div>
+      )}
+    </div>
+  );
+};
+
 /**
  * A component that displays a transaction output.
  *
@@ -339,10 +517,8 @@ const outputKey = (output: TransactionOutput) => {
  */
 export const ViewTransactionOutput = ({
   output,
-  showTxHash = false,
 }: {
   output: TransactionOutput;
-  showTxHash?: boolean;
 }) => {
   const utxosByHashQuery = useTxUtxosByHash(output.tx_hash);
 
@@ -364,19 +540,21 @@ export const ViewTransactionOutput = ({
   }, [registryQuery.data, output.address]);
 
   return (
-    <div className="inline-flex flex-col p-2 border-1 border-gray-400 dark:border-gray-600 gap-2 bg-gray-50 dark:bg-gray-800 break-all">
-      <div className="flex items-center gap-2">
-        <h2 className="dark:text-white">Output</h2>
+    <Box>
+      <BoxHeader title="Output">
+        <ThreeDots>
+          <OutputExtraInfo utxo={output} />
+        </ThreeDots>
         {consumedByTx && (
           <Link
             to={`/submitted-tx/${consumedByTx}`}
             className="hover:opacity-80 transition-opacity"
             title="Click to view transaction that spent this output"
           >
-            <SpentTag />
+            <RefTag text="Spent" />
           </Link>
         )}
-      </div>
+      </BoxHeader>
       <div className="flex flex-1 gap-2">
         <Tag
           label="Address"
@@ -398,25 +576,16 @@ export const ViewTransactionOutput = ({
           <MonoTag label="Script Ref" value={output.script_ref.hash} />
         </div>
       )}
-      {showTxHash && (
-        <MonoTag
-          label="Ref"
-          value={`${output.tx_hash}#${output.index}`}
-          href={`/submitted-tx/${output.tx_hash}`}
-        />
-      )}
-      <SeparatorLine />
       <ViewValue value={output.amount} />
       {output.cbor_datum && (
         <>
-          <SeparatorLine />
           <span className="text-sm dark:text-gray-400 text-gray-600">
             Datum
           </span>
           <ViewDatum datum={output.cbor_datum} />
         </>
       )}
-    </div>
+    </Box>
   );
 };
 
@@ -484,7 +653,6 @@ export const ViewWithdrawal = ({
       </span>
       {redeemer?.data && typeof redeemer?.data === 'string' && (
         <>
-          <SeparatorLine />
           <span className="text-sm dark:text-gray-400 text-gray-600">
             Redeemer
           </span>
@@ -520,7 +688,7 @@ export const TxViewer = ({ tx }: { tx: Transaction }) => {
       <div className="flex flex-col gap-2">
         <div className="flex flex-row gap-2">
           <div className="flex flex-col w-1/2">
-            <ViewTransactionHash hash={tx.hash} />
+            <ViewTransactionLiveness hash={tx.hash} />
           </div>
           <div className="flex flex-col w-1/2 gap-2 border border-gray-300 dark:border-gray-700 p-2">
             <h2 className="text-md text-slate-900 dark:text-white">

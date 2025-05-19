@@ -5,10 +5,8 @@ import { useTxDataByHash } from '../betterfrost';
 import { ErrorBox } from '../App';
 import { ShimmerBox, TxViewer } from '../components/tx';
 import { AnimatedSearchInput } from '../components/AnimatedSearchInput';
-import {
-  ClipboardButton,
-  LinkClipboardButton,
-} from '../components/ActionButtons';
+import { CopyBody } from '../components/layout/CopyBody';
+import CommandPalette from '../components/CommandPalette';
 
 const TxHashForm = () => {
   const navigate = useNavigate();
@@ -70,25 +68,12 @@ export const SubmittedTxPage = () => {
     <div className="min-h-screen flex flex-col p-1 gap-5 dark:bg-gray-900">
       <NavBar />
 
+      <CommandPalette />
+
       <div className="flex-1 flex flex-col sm:flex-row">
-        <main className="flex-1 flex flex-col">
+        <main className="flex-1 flex flex-col gap-1">
           {txData && (
-            <>
-              <h2 className="dark:text-white">Transaction</h2>
-              <div className="flex items-center gap-1">
-                <span className="text-xs text-gray-500 dark:text-gray-300 font-mono">
-                  {txHash}
-                </span>
-                <ClipboardButton
-                  text={txHash}
-                  className="opacity-70 hover:opacity-100 dark:text-white"
-                />
-                <LinkClipboardButton
-                  text={txUrl}
-                  className="opacity-70 hover:opacity-100 dark:text-white"
-                />
-              </div>
-            </>
+            <CopyBody title="Transaction" value={txHash} url={txUrl} />
           )}
 
           {!txData && <TxHashForm />}
