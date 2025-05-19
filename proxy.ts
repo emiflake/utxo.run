@@ -8,125 +8,125 @@
  * This implementation uses Hono for a more structured approach to routing.
  */
 
-import { Hono } from "hono";
-import { proxy } from "hono/proxy";
-import { logger } from "hono/logger";
-import { serveStatic } from "hono/bun";
-import * as path from "path";
-import convict from "convict";
+import { Hono } from 'hono';
+import { proxy } from 'hono/proxy';
+import { logger } from 'hono/logger';
+import { serveStatic } from 'hono/bun';
+import * as path from 'path';
+import convict from 'convict';
 
 const config = convict({
   port: {
-    doc: "The port to bind the proxy server to",
-    format: "port",
+    doc: 'The port to bind the proxy server to',
+    format: 'port',
     default: 5173,
-    env: "PORT",
+    env: 'PORT',
   },
   distDir: {
-    doc: "Directory containing built static files",
+    doc: 'Directory containing built static files',
     format: String,
-    default: "./dist",
-    env: "PROXY_DIST_DIR",
+    default: './dist',
+    env: 'PROXY_DIST_DIR',
   },
   betterfrostUrl: {
-    doc: "URL for the Betterfrost API",
+    doc: 'URL for the Betterfrost API',
     format: String,
-    default: "http://0.0.0.0:3001",
-    env: "VITE_BETTERFROST_URL",
+    default: 'http://0.0.0.0:3001',
+    env: 'VITE_BETTERFROST_URL',
   },
   ogmiosUrl: {
-    doc: "URL for the Ogmios service",
+    doc: 'URL for the Ogmios service',
     format: String,
     // TODO: Don't use string null
-    default: "null",
-    env: "VITE_OGMIOS_URL",
+    default: 'null',
+    env: 'VITE_OGMIOS_URL',
   },
   registryUrl: {
-    doc: "URL for the token registry service",
+    doc: 'URL for the token registry service',
     format: String,
-    default: "https://public.liqwid.finance/v4",
-    env: "VITE_REGISTRY_URL",
+    default: 'https://public.liqwid.finance/v4',
+    env: 'VITE_REGISTRY_URL',
   },
 });
 
-config.validate({ allowed: "strict" });
+config.validate({ allowed: 'strict' });
 
 const app = new Hono();
 
 app.use(logger());
 
 // Proxy routes
-app.all("/betterfrost/*", async (c) => {
-  const targetUrl = c.req.path.replace("/betterfrost", "");
-  console.log(`Proxying to ${config.get("betterfrostUrl")}${targetUrl}`);
-  return proxy(`${config.get("betterfrostUrl")}${targetUrl}`, {
+app.all('/betterfrost/*', async (c) => {
+  const targetUrl = c.req.path.replace('/betterfrost', '');
+  console.log(`Proxying to ${config.get('betterfrostUrl')}${targetUrl}`);
+  return proxy(`${config.get('betterfrostUrl')}${targetUrl}`, {
     ...c.req,
   });
 });
 
-if (config.get("ogmiosUrl") !== "null") {
-  app.all("/ogmios/*", async (c) => {
-    const targetUrl = c.req.path.replace("/ogmios", "");
+if (config.get('ogmiosUrl') !== 'null') {
+  app.all('/ogmios/*', async (c) => {
+    const targetUrl = c.req.path.replace('/ogmios', '');
 
-    return proxy(`${config.get("ogmiosUrl")}${targetUrl}`, {
+    return proxy(`${config.get('ogmiosUrl')}${targetUrl}`, {
       ...c.req,
     });
   });
 
-  app.all("/ogmios/:path", async (c) => {
+  app.all('/ogmios/:path', async (c) => {
     console.log(
-      `Proxying to ${config.get("ogmiosUrl")}/${c.req.param("path")}`
+      `Proxying to ${config.get('ogmiosUrl')}/${c.req.param('path')}`,
     );
-    return proxy(`${config.get("ogmiosUrl")}/${c.req.param("path")}`, {
+    return proxy(`${config.get('ogmiosUrl')}/${c.req.param('path')}`, {
       headers: {
         ...c.req.header(),
       },
     });
   });
 } else {
-  app.all("/ogmios/*", async (c) => {
-    return c.json({ error: "OGMIOS_URL not set. Not available!" });
+  app.all('/ogmios/*', async (c) => {
+    return c.json({ error: 'OGMIOS_URL not set. Not available!' });
   });
 }
 
-app.get("/registry-proxy/:path", async (c) => {
-  return proxy(`${config.get("registryUrl")}/${c.req.param("path")}`);
+app.get('/registry-proxy/:path', async (c) => {
+  return proxy(`${config.get('registryUrl')}/${c.req.param('path')}`);
 });
 
-app.get("/assets/*", serveStatic({ root: config.get("distDir") }));
+app.get('/assets/*', serveStatic({ root: config.get('distDir') }));
 
-app.use(":file.svg", serveStatic({ root: config.get("distDir") }));
-app.use(":file.png", serveStatic({ root: config.get("distDir") }));
-app.use(":file.jpg", serveStatic({ root: config.get("distDir") }));
-app.use(":file.ico", serveStatic({ root: config.get("distDir") }));
-app.use(":file.json", serveStatic({ root: config.get("distDir") }));
-app.use(":file.js", serveStatic({ root: config.get("distDir") }));
-app.use(":file.css", serveStatic({ root: config.get("distDir") }));
+app.use(':file.svg', serveStatic({ root: config.get('distDir') }));
+app.use(':file.png', serveStatic({ root: config.get('distDir') }));
+app.use(':file.jpg', serveStatic({ root: config.get('distDir') }));
+app.use(':file.ico', serveStatic({ root: config.get('distDir') }));
+app.use(':file.json', serveStatic({ root: config.get('distDir') }));
+app.use(':file.js', serveStatic({ root: config.get('distDir') }));
+app.use(':file.css', serveStatic({ root: config.get('distDir') }));
 
 // // SPA fallback - must be last as it's the catch-all
-app.get("*", async (c) => {
-  const file = Bun.file(path.join(config.get("distDir"), "/index.html"));
+app.get('*', async (c) => {
+  const file = Bun.file(path.join(config.get('distDir'), '/index.html'));
   const content = await file.text();
   return c.html(content);
 });
 
 console.log(`
-    Proxy started on http://0.0.0.0:${config.get("port")} 🚀
+    Proxy started on http://0.0.0.0:${config.get('port')} 🚀
 
-    Requests for /betterfrost    => ${config.get("betterfrostUrl")}
+    Requests for /betterfrost    => ${config.get('betterfrostUrl')}
     Requests for /ogmios         => ${
-      config.get("ogmiosUrl") === "null" ? "Not set" : config.get("ogmiosUrl")
+      config.get('ogmiosUrl') === 'null' ? 'Not set' : config.get('ogmiosUrl')
     }
-    Requests for /registry-proxy => ${config.get("registryUrl")}
-    Requests for assets          => ${path.join(config.get("distDir"))}
+    Requests for /registry-proxy => ${config.get('registryUrl')}
+    Requests for assets          => ${path.join(config.get('distDir'))}
     Any other request            => ${path.join(
-      config.get("distDir"),
-      "/index.html"
+      config.get('distDir'),
+      '/index.html',
     )}
 `);
 
 // Start the server
 export default {
-  port: config.get("port"),
+  port: config.get('port'),
   fetch: app.fetch,
 };

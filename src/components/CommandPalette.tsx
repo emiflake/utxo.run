@@ -166,7 +166,7 @@ const CommandPalette = ({
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [open, selected, query, commands, navigate]);
+  }, [open, selected, query, theme, commands, navigate]);
 
   if (!open) return null;
 
