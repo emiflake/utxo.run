@@ -1,12 +1,15 @@
 import { useCallback, useMemo, useState } from 'react';
 import { processTxFromCbor } from '../tx';
 import { TxViewer } from '../components/tx';
-import { ErrorBox } from '../App';
 import { useNavigate, useParams } from 'react-router';
 import { NavBar } from '../components/nav';
 import { AnimatedSearchInput } from '../components/AnimatedSearchInput';
 import { CopyBody } from '../components/layout/CopyBody';
 import CommandPalette from '../components/CommandPalette';
+import { MainLayout } from '../components/layout/Main';
+import { Box } from '../components/layout/Box';
+import { ErrorBox } from '../App';
+import { KeyboardShortcut } from '../components/KeyboardShortcut';
 
 const TxViewForm = () => {
   const navigate = useNavigate();
@@ -64,43 +67,39 @@ export function TxViewPage() {
     return processTxFromCbor(txCbor);
   }, [txCbor]);
 
-  const view = useMemo(() => {
-    if (processedCbor.success) {
-      return (
-        <div>
-          <CopyBody
-            title="Transaction"
-            value={processedCbor.value.hash}
-            url={window.location.href}
-          />
-          <TxViewer tx={processedCbor.value} />;
-        </div>
-      );
-    } else if (txCbor.length === 0) {
-      return (
-        <div className="flex flex-col p-4 border border-gray-200 dark:border-gray-700 gap-2 dark:text-white">
-          Please enter a CBOR transaction to view it!
-        </div>
-      );
-    } else {
-      return <ErrorBox message={processedCbor.error.message} />;
-    }
-  }, [txCbor, processedCbor]);
-
   return (
     <div className="min-h-screen flex flex-col p-1 gap-5 dark:bg-gray-900">
       <NavBar />
 
       <CommandPalette />
 
-      <div className="flex-1 flex flex-col sm:flex-row">
-        <main className="flex-1 flex flex-col">
-          {!processedCbor.success && <TxViewForm />}
-          {view}
-        </main>
-        <aside className="order-first md:w-16 lg:w-32"></aside>
-        <aside className="md:w-16 lg:w-32"></aside>
-      </div>
+      <MainLayout>
+        {!processedCbor.success && (
+          <>
+            <TxViewForm />
+            <Box>
+              Please enter a valid CBOR transaction to view it!
+              <span className="text-xs text-gray-500 dark:text-gray-400">
+                Tip: you can also paste it directly in the search bar. Or use{' '}
+                <KeyboardShortcut>Ctrl + K</KeyboardShortcut>.
+              </span>
+            </Box>
+            {txCbor.length > 0 && processedCbor.error && (
+              <ErrorBox message={processedCbor.error.message} />
+            )}
+          </>
+        )}
+        {processedCbor.success && (
+          <div>
+            <CopyBody
+              title="Transaction"
+              value={processedCbor.value.hash}
+              url={window.location.href}
+            />
+            <TxViewer tx={processedCbor.value} />;
+          </div>
+        )}
+      </MainLayout>
       <footer className=""></footer>
     </div>
   );

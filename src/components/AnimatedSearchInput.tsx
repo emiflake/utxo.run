@@ -6,6 +6,7 @@ interface AnimatedSearchInputProps {
   onSubmit: (e: FormEvent) => void;
   placeholder?: string;
   id?: string;
+  ref?: React.RefObject<HTMLInputElement | null>;
   name?: string;
   type?: string;
   title?: string;
@@ -20,6 +21,7 @@ export function AnimatedSearchInput({
   onSubmit,
   placeholder = 'Search...',
   id,
+  ref,
   name,
   type = 'text',
   title,
@@ -57,6 +59,7 @@ export function AnimatedSearchInput({
             relative z-10 bg-white dark:bg-gray-800 dark:text-white
             hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-[inset_0_1px_2px_rgba(0,0,0,0.03)] dark:hover:shadow-[inset_0_1px_2px_rgba(255,255,255,0.01)] focus:shadow-[inset_0_1px_2px_rgba(0,0,0,0.03)] dark:focus:shadow-[inset_0_1px_2px_rgba(255,255,255,0.01)] ${inputClassName}
           `}
+          ref={ref}
         />
       </div>
       <button

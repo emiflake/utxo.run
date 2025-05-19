@@ -14,6 +14,7 @@ import { useRegistry } from '../registry';
 import { ScriptInfo } from '../components/ScriptInfo';
 import { CopyBody } from '../components/layout/CopyBody';
 import CommandPalette from '../components/CommandPalette';
+import { MainLayout } from '../components/layout/Main';
 
 const ViewAssetTransactions = ({
   assetTransactions,
@@ -150,35 +151,31 @@ export const PolicyPage = () => {
 
       <CommandPalette />
 
-      <div className="flex-1 flex flex-col sm:flex-row">
-        <main className="flex-1 flex flex-col gap-1 dark:text-white">
-          <CopyBody title="Policy" value={policy} url={policyUrl} />
+      <MainLayout>
+        <CopyBody title="Policy" value={policy} url={policyUrl} />
 
-          {/* Token information, if available */}
-          {registryQuery.data && relevantScript && (
-            <ScriptInfo script={relevantScript} />
-          )}
+        {/* Token information, if available */}
+        {registryQuery.data && relevantScript && (
+          <ScriptInfo script={relevantScript} />
+        )}
 
-          <div className="flex flex-col lg:flex-row lg:flex-1 gap-2">
-            <div className="flex flex-col lg:w-1/2 gap-2 border-1 border-gray-200 dark:border-gray-700 p-4 dark:text-white">
-              <ViewAssetTransactions
-                assetTransactions={assetTransactions}
-                isLoading={isLoadingTransactions}
-                isError={isErrorTransactions}
-              />
-            </div>
-            <div className="flex flex-col lg:w-1/2 gap-2 border-1 border-gray-200 dark:border-gray-700 p-4 dark:text-white">
-              <ViewAssetHistory
-                assetHistory={assetHistory}
-                isLoading={isLoading}
-                isError={isError}
-              />
-            </div>
+        <div className="flex flex-col lg:flex-row lg:flex-1 gap-2">
+          <div className="flex flex-col lg:w-1/2 gap-2 border-1 border-gray-200 dark:border-gray-700 p-4 dark:text-white">
+            <ViewAssetTransactions
+              assetTransactions={assetTransactions}
+              isLoading={isLoadingTransactions}
+              isError={isErrorTransactions}
+            />
           </div>
-        </main>
-        <aside className="order-first md:w-16 lg:w-32"></aside>
-        <aside className="md:w-16 lg:w-32"></aside>
-      </div>
+          <div className="flex flex-col lg:w-1/2 gap-2 border-1 border-gray-200 dark:border-gray-700 p-4 dark:text-white">
+            <ViewAssetHistory
+              assetHistory={assetHistory}
+              isLoading={isLoading}
+              isError={isError}
+            />
+          </div>
+        </div>
+      </MainLayout>
       <footer className="bg-gray-100 dark:bg-gray-800"></footer>
     </div>
   );
