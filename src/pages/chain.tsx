@@ -4,9 +4,11 @@ import { MiniTransactionCard } from '../components/MiniTx';
 import { NavBar } from '../components/nav';
 import { ShimmerBox } from '../components/tx';
 import { useMemo } from 'react';
-import { useQueryLedgerStateUtxos } from '../ogmios';
+import { useOgmiosHealth, useQueryLedgerStateUtxos } from '../ogmios';
 import { Paginate } from '../components/Pagination';
 import { shorten } from '../utils';
+import CommandPalette from '../components/CommandPalette';
+import { MainLayout } from '../components/layout/Main';
 
 export const ViewBlock = ({ block }: { block: Block }) => {
   const formattedDate = block?.time
@@ -106,43 +108,48 @@ export const ViewUtxos = () => {
 };
 
 export const ChainPage = () => {
+  const ogmiosHealthQuery = useOgmiosHealth();
+
   return (
     <div className="min-h-screen flex flex-col p-1 gap-5 dark:bg-gray-900">
       <NavBar />
 
-      <div className="flex-1 flex flex-col sm:flex-row">
-        <main className="flex-1 flex flex-col gap-2">
-          <h2 className="dark:text-white">Chain explorer</h2>
+      <CommandPalette />
 
-          <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 mb-4">
-            <p className="text-sm text-yellow-700 dark:text-yellow-300">
-              <span className="font-medium">Note:</span> This page is
-              experimental and may not work as expected. Namely, it fetches
-              UTXOs from the ledger state through ogmios and may not succeed in
-              cases where ogmios struggles to provide a large number of UTXOs.
-            </p>
+      <MainLayout>
+        <h2 className="dark:text-white">Chain explorer</h2>
+
+        <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 mb-4">
+          <p className="text-sm text-yellow-700 dark:text-yellow-300">
+            <span className="font-medium">Note:</span> This page is experimental
+            and may not work as expected. Namely, it fetches UTXOs from the
+            ledger state through ogmios and may not succeed in cases where
+            ogmios struggles to provide a large number of UTXOs.
+          </p>
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <span className="text-xs text-gray-500 dark:text-gray-400">
+            Running against betterfrost {betterfrostURL}
+          </span>
+        </div>
+
+        <div className="flex flex-col lg:flex-row lg:flex-1 gap-2">
+          <div className="flex flex-col gap-2 lg:w-1/2 border dotted border-gray-200 dark:border-gray-700 p-4 dark:text-white">
+            <p className="text-md dark:text-white">Latest block</p>
+            <ViewLatestBlock />
           </div>
 
-          <div className="flex flex-col gap-2">
-            <span className="text-xs text-gray-500 dark:text-gray-400">
-              Running against betterfrost {betterfrostURL}
-            </span>
+          <div className="flex flex-col gap-2 lg:w-1/2 border border-gray-200 dark:border-gray-700 p-4 dark:text-white">
+            {ogmiosHealthQuery.data && <ViewUtxos />}
+            {!ogmiosHealthQuery.data && (
+              <div className="flex flex-col gap-2">
+                Ogmios is not available! Other pages will still work.
+              </div>
+            )}
           </div>
-
-          <div className="flex flex-col lg:flex-row lg:flex-1 gap-2">
-            <div className="flex flex-col gap-2 lg:w-1/2 border dotted border-gray-200 dark:border-gray-700 p-4 dark:text-white">
-              <p className="text-md dark:text-white">Latest block</p>
-              <ViewLatestBlock />
-            </div>
-
-            <div className="flex flex-col gap-2 lg:w-1/2">
-              <ViewUtxos />
-            </div>
-          </div>
-        </main>
-        <aside className="order-first md:w-16 lg:w-32"></aside>
-        <aside className="md:w-16 lg:w-32"></aside>
-      </div>
+        </div>
+      </MainLayout>
       <footer className="bg-gray-100 dark:bg-gray-800"></footer>
     </div>
   );

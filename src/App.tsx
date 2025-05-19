@@ -15,6 +15,7 @@ import { PolicyPage } from './pages/policy';
 import { RegistryProvider } from './registry_context';
 import { BlueprintPage } from './pages/blueprint';
 import { DatumProvider } from './context/Providers';
+import { HomePage } from './pages/home';
 
 const queryClient = new QueryClient();
 
@@ -39,7 +40,8 @@ function App() {
       <Providers>
         <Router>
           <Routes>
-            <Route path="/" element={<TxViewPage />} />
+            <Route path="/tx" element={<TxViewPage />} />
+            <Route path="/" element={<HomePage />} />
 
             <Route path="/tx/:txCbor?" element={<TxViewPage />} />
             <Route path="/registry" element={<RegistryPage />} />

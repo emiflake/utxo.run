@@ -2,10 +2,6 @@ import { useParams } from 'react-router';
 import { NavBar } from '../components/nav';
 import { useMemo } from 'react';
 import {
-  ClipboardButton,
-  LinkClipboardButton,
-} from '../components/ActionButtons';
-import {
   AssetHistory,
   AssetTransaction,
   useAssetHistory,
@@ -16,6 +12,9 @@ import { ErrorBox } from '../App';
 import { MiniTransactionCard } from '../components/MiniTx';
 import { useRegistry } from '../registry';
 import { ScriptInfo } from '../components/ScriptInfo';
+import { CopyBody } from '../components/layout/CopyBody';
+import CommandPalette from '../components/CommandPalette';
+import { MainLayout } from '../components/layout/Main';
 
 const ViewAssetTransactions = ({
   assetTransactions,
@@ -148,51 +147,35 @@ export const PolicyPage = () => {
 
   return (
     <div className="min-h-screen flex flex-col p-1 gap-5 dark:bg-gray-900">
-      <NavBar></NavBar>
+      <NavBar />
 
-      <div className="flex-1 flex flex-col sm:flex-row">
-        <main className="flex-1 flex flex-col gap-2 dark:text-white">
-          <h2 className="dark:text-white">Policy</h2>
+      <CommandPalette />
 
-          <div className="flex items-center gap-1">
-            <span className="text-xs text-gray-500 dark:text-gray-300 font-mono">
-              {policy}
-            </span>
-            <ClipboardButton
-              text={policy}
-              className="opacity-70 hover:opacity-100 dark:text-white"
-            />
-            <LinkClipboardButton
-              text={policyUrl}
-              className="opacity-70 hover:opacity-100 dark:text-white"
+      <MainLayout>
+        <CopyBody title="Policy" value={policy} url={policyUrl} />
+
+        {/* Token information, if available */}
+        {registryQuery.data && relevantScript && (
+          <ScriptInfo script={relevantScript} />
+        )}
+
+        <div className="flex flex-col lg:flex-row lg:flex-1 gap-2">
+          <div className="flex flex-col lg:w-1/2 gap-2 border-1 border-gray-200 dark:border-gray-700 p-4 dark:text-white">
+            <ViewAssetTransactions
+              assetTransactions={assetTransactions}
+              isLoading={isLoadingTransactions}
+              isError={isErrorTransactions}
             />
           </div>
-
-          {/* Token information, if available */}
-          {registryQuery.data && relevantScript && (
-            <ScriptInfo script={relevantScript} />
-          )}
-
-          <div className="flex flex-col lg:flex-row lg:flex-1 gap-2">
-            <div className="flex flex-col lg:w-1/2 gap-2 border-1 border-gray-200 dark:border-gray-700 p-4 dark:text-white">
-              <ViewAssetTransactions
-                assetTransactions={assetTransactions}
-                isLoading={isLoadingTransactions}
-                isError={isErrorTransactions}
-              />
-            </div>
-            <div className="flex flex-col lg:w-1/2 gap-2 border-1 border-gray-200 dark:border-gray-700 p-4 dark:text-white">
-              <ViewAssetHistory
-                assetHistory={assetHistory}
-                isLoading={isLoading}
-                isError={isError}
-              />
-            </div>
+          <div className="flex flex-col lg:w-1/2 gap-2 border-1 border-gray-200 dark:border-gray-700 p-4 dark:text-white">
+            <ViewAssetHistory
+              assetHistory={assetHistory}
+              isLoading={isLoading}
+              isError={isError}
+            />
           </div>
-        </main>
-        <aside className="order-first md:w-16 lg:w-32"></aside>
-        <aside className="md:w-16 lg:w-32"></aside>
-      </div>
+        </div>
+      </MainLayout>
       <footer className="bg-gray-100 dark:bg-gray-800"></footer>
     </div>
   );

@@ -8,6 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "format": "biome format",
+    "format-check": "biome ci",
     "preview": "vite preview",
     "build-proxy": "bun run build && bun run proxy.ts"
   },

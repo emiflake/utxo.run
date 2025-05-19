@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { ogmiosURL } from '../ogmios';
+import { ogmiosURL, useOgmiosHealth } from '../ogmios';
 import { betterfrostURL, useLatestBlock } from '../betterfrost';
 import { SettingsIcon } from './Icons';
 import { RegistryUrlSetting } from '../registry_context';
@@ -18,6 +18,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
     isLoading: latestBlockLoading,
     isError: latestBlockError,
   } = useLatestBlock();
+
+  const ogmiosHealthQuery = useOgmiosHealth();
 
   const betterfrostConnectionState = useMemo(() => {
     if (latestBlockLoading) return 'loading';
@@ -59,6 +61,11 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               className="flex-1 h-10 px-2 py-1 bg-gray-100 dark:bg-gray-900 outline-none font-mono text-base text-gray-400 dark:text-gray-500 border-none"
               title="This is disabled because it is set in the environment"
             />
+            <span className="h-10 flex items-center px-3 bg-white dark:bg-gray-800 rounded-r font-mono text-base text-gray-700 dark:text-gray-300 select-none">
+              <ConnectionState
+                connectionState={ogmiosHealthQuery.data ? 'connected' : 'error'}
+              />
+            </span>
           </div>
           <div className="min-h-[44px] border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm rounded flex items-center opacity-60 cursor-not-allowed">
             <label

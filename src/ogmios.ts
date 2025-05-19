@@ -53,3 +53,22 @@ export const useQueryLedgerStateUtxos = (): {
     staleTime: 10_000,
   });
 };
+
+export async function queryOgmiosHealth(): Promise<boolean> {
+  try {
+    const res = await fetch(`${ogmiosURL}/health`);
+    const json = await res.json();
+    const gotError = 'error' in json && json.error !== null;
+    return !gotError;
+  } catch {
+    return false;
+  }
+}
+
+export function useOgmiosHealth() {
+  return useQuery({
+    queryKey: ['ogmios-health'],
+    queryFn: () => queryOgmiosHealth(),
+    staleTime: 10_000,
+  });
+}

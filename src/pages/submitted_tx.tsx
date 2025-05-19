@@ -3,12 +3,13 @@ import { NavBar } from '../components/nav';
 import { useNavigate, useParams } from 'react-router';
 import { useTxDataByHash } from '../betterfrost';
 import { ErrorBox } from '../App';
-import { ShimmerBox, TxViewer } from '../components/tx';
+import { TxViewer } from '../components/tx';
 import { AnimatedSearchInput } from '../components/AnimatedSearchInput';
-import {
-  ClipboardButton,
-  LinkClipboardButton,
-} from '../components/ActionButtons';
+import { CopyBody } from '../components/layout/CopyBody';
+import CommandPalette from '../components/CommandPalette';
+import { MainLayout } from '../components/layout/Main';
+import { KeyboardShortcut } from '../components/KeyboardShortcut';
+import { Box } from '../components/layout/Box';
 
 const TxHashForm = () => {
   const navigate = useNavigate();
@@ -43,6 +44,7 @@ const TxHashForm = () => {
               value={txHashValue}
               onChange={(e) => setTxHashValue(e.target.value)}
               onSubmit={handleSearch}
+              placeholder="Enter transaction hash"
               id="tx-hash"
               name="tx-hash"
             />
@@ -64,50 +66,35 @@ export const SubmittedTxPage = () => {
     return `${window.location.href}`;
   }, []);
 
-  const { data: txData, isLoading, isError } = useTxDataByHash(txHash);
+  const { data: txData, isError } = useTxDataByHash(txHash);
 
   return (
     <div className="min-h-screen flex flex-col p-1 gap-5 dark:bg-gray-900">
       <NavBar />
 
-      <div className="flex-1 flex flex-col sm:flex-row">
-        <main className="flex-1 flex flex-col">
-          {txData && (
-            <>
-              <h2 className="dark:text-white">Transaction</h2>
-              <div className="flex items-center gap-1">
-                <span className="text-xs text-gray-500 dark:text-gray-300 font-mono">
-                  {txHash}
-                </span>
-                <ClipboardButton
-                  text={txHash}
-                  className="opacity-70 hover:opacity-100 dark:text-white"
-                />
-                <LinkClipboardButton
-                  text={txUrl}
-                  className="opacity-70 hover:opacity-100 dark:text-white"
-                />
-              </div>
-            </>
-          )}
+      <CommandPalette />
 
-          {!txData && <TxHashForm />}
-          {txHash && (
-            <>
-              {txData && <TxViewer tx={txData} />}
-              {isLoading && <ShimmerBox />}
-              {isError && <ErrorBox message={'Could not load transaction'} />}
-            </>
-          )}
-          {!txHash && (
-            <div className="flex flex-col p-4 border-1 border-gray-200 dark:border-gray-700 gap-2 dark:text-white">
-              Please enter a transaction hash to view it!
-            </div>
-          )}
-        </main>
-        <aside className="order-first md:w-16 lg:w-32"></aside>
-        <aside className="md:w-16 lg:w-32"></aside>
-      </div>
+      <MainLayout>
+        {!txData && (
+          <>
+            <TxHashForm />
+            <Box>
+              Please enter a valid transaction hash to view it!
+              <span className="text-xs text-gray-500 dark:text-gray-400">
+                Tip: you can also paste it directly in the search bar. Or use{' '}
+                <KeyboardShortcut>Ctrl + K</KeyboardShortcut>.
+              </span>
+            </Box>
+            {isError && <ErrorBox message={'Could not load transaction'} />}
+          </>
+        )}
+        {txData && (
+          <div>
+            <CopyBody title="Transaction" value={txData.hash} url={txUrl} />
+            <TxViewer tx={txData} />;
+          </div>
+        )}
+      </MainLayout>
       <footer className=""></footer>
     </div>
   );

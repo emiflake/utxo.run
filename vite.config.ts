@@ -7,7 +7,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-for (const k of ['VITE_BETTERFROST_URL', 'VITE_OGMIOS_URL']) {
+for (const k of ['VITE_BETTERFROST_URL']) {
   if (!process.env[k]) {
     throw new Error(`Missing environment variable: ${k}`);
   }
@@ -38,16 +38,21 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/betterfrost/, ''),
       },
-      '/ogmios': {
-        target: process.env.VITE_OGMIOS_URL,
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/ogmios/, ''),
-      },
+
       '/registry-proxy': {
         target: process.env.VITE_REGISTRY_URL,
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/registry-proxy/, ''),
       },
+      ...(process.env.VITE_OGMIOS_URL && process.env.VITE_OGMIOS_URL !== 'null'
+        ? {
+            '/ogmios': {
+              target: process.env.VITE_OGMIOS_URL,
+              changeOrigin: true,
+              rewrite: (path) => path.replace(/^\/ogmios/, ''),
+            },
+          }
+        : {}),
     },
 
     host: '0.0.0.0',

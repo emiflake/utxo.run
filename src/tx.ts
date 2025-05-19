@@ -254,3 +254,20 @@ export const processTxFromCbor = (
     return failure({ message: `Got error processing tx: ${e}` });
   }
 };
+
+export const addressInfo = (address: string) => {
+  const cmlAddress = CML.Address.from_bech32(address);
+
+  console.log(cmlAddress.header().toString(2));
+
+  if (cmlAddress.kind() === CML.AddressKind.Base) {
+    return {
+      paymentCredential: cmlAddress.payment_cred()?.to_cbor_hex(),
+      stakingCredential: cmlAddress.staking_cred()?.to_cbor_hex(),
+    };
+  } else {
+    return {
+      paymentCredential: cmlAddress.payment_cred()?.to_cbor_hex(),
+    };
+  }
+};
