@@ -8,6 +8,7 @@ import { classifySearch } from '../search';
 import { useOgmiosHealth } from '../ogmios';
 import { useLatestBlock } from '../betterfrost';
 import { KeyboardShortcut } from '../components/KeyboardShortcut';
+import { Footer } from '../components/layout/Footer';
 
 /// Silly animated placeholder text
 function useAnimatedText({ options }: { options: string[] }) {
@@ -222,10 +223,10 @@ export const HomePage = () => {
             </h1>
             <div className="flex flex-row sm:flex-row items-start sm:items-center gap-1">
               <label
-                htmlFor="tx-hash"
+                htmlFor="query"
                 className="text-sm min-w-[160px] font-medium text-gray-700 dark:text-gray-300"
               >
-                Enter transaction hash:
+                Enter query:
               </label>
               <div className="w-full">
                 <SearchBar />
@@ -234,7 +235,7 @@ export const HomePage = () => {
           </div>
         </div>
       </MainLayout>
-      <footer className=""></footer>
+      <Footer />
     </div>
   );
 };

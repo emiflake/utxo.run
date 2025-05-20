@@ -10,6 +10,7 @@ import CommandPalette from '../components/CommandPalette';
 import { MainLayout } from '../components/layout/Main';
 import { KeyboardShortcut } from '../components/KeyboardShortcut';
 import { Box } from '../components/layout/Box';
+import { Footer } from '../components/layout/Footer';
 
 const TxHashForm = () => {
   const navigate = useNavigate();
@@ -95,7 +96,7 @@ export const SubmittedTxPage = () => {
           </div>
         )}
       </MainLayout>
-      <footer className=""></footer>
+      <Footer />
     </div>
   );
 };

@@ -12,6 +12,7 @@ import { Box, BoxHeader } from '../components/layout/Box';
 import { MonoTag } from '../components/MiniTag';
 import CommandPalette from '../components/CommandPalette';
 import { MainLayout } from '../components/layout/Main';
+import { Footer } from '../components/layout/Footer';
 
 const outputKey = (output: TransactionOutput) => {
   return `${output.tx_hash}-${output.index}`;
@@ -141,7 +142,7 @@ export const AddressPage = () => {
           )}
         </div>
       </MainLayout>
-      <footer className=""></footer>
+      <Footer />
     </div>
   );
 };
