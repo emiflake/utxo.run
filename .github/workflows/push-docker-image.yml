@@ -30,9 +30,9 @@ jobs:
 
       - name: Update package.json version
         run: |
-          echo "`jq '.version="${{ github.ref_name }}"' package.json`" > package.json && \
+          VERSION="${{ github.ref_type == 'tag' && github.ref_name || format('{0}-{1}', github.ref_name,github.sha) }}"
+          echo "`jq --arg v "$VERSION" '.version=$v' package.json`" > package.json
           echo "Version updated to `cat package.json | jq '.version'`"
-
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@v5
