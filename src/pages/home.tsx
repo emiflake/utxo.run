@@ -8,6 +8,7 @@ import { classifySearch } from '../search';
 import { useOgmiosHealth } from '../ogmios';
 import { useLatestBlock } from '../betterfrost';
 import { KeyboardShortcut } from '../components/KeyboardShortcut';
+import { Footer } from '../components/layout/Footer';
 
 /// Silly animated placeholder text
 function useAnimatedText({ options }: { options: string[] }) {
@@ -234,7 +235,7 @@ export const HomePage = () => {
           </div>
         </div>
       </MainLayout>
-      <footer className=""></footer>
+      <Footer />
     </div>
   );
 };

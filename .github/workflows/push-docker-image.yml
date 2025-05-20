@@ -28,6 +28,11 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      - name: Update package.json version
+        run: |
+          echo "`jq '.version="${{ github.ref_name }}"' package.json`" > package.json && \
+          echo "Version updated to `cat package.json | jq '.version'`"
+
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@v5

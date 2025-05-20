@@ -13,6 +13,7 @@ import { ScriptTypeTag } from '../components/MiniTag';
 import { shorten } from '../utils';
 import CommandPalette from '../components/CommandPalette';
 import { MainLayout } from '../components/layout/Main';
+import { Footer } from '../components/layout/Footer';
 
 // Column helper for TanStack Table
 const columnHelper = createColumnHelper<ScriptInfo>();
@@ -203,7 +204,7 @@ export const RegistryPage = () => {
           </div>
         )}
       </MainLayout>
-      <footer className=""></footer>
+      <Footer />
     </div>
   );
 };

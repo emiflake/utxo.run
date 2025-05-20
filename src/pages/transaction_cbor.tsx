@@ -10,6 +10,7 @@ import { MainLayout } from '../components/layout/Main';
 import { Box } from '../components/layout/Box';
 import { ErrorBox } from '../App';
 import { KeyboardShortcut } from '../components/KeyboardShortcut';
+import { Footer } from '../components/layout/Footer';
 
 const TxViewForm = () => {
   const navigate = useNavigate();
@@ -100,7 +101,7 @@ export function TxViewPage() {
           </div>
         )}
       </MainLayout>
-      <footer className=""></footer>
+      <Footer />
     </div>
   );
 }

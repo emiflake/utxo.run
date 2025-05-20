@@ -15,6 +15,7 @@ import { ScriptInfo } from '../components/ScriptInfo';
 import { CopyBody } from '../components/layout/CopyBody';
 import CommandPalette from '../components/CommandPalette';
 import { MainLayout } from '../components/layout/Main';
+import { Footer } from '../components/layout/Footer';
 
 const ViewAssetTransactions = ({
   assetTransactions,
@@ -176,7 +177,7 @@ export const PolicyPage = () => {
           </div>
         </div>
       </MainLayout>
-      <footer className="bg-gray-100 dark:bg-gray-800"></footer>
+      <Footer />
     </div>
   );
 };

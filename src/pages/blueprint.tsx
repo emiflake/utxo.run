@@ -8,6 +8,7 @@ import { MiniTag } from '../components/MiniTag';
 import { ViewDatum } from '../components/Datum';
 import CommandPalette from '../components/CommandPalette';
 import { MainLayout } from '../components/layout/Main';
+import { Footer } from '../components/layout/Footer';
 
 // Component for testing datums against blueprints
 const DatumTester = () => {
@@ -279,7 +280,7 @@ export const BlueprintPage = () => {
           </div>
         </div>
       </MainLayout>
-      <footer className=""></footer>
+      <Footer />
     </div>
   );
 };

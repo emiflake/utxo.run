@@ -9,6 +9,7 @@ import { Paginate } from '../components/Pagination';
 import { shorten } from '../utils';
 import CommandPalette from '../components/CommandPalette';
 import { MainLayout } from '../components/layout/Main';
+import { Footer } from '../components/layout/Footer';
 
 export const ViewBlock = ({ block }: { block: Block }) => {
   const formattedDate = block?.time
@@ -150,7 +151,7 @@ export const ChainPage = () => {
           </div>
         </div>
       </MainLayout>
-      <footer className="bg-gray-100 dark:bg-gray-800"></footer>
+      <Footer />
     </div>
   );
 };
