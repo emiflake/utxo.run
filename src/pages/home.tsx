@@ -223,10 +223,10 @@ export const HomePage = () => {
             </h1>
             <div className="flex flex-row sm:flex-row items-start sm:items-center gap-1">
               <label
-                htmlFor="tx-hash"
+                htmlFor="query"
                 className="text-sm min-w-[160px] font-medium text-gray-700 dark:text-gray-300"
               >
-                Enter transaction hash:
+                Enter query:
               </label>
               <div className="w-full">
                 <SearchBar />
