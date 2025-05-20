@@ -86,13 +86,15 @@ export const SubmittedTxPage = () => {
                 <KeyboardShortcut>Ctrl + K</KeyboardShortcut>.
               </span>
             </Box>
-            {isError && <ErrorBox message={'Could not load transaction'} />}
+            {txHash.length > 0 && isError && (
+              <ErrorBox message={'Could not load transaction'} />
+            )}
           </>
         )}
         {txData && (
           <div>
             <CopyBody title="Transaction" value={txData.hash} url={txUrl} />
-            <TxViewer tx={txData} />;
+            <TxViewer tx={txData} />
           </div>
         )}
       </MainLayout>

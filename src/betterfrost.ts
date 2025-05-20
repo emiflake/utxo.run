@@ -349,6 +349,9 @@ export const useTxDataByHash = (
   return useQuery({
     queryKey: ['tx-data', txHash],
     queryFn: async () => {
+      if (txHash.length === 0) {
+        return null;
+      }
       const cbor = await getTxCborByHash(txHash);
       const result = await tx.processTxFromCbor(cbor.cbor);
       if (result.success) {

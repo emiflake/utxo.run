@@ -97,7 +97,7 @@ export function TxViewPage() {
               value={processedCbor.value.hash}
               url={window.location.href}
             />
-            <TxViewer tx={processedCbor.value} />;
+            <TxViewer tx={processedCbor.value} />
           </div>
         )}
       </MainLayout>
