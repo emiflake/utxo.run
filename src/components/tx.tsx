@@ -752,7 +752,7 @@ export const TxViewer = ({ tx }: { tx: Transaction }) => {
           </h1>
           {inputs}
           {referenceInputs.length > 0 && (
-            <div className="flex flex-col gap-2 bg-amber-50 dark:bg-amber-50/20 p-2">
+            <div className="flex flex-col gap-2 striped p-2">
               <h1 className="text-xl text-slate-900 dark:text-white">
                 Reference Inputs{' '}
                 <span className="text-xs text-gray-500 dark:text-gray-300">

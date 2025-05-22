@@ -40,7 +40,7 @@ function ActionButton({
   return (
     <button
       onClick={onClick}
-      className={`inline-flex items-center justify-center gap-1.5 p-1 text-xs focus:outline-none transition-colors duration-200 ${className}`}
+      className={`inline-flex items-center justify-center gap-1.5 p-1 focus:outline-none transition-colors duration-200 ${className}`}
       title={title}
       aria-label={ariaLabel || title}
     >

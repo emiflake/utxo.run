@@ -11,7 +11,7 @@ export const CopyBody = ({
   url: string;
 }) => {
   return (
-    <>
+    <div className="flex flex-col md:p-0 p-2">
       <h2 className="dark:text-white">{title}</h2>
       <div className="flex items-center gap-1">
         <span className="text-xs text-gray-500 dark:text-gray-300 font-mono break-all">
@@ -26,6 +26,6 @@ export const CopyBody = ({
           className="opacity-70 hover:opacity-100 dark:text-white"
         />
       </div>
-    </>
+    </div>
   );
 };
