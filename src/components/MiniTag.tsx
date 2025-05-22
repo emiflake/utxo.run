@@ -167,13 +167,13 @@ export const MonoTag = ({
       {href && (
         <Link
           to={href}
-          className="bg-gray-50 dark:bg-gray-800 text-indigo-500 dark:text-indigo-300 hover:underline px-1.5 py-0.5 font-mono"
+          className="bg-gray-50 dark:bg-gray-800 text-indigo-500 dark:text-indigo-300 hover:underline px-1.5 py-0.5 font-mono break-all"
         >
           {value}
         </Link>
       )}
       {!href && (
-        <span className="bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-200 px-1.5 py-0.5 font-mono">
+        <span className="bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-200 px-1.5 py-0.5 font-mono break-all">
           {value}
         </span>
       )}

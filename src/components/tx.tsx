@@ -325,7 +325,7 @@ export const ViewTransactionInput = ({
           className="hover:opacity-80 transition-opacity"
           title="Click to view transaction"
         >
-          <RefTag text="" />
+          <RefTag text="Created" />
         </Link>
       </BoxHeader>
 
@@ -695,7 +695,7 @@ export const TxViewer = ({ tx }: { tx: Transaction }) => {
               Transaction stats
             </h2>
             <div className="flex flex-row gap-2">
-              <MonoTag label="Fee" value={`${tx.fee} lovelace`} />
+              <MonoTag label="Fee" value={`${tx.fee}₳`} />
               {tx.ttl && <MonoTag label="TTL" value={`${tx.ttl}`} />}
             </div>
           </div>

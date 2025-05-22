@@ -216,12 +216,12 @@ export const HomePage = () => {
             pages.
           </p>
         </div>
-        <div className="flex flex-col min-w-[600px] max-w-[800px] lg:max-w-[1200px] mx-auto">
+        <div className="flex flex-col w-full px-4 sm:min-w-[600px] sm:max-w-[800px] lg:max-w-[1200px] mx-auto">
           <div className="flex flex-col gap-2 p-4 m-2 border border-gray-200 dark:border-gray-700">
             <h1 className="text-lg min-w-[160px] font-medium text-gray-700 dark:text-gray-300">
               Get started!
             </h1>
-            <div className="flex flex-row sm:flex-row items-start sm:items-center gap-1">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-1">
               <label
                 htmlFor="query"
                 className="text-sm min-w-[160px] font-medium text-gray-700 dark:text-gray-300"

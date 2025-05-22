@@ -6,6 +6,7 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 .env
+.env.testnet
 
 node_modules
 dist
@@ -30,3 +31,6 @@ tsconfig.app.tsbuildinfo
 tsconfig.node.tsbuildinfo
 
 .windsurfrules
+
+.wrangler/
+.npmrc

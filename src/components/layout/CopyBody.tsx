@@ -14,7 +14,7 @@ export const CopyBody = ({
     <>
       <h2 className="dark:text-white">{title}</h2>
       <div className="flex items-center gap-1">
-        <span className="text-xs text-gray-500 dark:text-gray-300 font-mono">
+        <span className="text-xs text-gray-500 dark:text-gray-300 font-mono break-all">
           {value}
         </span>
         <ClipboardButton
