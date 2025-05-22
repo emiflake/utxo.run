@@ -117,7 +117,7 @@ export const ChainPage = () => {
 
       <CommandPalette />
 
-      <MainLayout>
+      <MainLayout ariaLabel="Chain page">
         <h2 className="dark:text-white">Chain explorer</h2>
 
         <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 mb-4">

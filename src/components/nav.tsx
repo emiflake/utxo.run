@@ -48,7 +48,7 @@ export function SearchBar() {
         onChange={(e) => setSearchValue(e.target.value)}
         onSubmit={handleSearch}
         placeholder="Enter your query here..."
-        title="Addresses, tx CBORs and tx hashes all work!"
+        title="Search. Addresses, tx CBORs and tx hashes all work!"
         type="search"
         inputClassName="pl-8 h-9 text-sm border border-gray-200 dark:border-gray-700"
       />
@@ -66,12 +66,15 @@ export function NavBar() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full border-b border-gray-200 dark:border-gray-700 bg-white/95 dark:bg-gray-900/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-gray-900/60">
+      <header
+        aria-label="Navigation bar"
+        className="sticky top-0 z-50 w-full border-b border-gray-200 dark:border-gray-700 bg-white/95 dark:bg-gray-900/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-gray-900/60"
+      >
         <div className="flex h-16 items-center px-4 md:px-6">
           <div className="flex items-center gap-2 mr-8">
             <Link to="/" className="flex items-center gap-2">
               <LogoIcon />
-              <span className="text-2xl font-bold tracking-tight text-orange-300">
+              <span className="text-2xl font-bold tracking-tight text-orange-400">
                 fine.tx
               </span>
             </Link>
@@ -94,12 +97,17 @@ export function NavBar() {
                     Transactions
                     <ChevronDownIcon />
                   </button>
-                  <div className="absolute left-0 mt-2 w-[200px] bg-white dark:bg-gray-800 shadow-md border border-gray-200 dark:border-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                  <div
+                    className="absolute left-0 mt-2 w-[200px] bg-white dark:bg-gray-800 shadow-md border border-gray-200 dark:border-gray-700 opacity-0 invisible 
+                    group-focus:visible
+                    group-focus-within:opacity-100
+                  group-focus-within:visible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50"
+                  >
                     <ul className="py-1">
                       <li>
                         <Link
                           to="/tx/"
-                          className="flex items-center gap-2 px-4 py-2 text-sm font-medium dark:text-white no-underline outline-none transition-colors hover:bg-gray-100 dark:hover:bg-gray-700"
+                          className="flex items-center gap-2 px-4 py-2 text-sm font-medium dark:text-white no-underline outline-none transition-colors focus:bg-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
                         >
                           <FileIcon />
                           <span>Tx by CBOR</span>
@@ -108,7 +116,7 @@ export function NavBar() {
                       <li>
                         <Link
                           to="/submitted-tx/"
-                          className="flex items-center gap-2 px-4 py-2 text-sm font-medium dark:text-white no-underline outline-none transition-colors hover:bg-gray-100 dark:hover:bg-gray-700"
+                          className="flex items-center gap-2 px-4 py-2 text-sm font-medium dark:text-white no-underline outline-none transition-colors focus:bg-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
                         >
                           <FileSearchIcon />
                           <span>Tx by Hash</span>
@@ -125,12 +133,16 @@ export function NavBar() {
                     Other
                     <ChevronDownIcon />
                   </button>
-                  <div className="absolute left-0 mt-2 w-[200px] bg-white dark:bg-gray-800 shadow-md border border-gray-200 dark:border-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                  <div
+                    className="absolute left-0 mt-2 w-[200px] bg-white 
+                  dark:bg-gray-800 shadow-md border border-gray-200 dark:border-gray-700 opacity-0 invisible 
+                  group-focus-within:opacity-100 group-focus-within:visible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50"
+                  >
                     <ul className="py-1">
                       <li>
                         <Link
                           to="/blueprint"
-                          className="flex items-center gap-2 px-4 py-2 text-sm font-medium dark:text-white no-underline outline-none transition-colors hover:bg-gray-100 dark:hover:bg-gray-700"
+                          className="flex items-center gap-2 px-4 py-2 text-sm font-medium dark:text-white no-underline outline-none transition-colors focus:bg-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
                         >
                           <BlueprintIcon />
                           plutus.json
@@ -139,7 +151,7 @@ export function NavBar() {
                       <li>
                         <Link
                           to="/chain"
-                          className="flex items-center gap-2 px-4 py-2 text-sm font-medium dark:text-white no-underline outline-none transition-colors hover:bg-gray-100 dark:hover:bg-gray-700"
+                          className="flex items-center gap-2 px-4 py-2 text-sm font-medium dark:text-white no-underline outline-none transition-colors focus:bg-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
                         >
                           <ExplorerIcon />
                           Chain Explorer

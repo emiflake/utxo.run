@@ -133,7 +133,7 @@ export function SearchBar() {
       onChange={(e) => setSearchValue(e.target.value)}
       onSubmit={handleSearch}
       placeholder={animatedText}
-      title="Addresses, tx CBORs and tx hashes all work!"
+      title="Search. Addresses, tx CBORs and tx hashes all work!"
       type="search"
       inputClassName=" text-sm border border-gray-200 dark:border-gray-700"
     />

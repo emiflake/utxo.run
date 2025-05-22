@@ -1,6 +1,6 @@
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db, renderToJSON, renderToYaml } from '../cbor/plutus_json';
-import { Fragment, useContext, useMemo, useState } from 'react';
+import { Fragment, useContext, useId, useMemo, useState } from 'react';
 import * as cbor2 from 'cbor2';
 import { parseRawDatum } from '../cbor/raw_datum';
 import { createParsingContext } from '../cbor/plutus_json';
@@ -38,6 +38,7 @@ function ExternalLinkButton({
 }
 
 export const ViewDatum = ({ datum }: { datum: string }) => {
+  const datumSelectId = useId();
   const blueprints = useLiveQuery(async () => {
     return db.plutusJson.toArray();
   }, []);
@@ -136,17 +137,35 @@ export const ViewDatum = ({ datum }: { datum: string }) => {
       <div className="flex flex-col">
         {/* Toolbar with buttons always visible at the top */}
         <div className="flex justify-between items-center p-1 border-b border-gray-800">
+          <label htmlFor={datumSelectId} className="sr-only">
+            View mode selector
+          </label>
           <select
+            id={datumSelectId}
+            aria-label="View mode selector"
+            aria-description="Select the format to view the datum in"
             value={datumContext?.viewMode || 'enriched_yaml'}
             onChange={handleViewModeChange}
             className="text-xs text-white border-r border-gray-700 px-2 py-1 focus:outline-none bg-transparent"
           >
-            <option value="hex">Hex</option>
-            <option value="json">JSON</option>
-            <option value="diag">Diagnostic</option>
-            <option value="raw_datum">Raw Datum</option>
-            <option value="enriched_datum">Enriched Datum</option>
-            <option value="enriched_yaml">Enriched Datum (YAML)</option>
+            <option label="Hex" value="hex">
+              Hex
+            </option>
+            <option label="JSON" value="json">
+              JSON
+            </option>
+            <option label="Diagnostic" value="diag">
+              Diagnostic
+            </option>
+            <option label="Raw Datum" value="raw_datum">
+              Raw Datum
+            </option>
+            <option label="Enriched Datum" value="enriched_datum">
+              Enriched Datum
+            </option>
+            <option label="Enriched Datum (YAML)" value="enriched_yaml">
+              Enriched Datum (YAML)
+            </option>
           </select>
           <div className="flex gap-1">
             <button

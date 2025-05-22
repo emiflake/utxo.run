@@ -153,7 +153,7 @@ export const BlueprintPage = () => {
 
       <CommandPalette />
 
-      <MainLayout>
+      <MainLayout ariaLabel="Blueprints page">
         <h2 className="dark:text-white flex items-center gap-1">
           <BlueprintIcon className="h-5 w-5" /> Blueprints
         </h2>

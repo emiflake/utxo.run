@@ -11,6 +11,7 @@ import { Box } from '../components/layout/Box';
 import { ErrorBox } from '../App';
 import { KeyboardShortcut } from '../components/KeyboardShortcut';
 import { Footer } from '../components/layout/Footer';
+import { SkipLink } from '../components/layout/A11y';
 
 const TxViewForm = () => {
   const navigate = useNavigate();
@@ -70,6 +71,8 @@ export function TxViewPage() {
 
   return (
     <div className="min-h-screen flex flex-col p-1 gap-5 dark:bg-gray-900">
+      <SkipLink />
+
       <NavBar />
 
       <CommandPalette />

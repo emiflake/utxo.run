@@ -16,6 +16,7 @@ import { CopyBody } from '../components/layout/CopyBody';
 import CommandPalette from '../components/CommandPalette';
 import { MainLayout } from '../components/layout/Main';
 import { Footer } from '../components/layout/Footer';
+import { SkipLink } from '../components/layout/A11y';
 
 const ViewAssetTransactions = ({
   assetTransactions,
@@ -148,6 +149,8 @@ export const PolicyPage = () => {
 
   return (
     <div className="min-h-screen flex flex-col p-1 gap-5 dark:bg-gray-900">
+      <SkipLink />
+
       <NavBar />
 
       <CommandPalette />

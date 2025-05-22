@@ -5,7 +5,7 @@ import {
 } from '../betterfrost';
 import { RefTag } from './MiniTag';
 
-import { useMemo } from 'react';
+import { useId, useMemo } from 'react';
 import {
   addressInfo,
   LegacyRedeemer,
@@ -50,14 +50,14 @@ export const ViewTransactionLiveness = ({ hash }: { hash: string }) => {
             />
           </div>
           <ul className="list-disc ml-4 text-xs text-gray-500 dark:text-gray-300">
-            <li className="text-xs text-gray-500 dark:text-gray-300">
+            <li className="text-xs text-gray-800 dark:text-gray-300">
               <span>Block: </span>
               <span className="font-medium">{tx.block_height}</span>
             </li>
-            <li className="text-xs text-gray-500 dark:text-gray-300">
+            <li className="text-xs text-gray-800 dark:text-gray-300">
               {tx?.size} bytes
             </li>
-            <li className="text-xs text-gray-500 dark:text-gray-300">
+            <li className="text-xs text-gray-800 dark:text-gray-300">
               Slot #{tx?.slot}
             </li>
           </ul>
@@ -84,6 +84,8 @@ export const ViewUnit = ({
   unit: string;
   quantity: string;
 }) => {
+  const labelId = useId();
+
   const registryQuery = useRegistry();
 
   const resolvedUnitName = useMemo(() => {
@@ -132,8 +134,12 @@ export const ViewUnit = ({
   ]);
 
   return (
-    <div className="flex flex-row justify-between gap-4 border-1 shadow-xs bg-gray-50/20 dark:bg-gray-900/20 border-gray-200 dark:border-gray-600 p-2 break-all">
-      <span className="text-sm self-center">
+    <div
+      role="listitem"
+      aria-label="UTxO unit"
+      className="flex flex-row justify-between gap-4 border-1 shadow-xs bg-gray-50/20 dark:bg-gray-900/20 border-gray-200 dark:border-gray-600 p-2 break-all"
+    >
+      <span className="text-sm self-center" id={labelId} aria-hidden>
         {unit === 'lovelace' ? (
           <span className="font-mono dark:text-white">{resolvedUnitName}</span>
         ) : (
@@ -157,7 +163,10 @@ export const ViewUnit = ({
           </div>
         )}
       </span>
-      <span className="text-md justify-self-end dark:text-white">
+      <span
+        aria-labelledby={labelId}
+        className="text-md justify-self-end dark:text-white"
+      >
         {adjustedQuantity}
       </span>
     </div>
@@ -166,12 +175,14 @@ export const ViewUnit = ({
 
 export const ViewValue = ({ value }: { value: TransactionAmount[] }) => {
   return (
-    <>
-      <span className="text-sm dark:text-gray-400 text-gray-600">Value</span>
+    <div className="flex flex-col gap-2" role="list" aria-label="UTxO value">
+      <span className="text-sm dark:text-gray-400 text-gray-600" aria-hidden>
+        Value
+      </span>
       {value.map((v) => {
         return <ViewUnit key={v.unit} unit={v.unit} quantity={v.quantity} />;
       })}
-    </>
+    </div>
   );
 };
 

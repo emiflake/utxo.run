@@ -1,5 +1,6 @@
 import { Link } from 'react-router';
 import { ExternalLinkIcon } from './Icons';
+import { useId } from 'react';
 
 export const MiniTag = ({
   text,
@@ -121,18 +122,22 @@ export const Tag = ({
   href?: string;
   labelColor?: string;
 }) => {
+  const labelId = useId();
   if (!value) return null;
 
   return (
     <span className="inline-flex items-stretch text-xs mr-2 mb-1 border border-gray-100 dark:border-gray-700">
-      <span
+      <label
+        id={labelId}
         className={`text-gray-500 dark:text-gray-300 px-1.5 py-0.5 flex-shrink-0 ${labelColor}`}
+        aria-hidden
       >
         {label}
-      </span>
+      </label>
       {href && (
         <Link
           to={href}
+          aria-labelledby={labelId}
           className="bg-gray-50 dark:bg-gray-800 text-indigo-500 dark:text-indigo-300 hover:underline px-1.5 py-0.5"
         >
           {value}
@@ -157,23 +162,33 @@ export const MonoTag = ({
   value: React.ReactNode;
   href?: string;
 }) => {
+  const labelId = useId();
+
   if (!value) return null;
 
   const content = (
     <span className="inline-flex items-stretch text-xs mr-2 mb-1 border border-gray-100 dark:border-gray-700">
-      <span className="bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-300 px-1.5 py-0.5 flex-shrink-0">
+      <label
+        className="bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-300 px-1.5 py-0.5 flex-shrink-0"
+        aria-hidden
+        id={labelId}
+      >
         {label}
-      </span>
+      </label>
       {href && (
         <Link
           to={href}
+          aria-labelledby={labelId}
           className="bg-gray-50 dark:bg-gray-800 text-indigo-500 dark:text-indigo-300 hover:underline px-1.5 py-0.5 font-mono break-all"
         >
           {value}
         </Link>
       )}
       {!href && (
-        <span className="bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-200 px-1.5 py-0.5 font-mono break-all">
+        <span
+          aria-labelledby={labelId}
+          className="bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-200 px-1.5 py-0.5 font-mono break-all"
+        >
           {value}
         </span>
       )}

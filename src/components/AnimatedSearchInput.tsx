@@ -45,11 +45,13 @@ export function AnimatedSearchInput({
           type={type}
           id={id}
           name={name}
+          role="searchbox"
           value={value}
           onChange={onChange}
           onFocus={() => setIsInputFocused(true)}
           onBlur={() => setIsInputFocused(false)}
           placeholder={placeholder}
+          aria-description="Search"
           title={title}
           className={`h-10 w-full 
             ${
@@ -72,6 +74,8 @@ export function AnimatedSearchInput({
               ? 'opacity-100 max-w-[80px] ml-0'
               : 'opacity-0 max-w-0 ml-[-2px] overflow-hidden'
           }`}
+        onFocus={() => setIsInputFocused(true)}
+        onBlur={() => setIsInputFocused(false)}
       >
         {buttonText}
       </button>
