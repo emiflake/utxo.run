@@ -17,7 +17,15 @@ import { BlueprintPage } from './pages/blueprint';
 import { DatumProvider } from './context/Providers';
 import { HomePage } from './pages/home';
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      // @ts-expect-error Suspense is not a valid option, according to the types, but
+      // it is valid in practice.
+      suspense: true,
+    },
+  },
+});
 
 const persister = createSyncStoragePersister({
   storage: window.localStorage,
