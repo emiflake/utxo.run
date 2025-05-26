@@ -10,11 +10,15 @@ export type ThreeDotsMenuItem = {
 
 interface ThreeDotsProps {
   children: React.ReactNode;
+  name?: string;
+  description?: string;
   iconClassName?: string;
 }
 
 export const ThreeDots: React.FC<ThreeDotsProps> = ({
   children,
+  name,
+  description,
   iconClassName = '',
 }) => {
   const [open, setOpen] = useState(false);
@@ -69,7 +73,10 @@ export const ThreeDots: React.FC<ThreeDotsProps> = ({
         ref={buttonRef}
         type="button"
         aria-haspopup="menu"
+        name={name}
         aria-expanded={open}
+        aria-label={name}
+        aria-description={description}
         className={
           'flex items-center justify-center rounded-full p-1 hover:bg-zinc-200 dark:hover:bg-zinc-700 focus:outline-none focus:ring-2 focus:ring-blue-400 transition ' +
           iconClassName

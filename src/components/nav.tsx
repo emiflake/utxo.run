@@ -11,9 +11,11 @@ import {
   FileIcon,
   FileSearchIcon,
   LogoIcon,
+  MenuIcon,
   RegistryIcon,
   SearchIcon,
   SettingsIcon,
+  XIcon,
 } from './Icons';
 import { classifySearch } from '../search';
 
@@ -36,7 +38,7 @@ export function SearchBar() {
   }, [searchValue, navigate]);
 
   return (
-    <div className="relative w-full md:w-64 lg:w-80">
+    <div className="relative w-full lg:w-80">
       <SearchIcon
         className="absolute left-2.5 top-1/2 transform -translate-y-1/2 h-4 w-4 z-20"
         color="#9ca3af"
@@ -45,8 +47,8 @@ export function SearchBar() {
         value={searchValue}
         onChange={(e) => setSearchValue(e.target.value)}
         onSubmit={handleSearch}
-        placeholder="Enter your transaction hash here..."
-        title="Addresses, tx CBORs and tx hashes all work!"
+        placeholder="Enter your query here..."
+        title="Search. Addresses, tx CBORs and tx hashes all work!"
         type="search"
         inputClassName="pl-8 h-9 text-sm border border-gray-200 dark:border-gray-700"
       />
@@ -56,15 +58,23 @@ export function SearchBar() {
 
 export function NavBar() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full border-b border-gray-200 dark:border-gray-700 bg-white/95 dark:bg-gray-900/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-gray-900/60">
+      <header
+        aria-label="Navigation bar"
+        className="sticky top-0 z-50 w-full border-b border-gray-200 dark:border-gray-700 bg-white/95 dark:bg-gray-900/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-gray-900/60"
+      >
         <div className="flex h-16 items-center px-4 md:px-6">
           <div className="flex items-center gap-2 mr-8">
             <Link to="/" className="flex items-center gap-2">
               <LogoIcon />
-              <span className="text-2xl font-bold tracking-tight text-orange-300">
+              <span className="text-2xl font-bold tracking-tight text-orange-400">
                 fine.tx
               </span>
             </Link>
@@ -87,12 +97,17 @@ export function NavBar() {
                     Transactions
                     <ChevronDownIcon />
                   </button>
-                  <div className="absolute left-0 mt-2 w-[200px] bg-white dark:bg-gray-800 shadow-md border border-gray-200 dark:border-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                  <div
+                    className="absolute left-0 mt-2 w-[200px] bg-white dark:bg-gray-800 shadow-md border border-gray-200 dark:border-gray-700 opacity-0 invisible 
+                    group-focus:visible
+                    group-focus-within:opacity-100
+                  group-focus-within:visible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50"
+                  >
                     <ul className="py-1">
                       <li>
                         <Link
                           to="/tx/"
-                          className="flex items-center gap-2 px-4 py-2 text-sm font-medium dark:text-white no-underline outline-none transition-colors hover:bg-gray-100 dark:hover:bg-gray-700"
+                          className="flex items-center gap-2 px-4 py-2 text-sm font-medium dark:text-white no-underline outline-none transition-colors focus:bg-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
                         >
                           <FileIcon />
                           <span>Tx by CBOR</span>
@@ -101,7 +116,7 @@ export function NavBar() {
                       <li>
                         <Link
                           to="/submitted-tx/"
-                          className="flex items-center gap-2 px-4 py-2 text-sm font-medium dark:text-white no-underline outline-none transition-colors hover:bg-gray-100 dark:hover:bg-gray-700"
+                          className="flex items-center gap-2 px-4 py-2 text-sm font-medium dark:text-white no-underline outline-none transition-colors focus:bg-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
                         >
                           <FileSearchIcon />
                           <span>Tx by Hash</span>
@@ -118,12 +133,16 @@ export function NavBar() {
                     Other
                     <ChevronDownIcon />
                   </button>
-                  <div className="absolute left-0 mt-2 w-[200px] bg-white dark:bg-gray-800 shadow-md border border-gray-200 dark:border-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                  <div
+                    className="absolute left-0 mt-2 w-[200px] bg-white 
+                  dark:bg-gray-800 shadow-md border border-gray-200 dark:border-gray-700 opacity-0 invisible 
+                  group-focus-within:opacity-100 group-focus-within:visible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50"
+                  >
                     <ul className="py-1">
                       <li>
                         <Link
                           to="/blueprint"
-                          className="flex items-center gap-2 px-4 py-2 text-sm font-medium dark:text-white no-underline outline-none transition-colors hover:bg-gray-100 dark:hover:bg-gray-700"
+                          className="flex items-center gap-2 px-4 py-2 text-sm font-medium dark:text-white no-underline outline-none transition-colors focus:bg-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
                         >
                           <BlueprintIcon />
                           plutus.json
@@ -132,7 +151,7 @@ export function NavBar() {
                       <li>
                         <Link
                           to="/chain"
-                          className="flex items-center gap-2 px-4 py-2 text-sm font-medium dark:text-white no-underline outline-none transition-colors hover:bg-gray-100 dark:hover:bg-gray-700"
+                          className="flex items-center gap-2 px-4 py-2 text-sm font-medium dark:text-white no-underline outline-none transition-colors focus:bg-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
                         >
                           <ExplorerIcon />
                           Chain Explorer
@@ -146,53 +165,109 @@ export function NavBar() {
           </nav>
 
           <div className="flex items-center ml-auto">
-            <SearchBar />
+            {/* Show search only on large screens */}
+            <div className="hidden lg:block">
+              <SearchBar />
+            </div>
             <div className="flex items-center gap-3 p-3">
-              <ThemeToggle />
-              <IconButton
-                onClick={() => setIsSettingsOpen(!isSettingsOpen)}
-                disabled={isSettingsOpen}
-                ariaLabel="Settings"
-              >
-                <SettingsIcon />
-              </IconButton>
+              {/* Show theme toggle and settings only on large screens */}
+              <div className="hidden lg:block">
+                <ThemeToggle />
+              </div>
+              <div className="hidden lg:block">
+                <IconButton
+                  onClick={() => setIsSettingsOpen(!isSettingsOpen)}
+                  disabled={isSettingsOpen}
+                  ariaLabel="Settings"
+                >
+                  <SettingsIcon />
+                </IconButton>
+              </div>
+              <div className="lg:hidden">
+                <IconButton
+                  onClick={toggleMobileMenu}
+                  ariaLabel={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
+                >
+                  {isMobileMenuOpen ? (
+                    <XIcon className="h-5 w-5" />
+                  ) : (
+                    <MenuIcon className="h-5 w-5" />
+                  )}
+                </IconButton>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Mobile navigation */}
-        <div className="border-t border-gray-200 dark:border-gray-700 py-2 lg:hidden">
-          <nav className="container mx-auto max-w-md flex justify-between px-4">
-            <Link
-              to="/registry"
-              className="flex flex-col items-center text-sm font-medium dark:text-white hover:underline"
-            >
-              <RegistryIcon className="mb-1 h-5 w-5" />
-              Registry
-            </Link>
-            <Link
-              to="/tx/"
-              className="flex flex-col items-center text-sm font-medium dark:text-white hover:underline"
-            >
-              <FileIcon className="mb-1 h-5 w-5" />
-              Tx by CBOR
-            </Link>
-            <Link
-              to="/chain"
-              className="flex flex-col items-center text-sm font-medium dark:text-white hover:underline"
-            >
-              <ExplorerIcon className="mb-1 h-5 w-5" />
-              Explorer
-            </Link>
-            <Link
-              to="/submitted-tx/"
-              className="flex flex-col items-center text-sm font-medium dark:text-white hover:underline"
-            >
-              <FileSearchIcon className="mb-1 h-5 w-5" />
-              Tx by Hash
-            </Link>
-          </nav>
-        </div>
+        {isMobileMenuOpen && (
+          <div className="border-t border-gray-200 dark:border-gray-700 py-2 lg:hidden">
+            <nav className="container mx-auto flex flex-col space-y-2 px-4">
+              {/* Search bar in mobile menu */}
+              <div className="py-3">
+                <SearchBar />
+              </div>
+
+              {/* Navigation links */}
+              <Link
+                to="/registry"
+                className="flex items-center py-2 text-sm font-medium dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 px-3 rounded"
+                onClick={toggleMobileMenu}
+              >
+                <RegistryIcon className="mr-3 h-5 w-5" />
+                Registry
+              </Link>
+              <Link
+                to="/tx/"
+                className="flex items-center py-2 text-sm font-medium dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 px-3 rounded"
+                onClick={toggleMobileMenu}
+              >
+                <FileIcon className="mr-3 h-5 w-5" />
+                Tx by CBOR
+              </Link>
+              <Link
+                to="/chain"
+                className="flex items-center py-2 text-sm font-medium dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 px-3 rounded"
+                onClick={toggleMobileMenu}
+              >
+                <ExplorerIcon className="mr-3 h-5 w-5" />
+                Explorer
+              </Link>
+              <Link
+                to="/submitted-tx/"
+                className="flex items-center py-2 text-sm font-medium dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 px-3 rounded"
+                onClick={toggleMobileMenu}
+              >
+                <FileSearchIcon className="mr-3 h-5 w-5" />
+                Tx by Hash
+              </Link>
+              <Link
+                to="/blueprint"
+                className="flex items-center py-2 text-sm font-medium dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 px-3 rounded"
+                onClick={toggleMobileMenu}
+              >
+                <BlueprintIcon className="mr-3 h-5 w-5" />
+                plutus.json
+              </Link>
+
+              {/* Settings and theme in mobile menu */}
+              <div className="flex items-center justify-between py-2 px-3 border-t border-gray-200 dark:border-gray-700 mt-2">
+                <ThemeToggle />
+
+                <IconButton
+                  onClick={() => {
+                    setIsSettingsOpen(!isSettingsOpen);
+                    toggleMobileMenu();
+                  }}
+                  disabled={isSettingsOpen}
+                  ariaLabel="Settings"
+                >
+                  <SettingsIcon />
+                </IconButton>
+              </div>
+            </nav>
+          </div>
+        )}
       </header>
       {isSettingsOpen && (
         <SettingsModal

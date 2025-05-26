@@ -10,6 +10,32 @@
   --font-sans: "Roboto";
 }
 
+/* This makes some browsers have the right background color at the top, e.g. Safari */
+.dark {
+  background-color: var(--gray-900);
+}
+
+/* Striped background for reference inputs */
+.dark .striped {
+  background: repeating-linear-gradient(
+    135deg,
+    var(--gray-900),
+    var(--gray-900) 5px,
+    var(--gray-800) 5px,
+    var(--gray-800) 10px
+  );
+}
+
+.striped {
+  background: repeating-linear-gradient(
+    135deg,
+    var(--color-white),
+    var(--color-white) 5px,
+    var(--gray-50) 5px,
+    var(--gray-50) 10px
+  );
+}
+
 :root {
   --gray-950: #1b1b1b;
   --gray-900: #242424;

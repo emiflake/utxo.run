@@ -2,13 +2,15 @@
  * A central module for icons used in the app.
  */
 
-function LogoIcon({ className = 'h-6 w-6 text-orange-500' }) {
+function LogoIcon({ className = 'h-6 w-6 text-orange-400' }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
+      aria-label="Logo icon. Reads 'fine.tx'."
+      role="img"
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -28,6 +30,8 @@ function RegistryIcon({ className = 'mr-2 h-4 w-4' }) {
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
+      aria-label="Registry icon. Three boxes."
+      role="img"
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -48,6 +52,8 @@ function ChevronDownIcon({ className = 'ml-1 h-4 w-4' }) {
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
+      aria-label="Chevron down icon. Points down."
+      role="img"
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -65,6 +71,8 @@ function ChevronUpIcon({ className = 'ml-1 h-4 w-4' }) {
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
+      aria-label="Chevron up icon. Points up."
+      role="img"
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -82,6 +90,8 @@ function ExplorerIcon({ className = 'mr-2 h-4 w-4' }) {
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
+      aria-label="Explorer icon. A globe."
+      role="img"
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -101,6 +111,8 @@ function BlueprintIcon({ className = 'mr-2 h-4 w-4' }) {
       viewBox="0 0 24 24"
       stroke-width="1.5"
       stroke="currentColor"
+      aria-label="Blueprint icon. A puzzle piece."
+      role="img"
       className={className}
     >
       <path
@@ -119,6 +131,8 @@ function FileIcon({ className = 'h-4 w-4' }) {
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
+      aria-label="File icon. A page with the corner turned over."
+      role="img"
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -137,6 +151,8 @@ function FileSearchIcon({ className = 'h-4 w-4' }) {
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
+      aria-label="file search icon, magnifying glass"
+      role="img"
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -156,6 +172,8 @@ function SearchIcon({ className = 'h-4 w-4', color = 'currentColor' }) {
       xmlns="http://www.w3.org/2000/svg"
       width="16"
       height="16"
+      aria-label="search, magnifying glass"
+      role="img"
       viewBox="0 0 24 24"
       fill="none"
       stroke={color}
@@ -213,6 +231,7 @@ function CheckIcon({ className = 'h-3.5 w-3.5' }: { className?: string }) {
       xmlns="http://www.w3.org/2000/svg"
       className={className}
       viewBox="0 0 24 24"
+      aria-label="check mark"
       fill="none"
       stroke="currentColor"
       strokeWidth="2"
@@ -230,6 +249,7 @@ function CopyIcon({ className = 'h-3.5 w-3.5' }: { className?: string }) {
       xmlns="http://www.w3.org/2000/svg"
       className={className}
       viewBox="0 0 24 24"
+      aria-label="copy icon"
       fill="none"
       stroke="currentColor"
       strokeWidth="2"
@@ -248,6 +268,8 @@ function LinkIcon({ className = 'h-3.5 w-3.5' }: { className?: string }) {
       xmlns="http://www.w3.org/2000/svg"
       className={className}
       viewBox="0 0 24 24"
+      aria-label="link to another page"
+      role="img"
       fill="none"
       stroke="currentColor"
       strokeWidth="2"
@@ -266,6 +288,8 @@ function ArrowNext({ className = 'h-4 w-4' }: { className?: string }) {
       xmlns="http://www.w3.org/2000/svg"
       className={className}
       viewBox="0 0 20 20"
+      aria-label="arrow pointing right"
+      role="img"
       fill="currentColor"
     >
       <path
@@ -283,6 +307,8 @@ function ArrowPrev({ className = 'h-4 w-4' }: { className?: string }) {
       xmlns="http://www.w3.org/2000/svg"
       className={className}
       viewBox="0 0 20 20"
+      aria-label="arrow pointing left"
+      role="img"
       fill="currentColor"
     >
       <path
@@ -301,6 +327,8 @@ function SunIcon({ className = 'h-4 w-4' }) {
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
+      aria-label="sun"
+      role="img"
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -326,6 +354,8 @@ function MoonIcon({ className = 'h-4 w-4' }) {
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
+      aria-label="moon"
+      role="img"
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -345,6 +375,8 @@ function ExternalLinkIcon({
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
+      aria-label="open link in new tab"
+      role="img"
       className={className}
       strokeWidth="2"
       strokeLinecap="round"
@@ -365,6 +397,8 @@ function TrashIcon({ className = 'h-4 w-4' }: { className?: string }) {
       fill="none"
       stroke="currentColor"
       strokeWidth="2"
+      aria-label="trash bin"
+      role="img"
       strokeLinecap="round"
       strokeLinejoin="round"
       className={className}
@@ -382,11 +416,54 @@ function DotsVerticalIcon({ className = 'h-4 w-4' }: { className?: string }) {
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 24 24"
       fill="currentColor"
+      aria-label="Vertical dots icon."
+      role="img"
       className={className}
     >
       <circle cx="5" cy="12" r="1.5" />
       <circle cx="12" cy="12" r="1.5" />
       <circle cx="19" cy="12" r="1.5" />
+    </svg>
+  );
+}
+
+function MenuIcon({ className = 'h-4 w-4' }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      aria-label="Menu icon. Three horizontal lines."
+      role="img"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <line x1="3" y1="12" x2="21" y2="12" />
+      <line x1="3" y1="6" x2="21" y2="6" />
+      <line x1="3" y1="18" x2="21" y2="18" />
+    </svg>
+  );
+}
+
+function XIcon({ className = 'h-4 w-4' }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      aria-label="Cross icon. Represents closing an element."
+      role="img"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <line x1="18" y1="6" x2="6" y2="18" />
+      <line x1="6" y1="6" x2="18" y2="18" />
     </svg>
   );
 }
@@ -402,6 +479,7 @@ export {
   FileSearchIcon,
   SearchIcon,
   SettingsIcon,
+  TerminalIcon,
   CheckIcon,
   CopyIcon,
   LinkIcon,
@@ -411,6 +489,7 @@ export {
   MoonIcon,
   ExternalLinkIcon,
   TrashIcon,
-  TerminalIcon,
   DotsVerticalIcon,
+  MenuIcon,
+  XIcon,
 };

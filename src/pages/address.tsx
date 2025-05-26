@@ -13,6 +13,7 @@ import { MonoTag } from '../components/MiniTag';
 import CommandPalette from '../components/CommandPalette';
 import { MainLayout } from '../components/layout/Main';
 import { Footer } from '../components/layout/Footer';
+import { SkipLink } from '../components/layout/A11y';
 
 const outputKey = (output: TransactionOutput) => {
   return `${output.tx_hash}-${output.index}`;
@@ -82,11 +83,13 @@ export const AddressPage = () => {
 
   return (
     <div className="min-h-screen flex flex-col p-1 gap-5 dark:bg-gray-900">
+      <SkipLink />
+
       <NavBar />
 
       <CommandPalette />
 
-      <MainLayout>
+      <MainLayout ariaLabel="Address page">
         <CopyBody title="Address" value={address} url={addressUrl} />
         {scriptInfo && <ScriptInfo script={scriptInfo} />}
 

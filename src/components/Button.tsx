@@ -1,13 +1,13 @@
 export type IconButtonProps = {
   onClick: () => void;
-  disabled: boolean;
+  disabled?: boolean;
   ariaLabel: string;
   children: React.ReactNode;
 };
 
 export const IconButton = ({
   onClick,
-  disabled,
+  disabled = false,
   ariaLabel,
   children,
 }: IconButtonProps) => {

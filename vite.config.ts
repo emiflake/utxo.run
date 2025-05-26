@@ -36,6 +36,18 @@ export default defineConfig({
       '/betterfrost': {
         target: process.env.VITE_BETTERFROST_URL,
         changeOrigin: true,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        configure: (proxy, _options) => {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          proxy.on('proxyReq', (proxyReq, _req, _res, _options) => {
+            if (process.env.VITE_BLOCKFROST_PROJECT_ID) {
+              proxyReq.setHeader(
+                'project_id',
+                process.env.VITE_BLOCKFROST_PROJECT_ID,
+              );
+            }
+          });
+        },
         rewrite: (path) => path.replace(/^\/betterfrost/, ''),
       },
 
