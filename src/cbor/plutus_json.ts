@@ -11,7 +11,7 @@ export interface PlutusJsonEntity {
   description: string;
 }
 
-export const db = new Dexie('fine-tx') as Dexie & {
+export const db = new Dexie('utxo.run') as Dexie & {
   plutusJson: EntityTable<PlutusJsonEntity, 'id'>;
 };
 

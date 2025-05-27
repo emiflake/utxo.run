@@ -3,7 +3,7 @@ import { betterfrostURL, Block, useLatestBlock } from '../betterfrost';
 import { MiniTransactionCard } from '../components/MiniTx';
 import { NavBar } from '../components/nav';
 import { ShimmerBox } from '../components/tx';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useOgmiosHealth, useQueryLedgerStateUtxos } from '../ogmios';
 import { Paginate } from '../components/Pagination';
 import { shorten } from '../utils';
@@ -110,6 +110,10 @@ export const ViewUtxos = () => {
 
 export const ChainPage = () => {
   const ogmiosHealthQuery = useOgmiosHealth();
+
+  useEffect(() => {
+    document.title = 'utxo.run | chain';
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col p-1 gap-5 dark:bg-gray-900">

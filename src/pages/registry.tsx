@@ -15,6 +15,7 @@ import CommandPalette from '../components/CommandPalette';
 import { MainLayout } from '../components/layout/Main';
 import { Footer } from '../components/layout/Footer';
 import { SkipLink } from '../components/layout/A11y';
+import { useEffect } from 'react';
 
 // Column helper for TanStack Table
 const columnHelper = createColumnHelper<ScriptInfo>();
@@ -58,6 +59,10 @@ export const RegistryPage = () => {
     getCoreRowModel: getCoreRowModel(),
     state: {},
   });
+
+  useEffect(() => {
+    document.title = 'utxo.run | Liqwid Registry';
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col p-1 gap-5 dark:bg-gray-900">

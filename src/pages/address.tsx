@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { NavBar } from '../components/nav';
 import { useUtxosByAddress } from '../betterfrost';
 import { useParams } from 'react-router';
@@ -80,6 +80,10 @@ export const AddressPage = () => {
       return [];
     }
   }, [utxos]);
+
+  useEffect(() => {
+    document.title = address ? `address ${address}` : 'utxo.run | address';
+  }, [address]);
 
   return (
     <div className="min-h-screen flex flex-col p-1 gap-5 dark:bg-gray-900">

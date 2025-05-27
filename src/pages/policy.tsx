@@ -1,6 +1,6 @@
 import { useParams } from 'react-router';
 import { NavBar } from '../components/nav';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import {
   AssetHistory,
   AssetTransaction,
@@ -146,6 +146,10 @@ export const PolicyPage = () => {
       (script) => script.scriptHash === policy,
     );
   }, [registryQuery.data, policy]);
+
+  useEffect(() => {
+    document.title = policy ? `policy ${policy}` : 'utxo.run | policy';
+  }, [policy]);
 
   return (
     <div className="min-h-screen flex flex-col p-1 gap-5 dark:bg-gray-900">

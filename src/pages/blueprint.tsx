@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState, useMemo } from 'react';
+import { useCallback, useRef, useState, useMemo, useEffect } from 'react';
 import { db, PlutusJsonEntity, plutusJsonSchema } from '../cbor/plutus_json';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { NavBar } from '../components/nav';
@@ -146,6 +146,10 @@ export const BlueprintPage = () => {
       </div>
     );
   };
+
+  useEffect(() => {
+    document.title = 'utxo.run | plutus.json';
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col p-1 gap-5 dark:bg-gray-900">

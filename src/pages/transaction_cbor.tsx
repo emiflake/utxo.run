@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { processTxFromCbor } from '../tx';
 import { TxViewer } from '../components/tx';
 import { useNavigate, useParams } from 'react-router';
@@ -68,6 +68,12 @@ export function TxViewPage() {
   const processedCbor = useMemo(() => {
     return processTxFromCbor(txCbor);
   }, [txCbor]);
+
+  useEffect(() => {
+    document.title = processedCbor.success
+      ? `cbor ${processedCbor.value.hash}`
+      : 'utxo.run | cbor';
+  }, [processedCbor]);
 
   return (
     <div className="min-h-screen flex flex-col p-1 gap-5 dark:bg-gray-900">

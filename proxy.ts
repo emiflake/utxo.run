@@ -1,5 +1,5 @@
 /**
- * A simple proxy server for the fine-tx app
+ * A simple proxy server for the utxo.run app
  *
  * When running under docker, we would like to proxy requests to the betterfrost and ogmios services,
  * but we don't want to run vite in the container. Additionally, we would like to build the app

@@ -75,7 +75,7 @@ export function NavBar() {
             <Link to="/" className="flex items-center gap-2">
               <LogoIcon />
               <span className="text-2xl font-bold tracking-tight text-orange-400">
-                fine.tx
+                utxo.run
               </span>
             </Link>
           </div>

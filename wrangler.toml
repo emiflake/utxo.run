@@ -4,7 +4,7 @@ main = "proxy-cf.ts"
 compatibility_flags = [ "nodejs_compat" ]
 compatibility_date = "2025-05-21"
 
-route = { pattern = "fine.nix.dance/*", zone_name = "nix.dance" }
+route = { pattern = "utxo.run/*", zone_name = "utxo.run" }
 
 [assets]
 directory = "./dist/"

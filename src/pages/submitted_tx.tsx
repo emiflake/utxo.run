@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { NavBar } from '../components/nav';
 import { useNavigate, useParams } from 'react-router';
 import { useTxDataByHash } from '../betterfrost';
@@ -69,6 +69,10 @@ export const SubmittedTxPage = () => {
   }, []);
 
   const { data: txData, isError } = useTxDataByHash(txHash);
+
+  useEffect(() => {
+    document.title = txData ? `tx ${txData.hash}` : 'utxo.run | tx';
+  }, [txData]);
 
   return (
     <div className="min-h-screen flex flex-col p-1 gap-5 dark:bg-gray-900">

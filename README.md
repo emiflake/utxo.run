@@ -1,4 +1,4 @@
-# fine-tx
+# utxo.run
 
 A feature... fine transaction viewer. Especially useful for local devnet debugging!
 
@@ -8,7 +8,7 @@ A feature... fine transaction viewer. Especially useful for local devnet debuggi
 
 ## Dependencies
 
-fine-tx depends on `betterfrost` and _optionally_ `ogmios`. Configure `.env` based on the example `.env.example`.
+utxo.run depends on `betterfrost` and _optionally_ `ogmios`. Configure `.env` based on the example `.env.example`.
 
 ## proxy server
 

@@ -1,4 +1,4 @@
-// Cloudflare Worker proxy for fine-tx
+// Cloudflare Worker proxy for utxo.run
 
 import { Hono } from 'hono';
 import { proxy } from 'hono/proxy';

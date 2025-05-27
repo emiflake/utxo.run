@@ -159,6 +159,10 @@ export const HomePage = () => {
     return latestBlock !== undefined ? 'connected' : 'error';
   }, [latestBlock, latestBlockLoading, latestBlockError]);
 
+  useEffect(() => {
+    document.title = 'utxo.run | home';
+  }, []);
+
   return (
     <div className="min-h-screen flex flex-col p-1 gap-5 dark:bg-gray-900">
       <NavBar />
@@ -168,18 +172,18 @@ export const HomePage = () => {
       <MainLayout>
         <div className="flex flex-col p-2 gap-2 max-w-[600px] lg:max-w-[1200px] mx-auto">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            fine-tx
+            utxo.run
           </h1>
 
           <span className="text-sm text-gray-500 dark:text-gray-400">
             Git repo:{' '}
             <a
-              href="https://github.com/emiflake/fine-tx"
+              href="https://github.com/emiflake/utxo.run"
               target="_blank"
               rel="noopener noreferrer"
               className="text-blue-500 dark:text-blue-300 hover:underline"
             >
-              emiflake/fine-tx
+              emiflake/utxo.run
             </a>
           </span>
 
@@ -201,10 +205,10 @@ export const HomePage = () => {
           </p>
 
           <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200">
-            Using fine-tx
+            Using utxo.run
           </h2>
           <p className="text-gray-700 dark:text-gray-300">
-            You can use fine-tx to view transactions, both submitted and raw
+            You can use utxo.run to view transactions, both submitted and raw
             CBOR. You can also view addresses and policies. The search bar
             accepts any of those in their common formats. You can also open the
             command palette with <KeyboardShortcut>Ctrl + K</KeyboardShortcut>.
