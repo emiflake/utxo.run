@@ -57,12 +57,14 @@ const TxHashForm = () => {
   );
 };
 
-export const SubmittedTxPage = () => {
+export const SubmittedTxPage = ({
+  txHash: txHashOverride,
+}: { txHash?: string }) => {
   const params = useParams();
 
   const txHash = useMemo(() => {
-    return params.txHash ?? '';
-  }, [params]);
+    return txHashOverride ?? params.txHash ?? '';
+  }, [params, txHashOverride]);
 
   const txUrl = useMemo(() => {
     return `${window.location.href}`;

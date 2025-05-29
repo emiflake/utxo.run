@@ -31,6 +31,12 @@ const config = convict({
     default: 0,
     env: 'PROXY_CACHE_SIZE',
   },
+  pasteUrl: {
+    doc: 'URL for the paste service',
+    format: String,
+    default: 'https://paste.super.fish',
+    env: 'VITE_SF_URL',
+  },
   registryUrl: {
     doc: 'URL for the token registry service',
     format: String,
@@ -114,6 +120,21 @@ app.all('/ogmios/*', async (c) => {
 
 app.get('/registry-proxy/:path', async (c) => {
   return proxy(`${config.get('registryUrl')}/${c.req.param('path')}`);
+});
+
+app.post('/paste/sf/', async (c) => {
+  return proxy(`${config.get('pasteUrl')}`, {
+    method: 'POST',
+    body: c.req.raw.body,
+    headers: {
+      ...c.req.raw.headers,
+      'User-Agent': c.req.raw.headers['User-Agent'],
+    },
+  });
+});
+
+app.get('/paste/sf/:id', async (c) => {
+  return proxy(`${config.get('pasteUrl')}/${c.req.param('id')}`);
 });
 
 console.log(`

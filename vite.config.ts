@@ -56,12 +56,25 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/registry-proxy/, ''),
       },
+
+      // optional ogmios service
       ...(process.env.VITE_OGMIOS_URL && process.env.VITE_OGMIOS_URL !== 'null'
         ? {
             '/ogmios': {
               target: process.env.VITE_OGMIOS_URL,
               changeOrigin: true,
               rewrite: (path) => path.replace(/^\/ogmios/, ''),
+            },
+          }
+        : {}),
+
+      // optional paste.super.fish paste service
+      ...(process.env.VITE_SF_URL && process.env.VITE_SF_URL !== 'null'
+        ? {
+            '/paste/sf': {
+              target: process.env.VITE_SF_URL,
+              changeOrigin: true,
+              rewrite: (path) => path.replace(/^\/paste\/sf/, ''),
             },
           }
         : {}),

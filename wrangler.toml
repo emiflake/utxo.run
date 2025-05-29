@@ -6,6 +6,12 @@ compatibility_date = "2025-05-21"
 
 route = { pattern = "utxo.run/*", zone_name = "utxo.run" }
 
+[vars]
+VITE_SF_URL = "https://paste.super.fish"
+
+[observability]
+enabled = true
+
 [assets]
 directory = "./dist/"
 not_found_handling = "single-page-application"

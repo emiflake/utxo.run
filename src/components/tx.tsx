@@ -22,6 +22,7 @@ import { Box, BoxHeader } from './layout/Box';
 import { ThreeDots } from './layout/ThreeDots';
 import * as CML from '@dcspark/cardano-multiplatform-lib-browser';
 import * as Betterfrost from '../betterfrost';
+import { ErrorBox } from '../App';
 
 export const ViewTransactionLiveness = ({ hash }: { hash: string }) => {
   const { data: tx, isLoading, isError } = useTxByHash(hash);
@@ -303,7 +304,11 @@ export const ViewTransactionInput = ({
   input: TransactionInput;
   redeemer?: LegacyRedeemer;
 }) => {
-  const { data: txUtxos, isLoading } = useTxUtxosByHash(input.transactionId);
+  const {
+    data: txUtxos,
+    isLoading,
+    isError,
+  } = useTxUtxosByHash(input.transactionId);
 
   const registryQuery = useRegistry();
 
@@ -339,6 +344,8 @@ export const ViewTransactionInput = ({
           <RefTag text="Created" />
         </Link>
       </BoxHeader>
+
+      {isError && <ErrorBox message="Failed to load input" />}
 
       {inputUtxo?.address && (
         <div className="flex flex-1 gap-2">
@@ -723,7 +730,7 @@ export const TxViewer = ({ tx }: { tx: Transaction }) => {
               {tx.requiredSigners.map((s) => (
                 <span
                   key={s}
-                  className="bg-indigo-100 dark:bg-indigo-400/20 text-indigo-700 dark:text-indigo-200 text-xs font-mono px-3 py-1 border border-indigo-300 dark:border-indigo-300/50"
+                  className="bg-indigo-100 dark:bg-indigo-400/20 text-indigo-700 dark:text-indigo-200 text-xs font-mono px-3 py-1 border border-indigo-300 dark:border-indigo-300/50 break-all"
                 >
                   {s}
                 </span>

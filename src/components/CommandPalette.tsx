@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { TerminalIcon } from './Icons';
 import { NavigateFunction, useNavigate } from 'react-router';
-import { classifySearch } from '../search';
+import { classifySearch, handleSearch } from '../search';
 import { shorten } from '../utils';
 import { useTheme } from '../context/Theme';
 
@@ -58,7 +58,7 @@ function syntheticCommands(input: string): Command[] {
           </>
         ),
         action: (ctx: CommandContext) => {
-          ctx.navigate(`/submitted-tx/${input}`);
+          handleSearch(input, ctx.navigate);
         },
       },
     ];
@@ -72,7 +72,7 @@ function syntheticCommands(input: string): Command[] {
           </>
         ),
         action: (ctx: CommandContext) => {
-          ctx.navigate(`/address/${input}`);
+          handleSearch(input, ctx.navigate);
         },
       },
     ];
@@ -86,7 +86,7 @@ function syntheticCommands(input: string): Command[] {
           </>
         ),
         action: (ctx: CommandContext) => {
-          ctx.navigate(`/tx/${input}`);
+          handleSearch(input, ctx.navigate);
         },
       },
     ];

@@ -4,7 +4,7 @@ import { AnimatedSearchInput } from '../components/AnimatedSearchInput';
 import { NavBar } from '../components/nav';
 import CommandPalette from '../components/CommandPalette';
 import { MainLayout } from '../components/layout/Main';
-import { classifySearch } from '../search';
+import { handleSearch } from '../search';
 import { useOgmiosHealth } from '../ogmios';
 import { useLatestBlock } from '../betterfrost';
 import { KeyboardShortcut } from '../components/KeyboardShortcut';
@@ -106,17 +106,8 @@ export function SearchBar() {
 
   const navigate = useNavigate();
 
-  const handleSearch = useCallback(() => {
-    const searchType = classifySearch(searchValue);
-    if (searchType === 'hash') {
-      navigate(`/submitted-tx/${searchValue}`);
-    } else if (searchType === 'address') {
-      navigate(`/address/${searchValue}`);
-    } else if (searchType === 'cbor') {
-      navigate(`/tx/${searchValue}`);
-    } else {
-      return;
-    }
+  const handleSearchCb = useCallback(() => {
+    handleSearch(searchValue, navigate);
   }, [searchValue, navigate]);
 
   const animatedText = useAnimatedText({
@@ -131,7 +122,7 @@ export function SearchBar() {
     <AnimatedSearchInput
       value={searchValue}
       onChange={(e) => setSearchValue(e.target.value)}
-      onSubmit={handleSearch}
+      onSubmit={handleSearchCb}
       placeholder={animatedText}
       title="Search. Addresses, tx CBORs and tx hashes all work!"
       type="search"
