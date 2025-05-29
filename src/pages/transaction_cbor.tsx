@@ -58,12 +58,12 @@ const TxViewForm = () => {
   );
 };
 
-export function TxViewPage() {
+export function TxViewPage({ cbor }: { cbor?: string }) {
   const params = useParams();
 
   const txCbor = useMemo(() => {
-    return params.txCbor ?? '';
-  }, [params]);
+    return cbor ?? params.txCbor ?? '';
+  }, [params, cbor]);
 
   const processedCbor = useMemo(() => {
     return processTxFromCbor(txCbor);

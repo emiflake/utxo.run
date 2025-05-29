@@ -19,12 +19,14 @@ const outputKey = (output: TransactionOutput) => {
   return `${output.tx_hash}-${output.index}`;
 };
 
-export const AddressPage = () => {
+export const AddressPage = ({
+  address: addressOverride,
+}: { address?: string }) => {
   const params = useParams();
 
   const address = useMemo(() => {
-    return params.address ?? '';
-  }, [params]);
+    return addressOverride ?? params.address ?? '';
+  }, [params, addressOverride]);
 
   const addrInfo = useMemo(() => {
     return addressInfo(address);

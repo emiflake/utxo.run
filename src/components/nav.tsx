@@ -17,25 +17,17 @@ import {
   SettingsIcon,
   XIcon,
 } from './Icons';
-import { classifySearch } from '../search';
+import { handleSearch } from '../search';
 
 export function SearchBar() {
   const [searchValue, setSearchValue] = useState('');
 
   const navigate = useNavigate();
 
-  const handleSearch = useCallback(() => {
-    const searchType = classifySearch(searchValue);
-    if (searchType === 'hash') {
-      navigate(`/submitted-tx/${searchValue}`);
-    } else if (searchType === 'address') {
-      navigate(`/address/${searchValue}`);
-    } else if (searchType === 'cbor') {
-      navigate(`/tx/${searchValue}`);
-    } else {
-      return;
-    }
-  }, [searchValue, navigate]);
+  const handleSearchCb = useCallback(
+    () => handleSearch(searchValue, navigate),
+    [searchValue, navigate],
+  );
 
   return (
     <div className="relative w-full lg:w-80">
@@ -46,7 +38,7 @@ export function SearchBar() {
       <AnimatedSearchInput
         value={searchValue}
         onChange={(e) => setSearchValue(e.target.value)}
-        onSubmit={handleSearch}
+        onSubmit={handleSearchCb}
         placeholder="Enter your query here..."
         title="Search. Addresses, tx CBORs and tx hashes all work!"
         type="search"

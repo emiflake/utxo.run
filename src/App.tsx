@@ -16,13 +16,12 @@ import { RegistryProvider } from './registry_context';
 import { BlueprintPage } from './pages/blueprint';
 import { DatumProvider } from './context/Providers';
 import { HomePage } from './pages/home';
+import { HandlePaste } from './pages/paste';
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      // @ts-expect-error Suspense is not a valid option, according to the types, but
-      // it is valid in practice.
-      suspense: true,
+      // suspense: true,
     },
   },
 });
@@ -61,6 +60,7 @@ function App() {
             />
             <Route path="/address/:address" element={<AddressPage />} />
             <Route path="/blueprint" element={<BlueprintPage />} />
+            <Route path="/p/:id" element={<HandlePaste iface="sf" />} />
           </Routes>
         </Router>
         <ReactQueryDevtools initialIsOpen />
