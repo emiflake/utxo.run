@@ -375,6 +375,7 @@ export const ViewTransactionInput = ({
           <span className="text-sm dark:text-gray-400 text-gray-600">
             Datum
           </span>
+
           <ViewDatum datum={inputUtxo.inline_datum} />
         </>
       )}
@@ -607,46 +608,7 @@ export const ViewTransactionOutput = ({
   );
 };
 
-/**
- * A component that displays a generic label and value inline, similar to MonoTag in ScriptInfo.
- *
- * @param label - The label to display
- * @param value - The value to display
- * @param href - Optional link URL
- * @returns A styled inline label-value pair component
- */
-export const GenericInfo = ({
-  label,
-  value,
-  href,
-}: {
-  label: string;
-  value: string;
-  href?: string;
-}) => {
-  return (
-    <span className="inline-flex items-stretch text-xs mr-2 mb-1 border border-gray-100 dark:border-gray-700 w-full">
-      <span className="bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-300 px-1.5 py-0.5 flex-shrink-0">
-        {label}
-      </span>
-      {href && (
-        <Link
-          to={href}
-          className="bg-gray-50 dark:bg-gray-800 text-indigo-500 dark:text-indigo-300 hover:underline px-1.5 py-0.5 font-mono flex-grow"
-        >
-          {value}
-        </Link>
-      )}
-      {!href && (
-        <span className="bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-200 px-1.5 py-0.5 font-mono flex-grow">
-          {value}
-        </span>
-      )}
-    </span>
-  );
-};
-
-export const ViewWithdrawal = ({
+const ViewWithdrawal = ({
   address,
   amount,
   redeemer,

@@ -1,6 +1,6 @@
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db, renderToJSON, renderToYaml } from '../cbor/plutus_json';
-import { Fragment, useContext, useId, useMemo, useState } from 'react';
+import { Fragment, useContext, useId, useMemo, useRef, useState } from 'react';
 import * as cbor2 from 'cbor2';
 import { parseRawDatum } from '../cbor/raw_datum';
 import { createParsingContext } from '../cbor/plutus_json';
@@ -13,6 +13,7 @@ import { toJsxRuntime } from 'hast-util-to-jsx-runtime';
 import { jsx, jsxs } from 'react/jsx-runtime';
 import { DatumContext } from '../context/DatumContext';
 import jsonBigInt from 'json-bigint';
+import { DiffCheckbox } from './DiffCheck';
 
 const JSONbig = jsonBigInt();
 
@@ -132,6 +133,26 @@ export const ViewDatum = ({ datum }: { datum: string }) => {
     return toJsxRuntime(hastTree, { Fragment, jsx, jsxs });
   }, [hastTree]);
 
+  const ref = useRef<HTMLInputElement>(null);
+
+  const [checked, setChecked] = useState(false);
+
+  const isRefObject = (
+    ref: React.RefObject<HTMLInputElement | null>,
+  ): ref is React.RefObject<HTMLInputElement> =>
+    ref instanceof Object && ref.current instanceof HTMLInputElement;
+
+  const handleCheckedChange = (checked: boolean) => {
+    if (!isRefObject(ref)) return;
+    if (checked && (datumContext?.selectedDatums?.length ?? 0) >= 2) return;
+    if (checked) {
+      datumContext?.selectDatum(ref, datum);
+    } else {
+      datumContext?.unselectDatum(ref, datum);
+    }
+    setChecked(checked);
+  };
+
   return (
     <div className="border-black border-1 bg-gray-900 text-white overflow-hidden">
       <div className="flex flex-col">
@@ -168,6 +189,18 @@ export const ViewDatum = ({ datum }: { datum: string }) => {
             </option>
           </select>
           <div className="flex gap-1">
+            <DiffCheckbox
+              ref={ref}
+              checked={checked}
+              setChecked={handleCheckedChange}
+              label="Compare"
+              disabled={
+                !checked && (datumContext?.selectedDatums?.length ?? 0) >= 2
+              }
+              count={datumContext?.selectedDatums?.length ?? 0}
+              maxCount={2}
+              className="text-white hover:text-blue-300"
+            />
             <button
               onClick={toggleExpand}
               className="text-white hover:text-blue-300 p-1"
