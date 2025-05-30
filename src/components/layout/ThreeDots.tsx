@@ -1,6 +1,6 @@
 // Three dots with non-native menu
-import React, { useRef } from "react";
-import { DotsVerticalIcon } from "../Icons";
+import React, { useRef } from 'react';
+import { DotsVerticalIcon } from '../Icons';
 
 export type ThreeDotsMenuItem = {
   label: string | React.ReactNode;
@@ -17,7 +17,7 @@ interface ThreeDotsProps {
 export const ThreeDots: React.FC<ThreeDotsProps> = ({
   name,
   description,
-  iconClassName = "",
+  iconClassName = '',
 }) => {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -32,7 +32,7 @@ export const ThreeDots: React.FC<ThreeDotsProps> = ({
         aria-label={name}
         aria-description={description}
         className={
-          "flex items-center justify-center rounded-full p-1 hover:bg-zinc-200 dark:hover:bg-zinc-700 focus:outline-none focus:ring-2 focus:ring-blue-400 transition " +
+          'flex items-center justify-center rounded-full p-1 hover:bg-zinc-200 dark:hover:bg-zinc-700 focus:outline-none focus:ring-2 focus:ring-blue-400 transition ' +
           iconClassName
         }
       >

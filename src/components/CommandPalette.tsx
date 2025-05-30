@@ -1,8 +1,8 @@
-import React, { useState, useRef, useEffect, useMemo } from "react";
-import { NavigateFunction, useNavigate } from "react-router";
-import { classifySearch, handleSearch } from "../search";
-import { shorten } from "../utils";
-import { useTheme } from "../context/Theme";
+import React, { useState, useRef, useEffect, useMemo } from 'react';
+import { NavigateFunction, useNavigate } from 'react-router';
+import { classifySearch, handleSearch } from '../search';
+import { shorten } from '../utils';
+import { useTheme } from '../context/Theme';
 import {
   CommandDialog,
   CommandEmpty,
@@ -10,10 +10,10 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/components/ui/command";
-import Fuse from "fuse.js";
-import { Command } from "cmdk";
-import { BlueprintIcon, MoonIcon, SunIcon } from "@/components/Icons";
+} from '@/components/ui/command';
+import Fuse from 'fuse.js';
+import { Command } from 'cmdk';
+import { BlueprintIcon, MoonIcon, SunIcon } from '@/components/Icons';
 
 type CommandContext = {
   navigate: NavigateFunction;
@@ -35,9 +35,9 @@ const NotCurrentThemeIcon = () => {
 const DEFAULT_GLOBAL_COMMANDS: Command[] = [
   /// Navigation
   {
-    name: "plutus.json blueprints",
+    name: 'plutus.json blueprints',
     action: (ctx: CommandContext) => {
-      ctx.navigate("/blueprint");
+      ctx.navigate('/blueprint');
     },
     displayAs: (
       <>
@@ -46,20 +46,20 @@ const DEFAULT_GLOBAL_COMMANDS: Command[] = [
     ),
   },
   {
-    name: "Registry",
+    name: 'Registry',
     action: (ctx: CommandContext) => {
-      ctx.navigate("/registry");
+      ctx.navigate('/registry');
     },
   },
   {
-    name: "Chain explorer",
+    name: 'Chain explorer',
     action: (ctx: CommandContext) => {
-      ctx.navigate("/chain");
+      ctx.navigate('/chain');
     },
   },
 
   {
-    name: "Theme Toggle",
+    name: 'Theme Toggle',
     action: (ctx: CommandContext) => {
       ctx.theme.toggleDarkMode();
     },
@@ -73,13 +73,13 @@ const DEFAULT_GLOBAL_COMMANDS: Command[] = [
 
 function syntheticCommands(input: string): Command[] {
   const searchType = classifySearch(input);
-  if (searchType === "hash") {
+  if (searchType === 'hash') {
     return [
       {
         name: `Tx with hash: ${shorten(input)}`,
         displayAs: (
           <>
-            Tx with hash:{" "}
+            Tx with hash:{' '}
             <span className="font-mono text-foreground-accent">
               {shorten(input)}
             </span>
@@ -90,7 +90,7 @@ function syntheticCommands(input: string): Command[] {
         },
       },
     ];
-  } else if (searchType === "address") {
+  } else if (searchType === 'address') {
     return [
       {
         name: `Address: ${shorten(input)}`,
@@ -104,7 +104,7 @@ function syntheticCommands(input: string): Command[] {
         },
       },
     ];
-  } else if (searchType === "cbor") {
+  } else if (searchType === 'cbor') {
     return [
       {
         name: `Tx with CBOR: ${shorten(input)}`,
@@ -133,8 +133,8 @@ function useOnKeyCombo(key: string, ctrl = false, callback: () => void) {
         callback();
       }
     }
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
   }, [key, ctrl, callback]);
 }
 
@@ -147,28 +147,28 @@ const CommandPalette = ({
   const theme = useTheme();
 
   const [open, setOpen] = useState(false);
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Open on Ctrl+K
-  useOnKeyCombo("k", true, () => setOpen(true));
+  useOnKeyCombo('k', true, () => setOpen(true));
 
   // Focus input when opened
   useEffect(() => {
     if (open) {
       setTimeout(() => inputRef.current?.focus(), 10);
     } else {
-      setQuery("");
+      setQuery('');
     }
   }, [open]);
 
   const globalFuse = new Fuse(DEFAULT_GLOBAL_COMMANDS, {
-    keys: ["name"],
+    keys: ['name'],
     threshold: 0.2,
   });
 
   const pageFuse = new Fuse(pageCommands, {
-    keys: ["name"],
+    keys: ['name'],
     threshold: 0.2,
   });
 

@@ -1,5 +1,5 @@
-import { Suspense } from "react";
-import { ShimmerBox } from "../tx";
+import { Suspense } from 'react';
+import { ShimmerBox } from '../tx';
 
 export const MainLayout = ({
   children,

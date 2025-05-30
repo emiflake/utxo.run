@@ -2,48 +2,48 @@ import {
   TransactionAmount,
   useTxByHash,
   useTxUtxosByHash,
-} from "@/betterfrost";
-import { RefTag } from "./MiniTag";
+} from '@/betterfrost';
+import { RefTag } from './MiniTag';
 
-import { useCallback, useContext, useId, useMemo } from "react";
+import { useCallback, useContext, useId, useMemo } from 'react';
 import {
   addressInfo,
   LegacyRedeemer,
   Transaction,
   TransactionInput,
   TransactionOutput,
-} from "@/tx";
-import { Link } from "react-router";
-import { scriptInfoByAddress, useRegistry } from "@/registry";
-import { shorten } from "@/utils";
-import { MonoTag, Tag } from "./MiniTag";
-import { ViewDatum, ViewDatumDiff } from "./Datum";
-import { Box, BoxHeader } from "./layout/Box";
-import { ThreeDots } from "./layout/ThreeDots";
-import * as CML from "@dcspark/cardano-multiplatform-lib-browser";
-import * as Betterfrost from "@/betterfrost";
-import { ErrorBox } from "@/App";
+} from '@/tx';
+import { Link } from 'react-router';
+import { scriptInfoByAddress, useRegistry } from '@/registry';
+import { shorten } from '@/utils';
+import { MonoTag, Tag } from './MiniTag';
+import { ViewDatum, ViewDatumDiff } from './Datum';
+import { Box, BoxHeader } from './layout/Box';
+import { ThreeDots } from './layout/ThreeDots';
+import * as CML from '@dcspark/cardano-multiplatform-lib-browser';
+import * as Betterfrost from '@/betterfrost';
+import { ErrorBox } from '@/App';
 import {
   Drawer,
   DrawerContent,
   DrawerHeader,
   DrawerTitle,
-} from "@/components/ui/drawer";
-import { DatumContext, DatumContextInterface } from "@/context/DatumContext";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { useMediaQuery } from "@/hooks/use-media-query";
+} from '@/components/ui/drawer';
+import { DatumContext, DatumContextInterface } from '@/context/DatumContext';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { useMediaQuery } from '@/hooks/use-media-query';
 import {
   Sheet,
   SheetContent,
   SheetDescription,
   SheetHeader,
   SheetTitle,
-} from "@/components/ui/sheet";
+} from '@/components/ui/sheet';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
+} from '@/components/ui/popover';
 
 export const ViewTransactionLiveness = ({ hash }: { hash: string }) => {
   const { data: tx, isLoading, isError } = useTxByHash(hash);
@@ -75,16 +75,16 @@ export const ViewTransactionLiveness = ({ hash }: { hash: string }) => {
             <li className="text-xs text-gray-800 dark:text-gray-300">
               <span>Block: </span>
               <span className="font-medium">{tx.block_height}</span>
-              {" ("}
-              minted at{" "}
+              {' ('}
+              minted at{' '}
               <span className="text-xs text-gray-700 dark:text-gray-400">
                 {tx.block_time}
               </span>
-              {", or "}
+              {', or '}
               <span className="text-xs text-green-700 dark:text-green-400">
                 {new Date(tx.block_time * 1000).toLocaleString()}
               </span>
-              {")"}
+              {')'}
             </li>
             <li className="text-xs text-gray-800 dark:text-gray-300">
               {tx?.size} bytes
@@ -123,15 +123,15 @@ export const ViewUnit = ({
   const resolvedUnitName = useMemo(() => {
     if (registryQuery.isLoading || registryQuery.isError) {
       return <span> {shorten(unit)} </span>;
-    } else if (unit === "lovelace") {
-      return "Ada";
+    } else if (unit === 'lovelace') {
+      return 'Ada';
     } else {
       return shorten(unit);
     }
   }, [unit, registryQuery.isLoading, registryQuery.isError]);
 
   const decimals = useMemo(() => {
-    if (unit === "lovelace") {
+    if (unit === 'lovelace') {
       return 6;
     } else {
       return 0;
@@ -145,11 +145,11 @@ export const ViewUnit = ({
   const metadataName = useMemo(() => {
     if (registryQuery.isLoading || registryQuery.isError) {
       return;
-    } else if (unit === "lovelace") {
+    } else if (unit === 'lovelace') {
       return;
     } else {
       const scriptInfo = registryQuery.data?.scriptInfos.find(
-        (s) => s.scriptHash === unit
+        (s) => s.scriptHash === unit,
       );
 
       if (!scriptInfo) {
@@ -172,7 +172,7 @@ export const ViewUnit = ({
       className="flex flex-row justify-between gap-4 border-1 shadow-xs bg-gray-50/20 dark:bg-gray-900/20 border-gray-200 dark:border-gray-600 p-2 break-all"
     >
       <span className="text-sm self-center" id={labelId} aria-hidden>
-        {unit === "lovelace" ? (
+        {unit === 'lovelace' ? (
           <span className="font-mono dark:text-white">{resolvedUnitName}</span>
         ) : (
           <div className="flex flex-row gap-1">
@@ -370,8 +370,8 @@ export const ViewTransactionInput = ({
               className="w-168"
               style={{
                 maxHeight:
-                  "calc(var(--radix-popover-content-available-height))",
-                overflow: "auto",
+                  'calc(var(--radix-popover-content-available-height))',
+                overflow: 'auto',
               }}
               side="left"
               align="start"
@@ -443,7 +443,7 @@ export const LoadingSpinner = () => {
 };
 
 // A box that pulses to indicate loading
-export const ShimmerBox = ({ className = "" }: { className?: string }) => {
+export const ShimmerBox = ({ className = '' }: { className?: string }) => {
   return (
     <div
       className={`flex flex-col p-2 bg-gray-200 dark:bg-gray-700 animate-pulse ${className}`}
@@ -461,7 +461,7 @@ export const MiniButton = ({
   children: React.ReactNode;
 }) => {
   return (
-    <a href={href ?? "#"} onClick={onClick ?? (() => {})}>
+    <a href={href ?? '#'} onClick={onClick ?? (() => {})}>
       <button className="flex flex-col gap-2 border-black dark:border-gray-400 bg-slate-100 dark:bg-slate-700 dark:text-white border-2 p-2 rounded-md break-all max-w-auto text-xs">
         {children}
       </button>
@@ -678,10 +678,10 @@ const ViewWithdrawal = ({
           to={`/address/${address}`}
         >
           {address}
-        </Link>{" "}
+        </Link>{' '}
         is withdrawing {amount} lovelace
       </span>
-      {redeemer?.data && typeof redeemer?.data === "string" && (
+      {redeemer?.data && typeof redeemer?.data === 'string' && (
         <>
           <span className="text-sm dark:text-gray-400 text-gray-600">
             Redeemer
@@ -702,12 +702,12 @@ export const TxViewer = ({ tx }: { tx: Transaction }) => {
         datumContext?.unselectAllDatums();
       }
     },
-    [datumContext]
+    [datumContext],
   );
 
   const inputs = tx.inputs.map((input, index) => {
     const redeemer = tx.legacyRedeemers.find(
-      (r) => r.index === index && r.tag === "Spend"
+      (r) => r.index === index && r.tag === 'Spend',
     );
     return (
       <ViewTransactionInput
@@ -744,7 +744,7 @@ export const TxViewer = ({ tx }: { tx: Transaction }) => {
         {tx.requiredSigners.length > 0 && (
           <div className="flex flex-col gap-2 border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-2">
             <span className="text-md text-slate-900 dark:text-white">
-              Required Signers{" "}
+              Required Signers{' '}
               <span className="text-xs text-gray-500 dark:text-gray-300">
                 ({tx.requiredSigners.length})
               </span>
@@ -764,7 +764,7 @@ export const TxViewer = ({ tx }: { tx: Transaction }) => {
         {Object.keys(tx.withdrawals).length > 0 && (
           <>
             <h2 className="text-md text-slate-900 dark:text-white">
-              Withdrawals{" "}
+              Withdrawals{' '}
               <span className="text-xs text-gray-500 dark:text-gray-300">
                 ({Object.keys(tx.withdrawals).length})
               </span>
@@ -775,7 +775,7 @@ export const TxViewer = ({ tx }: { tx: Transaction }) => {
                 address={address}
                 amount={amount}
                 redeemer={tx.legacyRedeemers.find(
-                  (r) => r.tag === "Reward" && r.index === i
+                  (r) => r.tag === 'Reward' && r.index === i,
                 )}
               />
             ))}
@@ -786,7 +786,7 @@ export const TxViewer = ({ tx }: { tx: Transaction }) => {
       <div className="flex flex-col lg:flex-row gap-2">
         <div className="flex flex-col lg:w-1/2 gap-2">
           <h1 className="text-xl text-slate-900 dark:text-white">
-            Inputs{" "}
+            Inputs{' '}
             <span className="text-xs text-gray-500 dark:text-gray-300">
               ({tx.inputs.length})
             </span>
@@ -795,7 +795,7 @@ export const TxViewer = ({ tx }: { tx: Transaction }) => {
           {referenceInputs.length > 0 && (
             <div className="flex flex-col gap-2 striped p-2">
               <h1 className="text-xl text-slate-900 dark:text-white">
-                Reference Inputs{" "}
+                Reference Inputs{' '}
                 <span className="text-xs text-gray-500 dark:text-gray-300">
                   ({referenceInputs.length})
                 </span>
@@ -806,7 +806,7 @@ export const TxViewer = ({ tx }: { tx: Transaction }) => {
         </div>
         <div className="flex flex-col lg:w-1/2 gap-2">
           <h1 className="text-xl text-slate-900 dark:text-white">
-            Outputs{" "}
+            Outputs{' '}
             <span className="text-xs text-gray-500 dark:text-gray-300">
               ({tx.outputs.length})
             </span>
@@ -817,7 +817,7 @@ export const TxViewer = ({ tx }: { tx: Transaction }) => {
       {tx.mint.length > 0 && (
         <div className="flex flex-col gap-2 bg-blue-100 dark:bg-blue-700/40 p-2">
           <h1 className="text-xl text-slate-900 dark:text-white">
-            Mint{" "}
+            Mint{' '}
             <span className="text-xs text-gray-500 dark:text-gray-300">
               ({tx.mint.length})
             </span>
@@ -828,7 +828,7 @@ export const TxViewer = ({ tx }: { tx: Transaction }) => {
       {tx.burn.length > 0 && (
         <div className="flex flex-col gap-2 bg-rose-50 dark:bg-red-700/30 p-2">
           <h1 className="text-xl text-slate-900 dark:text-white">
-            Burn{" "}
+            Burn{' '}
             <span className="text-xs text-gray-500 dark:text-gray-300">
               ({tx.burn.length})
             </span>
@@ -851,7 +851,7 @@ const DiffDialog = ({
   datumContext: DatumContextInterface | undefined;
   handleSetIsOpen: (open: boolean) => void;
 }) => {
-  const isDesktop = useMediaQuery("(min-width: 768px)");
+  const isDesktop = useMediaQuery('(min-width: 768px)');
   const open = (datumContext?.selectedDatums.length ?? 0) > 1;
   const onOpenChange = (open: boolean) => {
     handleSetIsOpen(open);
@@ -861,7 +861,7 @@ const DiffDialog = ({
     if (!datumContext || datumContext.selectedDatums.length !== 2) return null;
     return (
       <ViewDatumDiff
-        key={"datum_diff"}
+        key={'datum_diff'}
         datumA={datumContext.selectedDatums[0].cbor}
         datumB={datumContext.selectedDatums[1].cbor}
       />

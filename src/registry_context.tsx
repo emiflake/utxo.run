@@ -17,7 +17,9 @@ const defaultRegistryURL = '/registry-proxy/registry.json';
 
 export const RegistryProvider = ({
   children,
-}: { children: React.ReactNode }) => {
+}: {
+  children: React.ReactNode;
+}) => {
   const [registryURL, setRegistryURL] = useLocalStorage<string>(
     'registry-url',
     defaultRegistryURL,
@@ -57,7 +59,7 @@ export const RegistryUrlSetting = () => {
           id="registry-url"
           value={registryContext?.registryURL}
           disabled
-          className="border rounded p-2 bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-300"
+          className="rounded p-2 bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-300 min-h-[44px] border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm rounded flex items-center opacity-60 cursor-not-allowed"
           title="This is disabled because `VITE_DYN_REGISTRY` is set to `false`"
         />
       </div>
@@ -95,8 +97,10 @@ export const RegistryUrlSetting = () => {
       </label>
       {isExpanded ? (
         <div
-          className="flex flex-wrap items-center min-h-[44px] border-2 rounded bg-white dark:bg-gray-800 border-gray-200 
-            dark:border-gray-700 overflow-hidden group focus-within:border-gray-300 dark:focus-within:border-gray-600 shadow-sm"
+          className="flex-wrap rounded bg-white dark:bg-gray-800 border-gray-200 
+            dark:border-gray-700 overflow-hidden group focus-within:border-gray-300 dark:focus-within:border-gray-600 shadow-sm
+            min-h-[44px] border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm rounded flex items-center opacity-60 cursor-not-allowed
+            "
         >
           <span className="pl-3 py-2 text-gray-500 dark:text-gray-400 whitespace-nowrap select-none">
             /registry-proxy/
