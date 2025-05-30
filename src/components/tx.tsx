@@ -17,7 +17,7 @@ import { Link } from 'react-router';
 import { scriptInfoByAddress, useRegistry } from '@/registry';
 import { shorten } from '@/utils';
 import { MonoTag, Tag } from './MiniTag';
-import { ViewDatum, ViewDatumDiff } from './Datum';
+import { ViewDatum, ViewDatumDiff, ViewMetadatum } from './Datum';
 import { Box, BoxHeader } from './layout/Box';
 import { ThreeDots } from './layout/ThreeDots';
 import * as CML from '@dcspark/cardano-multiplatform-lib-browser';
@@ -693,6 +693,23 @@ const ViewWithdrawal = ({
   );
 };
 
+export const ViewMetadata = ({
+  metadata,
+}: {
+  metadata: Record<string, string>;
+}) => {
+  return (
+    <div className="flex flex-col gap-2 border border-gray-300 dark:border-gray-700 p-2">
+      <span className="text-md text-slate-900 dark:text-white">Metadata</span>
+      <div className="flex flex-row gap-2">
+        {Object.entries(metadata).map(([key, value]) => (
+          <ViewMetadatum key={key} label={key} metadatum={value} />
+        ))}
+      </div>
+    </div>
+  );
+};
+
 export const TxViewer = ({ tx }: { tx: Transaction }) => {
   const datumContext = useContext(DatumContext);
 
@@ -741,6 +758,9 @@ export const TxViewer = ({ tx }: { tx: Transaction }) => {
             </div>
           </div>
         </div>
+        {Object.entries(tx.metadata).length > 0 && (
+          <ViewMetadata metadata={tx.metadata} />
+        )}
         {tx.requiredSigners.length > 0 && (
           <div className="flex flex-col gap-2 border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-2">
             <span className="text-md text-slate-900 dark:text-white">

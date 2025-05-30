@@ -5,7 +5,7 @@ import {
   renderToJSON,
   renderToYaml,
 } from '../cbor/plutus_json';
-import { Fragment, useContext, useId, useMemo, useRef, useState } from 'react';
+import { Fragment, useContext, useMemo, useRef, useState } from 'react';
 import * as cbor2 from 'cbor2';
 import { parseRawDatum } from '../cbor/raw_datum';
 import { createParsingContext } from '../cbor/plutus_json';
@@ -20,6 +20,19 @@ import { DatumContext, ViewMode, ViewModeList } from '../context/DatumContext';
 import jsonBigInt from 'json-bigint';
 import { diffWordsWithSpace } from 'diff';
 import { DiffCheckbox } from './DiffCheck';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { Button } from '@/components/ui/button';
 
 const JSONbig = jsonBigInt();
 
@@ -120,8 +133,6 @@ export const ViewDatum = ({ datum }: { datum: string }) => {
                 !datumContext?.selectedDatums.some((d) => d.ref === ref) &&
                 (datumContext?.selectedDatums?.length ?? 0) >= 2
               }
-              count={datumContext?.selectedDatums?.length ?? 0}
-              maxCount={2}
               className="text-white hover:text-blue-300"
             />
             <button
@@ -211,12 +222,6 @@ export const ViewDatumDiff = ({
 
   const datumContext = useContext(DatumContext);
 
-  const [isExpanded, setIsExpanded] = useState(true);
-
-  const toggleExpand = () => {
-    setIsExpanded(!isExpanded);
-  };
-
   const textToDisplayA =
     datumAParsed[datumContext?.viewMode ?? 'enriched_yaml'];
   const textToDisplayB =
@@ -225,20 +230,6 @@ export const ViewDatumDiff = ({
   const diff = useMemo(() => {
     return diffWordsWithSpace(textToDisplayA, textToDisplayB);
   }, [textToDisplayA, textToDisplayB]);
-
-  const diffString = useMemo(() => {
-    let diffString = '';
-    for (const change of diff) {
-      if (change.added) {
-        diffString += `+ ${change.value}\n`;
-      } else if (change.removed) {
-        diffString += `- ${change.value}\n`;
-      } else {
-        diffString += ` ${change.value}\n`;
-      }
-    }
-    return diffString;
-  }, [diff]);
 
   const { nodesA, nodesB } = useMemo(() => {
     const nodesA: React.ReactNode[] = [];
@@ -277,32 +268,13 @@ export const ViewDatumDiff = ({
       <div className="flex flex-col">
         <div className="flex justify-between items-center p-1 border-b border-gray-800">
           <ViewModeSelector />
-          <div className="flex gap-1">
-            <button
-              onClick={toggleExpand}
-              className="text-white hover:text-blue-300 p-1"
-              title={isExpanded ? 'Collapse' : 'Expand'}
-            >
-              {isExpanded ? (
-                <ChevronUpIcon className="h-3.5 w-3.5" />
-              ) : (
-                <ChevronDownIcon className="h-3.5 w-3.5" />
-              )}
-            </button>
-
-            <ClipboardButton
-              text={diffString}
-              className="text-white hover:text-blue-300"
-            />
-          </div>
+          <div className="flex gap-1"></div>
         </div>
         <div className="p-2 overflow-x-auto leading-none">
           <div className="flex flex-1 gap-2">
             <div className="flex w-1/2">
               <span
-                className={`text-xs font-mono break-all dark:text-white ${
-                  isExpanded ? 'whitespace-pre-wrap' : ''
-                }`}
+                className={`text-xs font-mono break-all dark:text-white whitespace-pre-wrap`}
               >
                 {nodesA}
               </span>
@@ -310,9 +282,7 @@ export const ViewDatumDiff = ({
             {
               <div className="flex border-l border-gray-00 pl-5 w-1/2">
                 <span
-                  className={`text-xs font-mono break-all dark:text-white ${
-                    isExpanded ? 'whitespace-pre-wrap' : ''
-                  }`}
+                  className={`text-xs font-mono break-all dark:text-white whitespace-pre-wrap`}
                 >
                   {nodesB}
                 </span>
@@ -328,33 +298,74 @@ export const ViewDatumDiff = ({
 };
 
 export const ViewModeSelector = () => {
-  const datumSelectId = useId();
-
   const datumContext = useContext(DatumContext);
-
-  const handleViewModeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    datumContext?.setViewMode(e.target.value as ViewMode);
-  };
 
   return (
     <>
-      <label htmlFor={datumSelectId} className="sr-only">
-        View mode selector
-      </label>
-      <select
-        id={datumSelectId}
-        aria-label="View mode selector"
-        aria-description="Select the format to view the datum in"
-        value={datumContext?.viewMode || 'enriched_yaml'}
-        onChange={handleViewModeChange}
-        className="text-xs text-white border-r border-gray-700 px-2 py-1 focus:outline-none bg-transparent"
+      <Select
+        onValueChange={(value) => datumContext?.setViewMode(value as ViewMode)}
+        value={datumContext?.viewMode}
       >
-        {Object.entries(ViewModeList).map(([key, value]) => (
-          <option key={key} label={value} value={key}>
-            {value}
-          </option>
-        ))}
-      </select>
+        <SelectTrigger className="w-[180px] border-0 border-r-1 border-gray-800 dark:bg-gray-900 bg-gray-900 hover:bg-gray-800">
+          <SelectValue placeholder="Theme" />
+        </SelectTrigger>
+        <SelectContent onAnimationStart={(e) => e.stopPropagation()}>
+          {Object.entries(ViewModeList).map(([key, value]) => (
+            <SelectItem key={key} value={key}>
+              {value}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
     </>
+  );
+};
+
+export const ViewMetadatum = ({
+  label,
+  metadatum,
+}: {
+  label: string;
+  metadatum: string;
+}) => {
+  const hastTree = useMemo(() => {
+    return refractor.highlight(metadatum, 'json');
+  }, [metadatum]);
+
+  const jsxRuntime = useMemo(() => {
+    return toJsxRuntime(hastTree, { Fragment, jsx, jsxs });
+  }, [hastTree]);
+
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button className="w-fit bg-transparent" variant="outline">
+          {label}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent
+        side="bottom"
+        className="w-168 max-h-[calc(var(--radix-popover-content-available-height))] overflow-auto bg-background dark:bg-gray-900"
+      >
+        <div className="flex flex-col">
+          <div className="p-2 overflow-x-auto leading-none flex justify-between">
+            <span>Metadata with label {label}</span>
+            <ClipboardButton
+              text={metadatum}
+              className="text-white hover:text-blue-300"
+            />
+          </div>
+          <div className="flex justify-between items-center bg-gray-900 p-1 text-white border-2 ">
+            <div className=" p-2 overflow-x-auto leading-none w-full">
+              <span
+                className={`text-xs font-mono break-all dark:text-white whitespace-pre-wrap`}
+              >
+                {jsxRuntime}
+              </span>
+            </div>
+          </div>
+        </div>
+      </PopoverContent>
+    </Popover>
   );
 };

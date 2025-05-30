@@ -7,8 +7,7 @@ export const DiffCheckbox = ({
   ref,
   label,
   disabled = false,
-  count,
-  maxCount,
+
   className = '',
 }: {
   checked: boolean;
@@ -16,8 +15,7 @@ export const DiffCheckbox = ({
   onChecked?: (checked: boolean) => void;
   ref?: React.RefObject<HTMLInputElement | null>;
   // We have checked count out of maxCount boxes.
-  count: number;
-  maxCount: number;
+
   label?: string;
   disabled?: boolean;
   className?: string;

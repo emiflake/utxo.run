@@ -1,17 +1,9 @@
 import { useLocalStorage } from 'react-use';
-import { createContext, useContext, useState } from 'react';
+import { useContext, useState } from 'react';
 import { dynamicRegistry, useRegistry } from './registry';
 import { ShimmerBox } from './components/tx';
 import { ErrorBox } from './App';
-
-export type RegistryContextInterface = {
-  registryURL: string | undefined;
-  setRegistryURL: (url: string | undefined) => void;
-};
-
-export const RegistryContext = createContext<
-  RegistryContextInterface | undefined
->(undefined);
+import { RegistryContext } from '@/context/RegistryContext';
 
 const defaultRegistryURL = '/registry-proxy/registry.json';
 
