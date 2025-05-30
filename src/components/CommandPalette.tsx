@@ -1,9 +1,19 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { TerminalIcon } from './Icons';
 import { NavigateFunction, useNavigate } from 'react-router';
 import { classifySearch, handleSearch } from '../search';
 import { shorten } from '../utils';
 import { useTheme } from '../context/Theme';
+import {
+  CommandDialog,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command';
+import Fuse from 'fuse.js';
+import { Command } from 'cmdk';
+import { BlueprintIcon, MoonIcon, SunIcon } from '@/components/Icons';
 
 type CommandContext = {
   navigate: NavigateFunction;
@@ -16,21 +26,24 @@ type Command = {
   action: (context: CommandContext) => void;
 };
 
+const NotCurrentThemeIcon = () => {
+  const { isDarkMode } = useTheme();
+  return isDarkMode ? <SunIcon /> : <MoonIcon />;
+};
+
 // Example commands (extend as needed)
 const DEFAULT_GLOBAL_COMMANDS: Command[] = [
-  {
-    name: 'Theme Toggle',
-    action: (ctx: CommandContext) => {
-      ctx.theme.toggleDarkMode();
-    },
-  },
-
   /// Navigation
   {
     name: 'plutus.json blueprints',
     action: (ctx: CommandContext) => {
       ctx.navigate('/blueprint');
     },
+    displayAs: (
+      <>
+        plutus.json blueprints <BlueprintIcon />
+      </>
+    ),
   },
   {
     name: 'Registry',
@@ -44,6 +57,18 @@ const DEFAULT_GLOBAL_COMMANDS: Command[] = [
       ctx.navigate('/chain');
     },
   },
+
+  {
+    name: 'Theme Toggle',
+    action: (ctx: CommandContext) => {
+      ctx.theme.toggleDarkMode();
+    },
+    displayAs: (
+      <>
+        Theme Toggle <NotCurrentThemeIcon />
+      </>
+    ),
+  },
 ];
 
 function syntheticCommands(input: string): Command[] {
@@ -54,7 +79,10 @@ function syntheticCommands(input: string): Command[] {
         name: `Tx with hash: ${shorten(input)}`,
         displayAs: (
           <>
-            Tx with hash: <span className="font-mono">{shorten(input)}</span>
+            Tx with hash:{' '}
+            <span className="font-mono text-foreground-accent">
+              {shorten(input)}
+            </span>
           </>
         ),
         action: (ctx: CommandContext) => {
@@ -111,16 +139,16 @@ function useOnKeyCombo(key: string, ctrl = false, callback: () => void) {
 }
 
 const CommandPalette = ({
-  extraCommands = [],
-}: { extraCommands?: Command[] }) => {
+  extraCommands: pageCommands = [],
+}: {
+  extraCommands?: Command[];
+}) => {
   const navigate = useNavigate();
   const theme = useTheme();
 
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
-  const [selected, setSelected] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
-  const listRef = useRef<HTMLUListElement>(null);
 
   // Open on Ctrl+K
   useOnKeyCombo('k', true, () => setOpen(true));
@@ -131,104 +159,83 @@ const CommandPalette = ({
       setTimeout(() => inputRef.current?.focus(), 10);
     } else {
       setQuery('');
-      setSelected(0);
     }
   }, [open]);
 
-  // Filter commands
-  const filtered = DEFAULT_GLOBAL_COMMANDS.filter((cmd) =>
-    cmd.name.toLowerCase().includes(query.toLowerCase()),
-  );
+  const globalFuse = new Fuse(DEFAULT_GLOBAL_COMMANDS, {
+    keys: ['name'],
+    threshold: 0.2,
+  });
 
-  const synthetic = syntheticCommands(query);
+  const pageFuse = new Fuse(pageCommands, {
+    keys: ['name'],
+    threshold: 0.2,
+  });
 
-  const commands = useMemo(
-    () => [...filtered, ...synthetic, ...extraCommands],
-    [filtered, synthetic, extraCommands],
-  );
+  const synthetic = useMemo(() => syntheticCommands(query), [query]);
 
-  // Trap focus
-  useEffect(() => {
-    if (!open) return;
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Tab') {
-        e.preventDefault();
-        inputRef.current?.focus();
-      }
-      if (e.key === 'Escape') setOpen(false);
-      if (e.key === 'ArrowDown')
-        setSelected((i) => Math.min(i + 1, commands.length - 1));
-      if (e.key === 'ArrowUp') setSelected((i) => Math.max(i - 1, 0));
-      if (e.key === 'Enter' && commands[selected]) {
-        commands[selected].action({ navigate, theme });
-        setOpen(false);
-      }
-    };
-    window.addEventListener('keydown', handler);
-    return () => window.removeEventListener('keydown', handler);
-  }, [open, selected, query, theme, commands, navigate]);
+  const FilteredCommandGroup = ({
+    allCommands,
+    fuse,
+    query,
+    heading,
+  }: {
+    allCommands: Command[];
+    fuse?: Fuse<Command>;
+    query: string;
+    heading: string;
+  }) => {
+    const res =
+      !query || !fuse ? allCommands : fuse.search(query).map((cmd) => cmd.item);
 
-  if (!open) return null;
+    return (
+      <>
+        {res.length > 0 && (
+          <CommandGroup heading={heading}>
+            {res.map((cmd, i) => (
+              <CommandItem
+                key={cmd.name + i}
+                onSelect={() => cmd.action({ navigate, theme })}
+              >
+                {cmd.displayAs || cmd.name}
+              </CommandItem>
+            ))}
+          </CommandGroup>
+        )}
+      </>
+    );
+  };
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-start justify-center bg-black/30 dark:bg-black/60 backdrop-blur-sm"
-      aria-modal="true"
-      role="dialog"
-      tabIndex={-1}
-      onClick={() => setOpen(false)}
-    >
-      <div
-        className="mt-32 w-full max-w-sm rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 animate-fadeIn"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="flex items-center bg-zinc-100 dark:bg-zinc-800 rounded-t-lg px-3 py-2 border-b border-zinc-100 dark:border-zinc-800">
-          <TerminalIcon className="h-4 w-4 mr-2 text-zinc-400 dark:text-zinc-500" />
-          <input
-            ref={inputRef}
-            type="text"
-            className="flex-1 bg-transparent text-sm outline-none text-zinc-800 dark:text-zinc-200 placeholder-zinc-400 dark:placeholder-zinc-600"
-            placeholder="Type a command..."
-            value={query}
-            onChange={(e) => {
-              setQuery(e.target.value);
-              setSelected(0);
-            }}
-            aria-label="Command palette input"
-          />
-        </div>
-        <ul
-          ref={listRef}
-          className="flex flex-col max-h-56 p-2 gap-1 overflow-y-auto"
-        >
-          {commands.length === 0 && (
-            <li className="p-2 text-xs text-zinc-400 dark:text-zinc-600">
-              No commands found.
-            </li>
-          )}
-          {commands.map((cmd, i) => (
-            <li
-              key={cmd.name}
-              className={`p-2 cursor-pointer select-none text-sm rounded-md break-all ${
-                i === selected
-                  ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100'
-                  : ' text-gray-900 dark:text-gray-400'
-              }`}
-              onMouseEnter={() => setSelected(i)}
-              onClick={() => {
-                cmd.action({ navigate, theme });
-                setOpen(false);
-              }}
-              role="option"
-              aria-selected={i === selected}
-              tabIndex={-1}
-            >
-              {cmd.displayAs || cmd.name}
-            </li>
-          ))}
-        </ul>
-      </div>
-    </div>
+    <CommandDialog open={open} onOpenChange={setOpen} shouldFilter={false}>
+      <CommandInput
+        value={query}
+        onValueChange={setQuery}
+        className="w-full max-w-[90%]"
+        placeholder="Type a command or search..."
+      />
+      <CommandList>
+        <CommandEmpty>No results found.</CommandEmpty>
+        <FilteredCommandGroup
+          allCommands={synthetic}
+          query={query}
+          heading="Your search"
+        />
+
+        <FilteredCommandGroup
+          allCommands={DEFAULT_GLOBAL_COMMANDS}
+          fuse={globalFuse}
+          query={query}
+          heading="Global"
+        />
+        <FilteredCommandGroup
+          allCommands={pageCommands}
+          fuse={pageFuse}
+          query={query}
+          heading="Page"
+        />
+      </CommandList>
+    </CommandDialog>
   );
 };
 

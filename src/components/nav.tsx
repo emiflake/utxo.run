@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router';
 import { AnimatedSearchInput } from './AnimatedSearchInput';
 import { SettingsModal } from './SettingsModal';
 import { ThemeToggle } from './Toggle';
-import { IconButton } from './Button';
 import {
   BlueprintIcon,
   ChevronDownIcon,
@@ -18,6 +17,8 @@ import {
   XIcon,
 } from './Icons';
 import { handleSearch } from '../search';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 
 export function SearchBar() {
   const [searchValue, setSearchValue] = useState('');
@@ -49,7 +50,6 @@ export function SearchBar() {
 }
 
 export function NavBar() {
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const toggleMobileMenu = () => {
@@ -167,25 +167,29 @@ export function NavBar() {
                 <ThemeToggle />
               </div>
               <div className="hidden lg:block">
-                <IconButton
-                  onClick={() => setIsSettingsOpen(!isSettingsOpen)}
-                  disabled={isSettingsOpen}
-                  ariaLabel="Settings"
-                >
-                  <SettingsIcon />
-                </IconButton>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button variant="outline">
+                      <SettingsIcon />
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <SettingsModal />
+                  </DialogContent>
+                </Dialog>
               </div>
               <div className="lg:hidden">
-                <IconButton
+                <Button
+                  variant="outline"
                   onClick={toggleMobileMenu}
-                  ariaLabel={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
+                  aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
                 >
                   {isMobileMenuOpen ? (
                     <XIcon className="h-5 w-5" />
                   ) : (
                     <MenuIcon className="h-5 w-5" />
                   )}
-                </IconButton>
+                </Button>
               </div>
             </div>
           </div>
@@ -246,27 +250,21 @@ export function NavBar() {
               <div className="flex items-center justify-between py-2 px-3 border-t border-gray-200 dark:border-gray-700 mt-2">
                 <ThemeToggle />
 
-                <IconButton
-                  onClick={() => {
-                    setIsSettingsOpen(!isSettingsOpen);
-                    toggleMobileMenu();
-                  }}
-                  disabled={isSettingsOpen}
-                  ariaLabel="Settings"
-                >
-                  <SettingsIcon />
-                </IconButton>
+                <Dialog>
+                  <DialogTrigger>
+                    <Button variant="outline">
+                      <SettingsIcon />
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <SettingsModal />
+                  </DialogContent>
+                </Dialog>
               </div>
             </nav>
           </div>
         )}
       </header>
-      {isSettingsOpen && (
-        <SettingsModal
-          isOpen={isSettingsOpen}
-          onClose={() => setIsSettingsOpen(false)}
-        />
-      )}
     </>
   );
 }

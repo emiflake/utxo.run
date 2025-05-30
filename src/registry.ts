@@ -1,8 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import { useContext } from 'react';
 import * as z from 'zod';
-import { RegistryContext } from './registry_context';
 import * as CML from '@dcspark/cardano-multiplatform-lib-browser';
+import { RegistryContext } from '@/context/RegistryContext';
 
 export const otherInfoSchema = z.object({
   agoraTestnetParams: z.unknown(),
