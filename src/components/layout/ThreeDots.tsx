@@ -19,16 +19,12 @@ export const ThreeDots: React.FC<ThreeDotsProps> = ({
   description,
   iconClassName = '',
 }) => {
-  const buttonRef = useRef<HTMLButtonElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   return (
     <div ref={containerRef} className="relative inline-block text-left">
-      <button
-        ref={buttonRef}
-        type="button"
+      <div
         aria-haspopup="menu"
-        name={name}
         aria-label={name}
         aria-description={description}
         className={
@@ -37,7 +33,7 @@ export const ThreeDots: React.FC<ThreeDotsProps> = ({
         }
       >
         <DotsVerticalIcon className="h-5 w-5 text-zinc-500 dark:text-zinc-400" />
-      </button>
+      </div>
     </div>
   );
 };

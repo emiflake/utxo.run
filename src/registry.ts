@@ -1,8 +1,8 @@
-import { useQuery } from "@tanstack/react-query";
-import { useContext } from "react";
-import * as z from "zod";
-import * as CML from "@dcspark/cardano-multiplatform-lib-browser";
-import { RegistryContext } from "@/context/RegistryContext";
+import { useQuery } from '@tanstack/react-query';
+import { useContext } from 'react';
+import * as z from 'zod';
+import * as CML from '@dcspark/cardano-multiplatform-lib-browser';
+import { RegistryContext } from '@/context/RegistryContext';
 
 export const otherInfoSchema = z.object({
   agoraTestnetParams: z.unknown(),
@@ -20,13 +20,13 @@ export const otherInfoSchema = z.object({
 
 export type OtherInfo = z.infer<typeof otherInfoSchema>;
 
-export type ScriptType = "Validator" | "MintingPolicy" | "StakeValidator";
+export type ScriptType = 'Validator' | 'MintingPolicy' | 'StakeValidator';
 
 export const scriptInfoSchema = z.object({
   type: z.union([
-    z.literal("Validator"),
-    z.literal("MintingPolicy"),
-    z.literal("StakeValidator"),
+    z.literal('Validator'),
+    z.literal('MintingPolicy'),
+    z.literal('StakeValidator'),
   ]),
   name: z.string(),
   tag: z.string(),
@@ -39,12 +39,12 @@ export const scriptInfoSchema = z.object({
   scriptHash: z.string(),
   deployment: z.union([
     z.object({
-      type: z.literal("lockedAt"),
+      type: z.literal('lockedAt'),
       referenceUtxo: z.object({
         output: z.object({
           scriptRef: z.object({
-            tag: z.literal("PlutusScriptRef"),
-            contents: z.tuple([z.string(), z.literal("PlutusV2")]),
+            tag: z.literal('PlutusScriptRef'),
+            contents: z.tuple([z.string(), z.literal('PlutusV2')]),
           }),
           output: z.object({
             referenceScript: z.string(),
@@ -52,7 +52,7 @@ export const scriptInfoSchema = z.object({
             address: z.object({
               addressStakingCredential: z.null(),
               addressCredential: z.object({
-                tag: z.enum(["ScriptCredential", "PubKeyCredential"]),
+                tag: z.enum(['ScriptCredential', 'PubKeyCredential']),
                 contents: z.string(),
               }),
             }),
@@ -65,8 +65,8 @@ export const scriptInfoSchema = z.object({
       }),
     }),
     z.object({
-      type: z.literal("notDeployed"),
-      version: z.literal("PlutusV2"),
+      type: z.literal('notDeployed'),
+      version: z.literal('PlutusV2'),
       rawHex: z.string(),
     }),
   ]),
@@ -99,17 +99,17 @@ export const getRegistry = async (url: string): Promise<Registry> => {
 export const registryBaseURL: string = import.meta.env.VITE_REGISTRY_URL;
 
 export const dynamicRegistry = !(
-  import.meta.env.VITE_DYN_REGISTRY === "false" ||
-  import.meta.env.VITE_DYN_REGISTRY === "FALSE"
+  import.meta.env.VITE_DYN_REGISTRY === 'false' ||
+  import.meta.env.VITE_DYN_REGISTRY === 'FALSE'
 );
 
 export const useRegistry = () => {
   const registry = useContext(RegistryContext);
 
   return useQuery({
-    queryKey: ["registry", registry?.registryURL],
+    queryKey: ['registry', registry?.registryURL],
     queryFn: () =>
-      getRegistry(registry?.registryURL || "/registry-proxy/registry.json"),
+      getRegistry(registry?.registryURL || '/registry-proxy/registry.json'),
   });
 };
 
@@ -121,12 +121,13 @@ export const useRegistry = () => {
  */
 export const scriptInfoByAddress = (
   registry: Registry,
-  address: string
+  address: string,
 ): ScriptInfo | undefined => {
   const cmlAddress = CML.Address.from_bech32(address);
 
   return registry.scriptInfos.find(
     (scriptInfo) =>
-      scriptInfo.scriptHash === cmlAddress.payment_cred()?.as_script()?.to_hex()
+      scriptInfo.scriptHash ===
+      cmlAddress.payment_cred()?.as_script()?.to_hex(),
   );
 };

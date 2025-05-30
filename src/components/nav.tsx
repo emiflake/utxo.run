@@ -168,7 +168,7 @@ export function NavBar() {
               </div>
               <div className="hidden lg:block">
                 <Dialog>
-                  <DialogTrigger>
+                  <DialogTrigger asChild>
                     <Button variant="outline">
                       <SettingsIcon />
                     </Button>
