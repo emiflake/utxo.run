@@ -7,7 +7,7 @@ import {
 } from '../cbor/plutus_json';
 import { Fragment, useContext, useMemo, useRef, useState } from 'react';
 import * as cbor2 from 'cbor2';
-import { parseRawDatum } from '../cbor/raw_datum';
+import { parseRawDatum, simplifyMetadata } from '../cbor/raw_datum';
 import { createParsingContext } from '../cbor/plutus_json';
 import { parseAgainstSchema } from '../cbor/plutus_json';
 import { ChevronDownIcon, ChevronUpIcon, ExternalLinkIcon } from './Icons';
@@ -33,6 +33,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
+import * as yaml from 'yaml';
 
 const JSONbig = jsonBigInt();
 
@@ -328,9 +329,13 @@ export const ViewMetadatum = ({
   label: string;
   metadatum: string;
 }) => {
-  const hastTree = useMemo(() => {
-    return refractor.highlight(metadatum, 'json');
+  const asYaml = useMemo(() => {
+    return yaml.stringify(simplifyMetadata(JSON.parse(metadatum)));
   }, [metadatum]);
+
+  const hastTree = useMemo(() => {
+    return refractor.highlight(asYaml, 'yaml');
+  }, [asYaml]);
 
   const jsxRuntime = useMemo(() => {
     return toJsxRuntime(hastTree, { Fragment, jsx, jsxs });
@@ -351,7 +356,7 @@ export const ViewMetadatum = ({
           <div className="p-2 overflow-x-auto leading-none flex justify-between">
             <span>Metadata with label {label}</span>
             <ClipboardButton
-              text={metadatum}
+              text={asYaml}
               className="text-white hover:text-blue-300"
             />
           </div>

@@ -75,3 +75,64 @@ export const parseRawDatum = (rawDatum: unknown): RawDatum => {
 
   return null;
 };
+
+/// For metadata
+
+/**
+ * Metadata is encoded as JSON, but since map keys can be non-strings, it encodes it using `{ 'map': [{ 'k': <key>, 'v': <value> }] }'`
+ *
+ * The following function simplifies this structure when all keys are strings
+ */
+const simplifyObject = (
+  obj: { k: unknown; v: unknown }[],
+): { [k: string]: unknown } | { k: unknown; v: unknown }[] => {
+  const result: { [k: string]: unknown } = {};
+
+  console.log(obj);
+  for (const { k, v } of obj) {
+    if (
+      typeof k === 'object' &&
+      k !== null &&
+      'string' in k &&
+      typeof k.string === 'string'
+    ) {
+      result[k.string] = simplifyMetadata(v);
+    } else {
+      // Not all keys are strings, return the original object!
+      return obj;
+    }
+  }
+  return result;
+};
+
+/**
+ * Simplifies metadata by doing the following:
+ *
+ * '{ "string": "value" }' -> "value"
+ * '{ "int": 1 }'          -> 1
+ * '{ "map": <map> }'      -> simplifyObject(<map>)
+ */
+export const simplifyMetadata = (metadata: unknown): unknown => {
+  if (Array.isArray(metadata)) {
+    return metadata.map(simplifyObject);
+  } else if (
+    typeof metadata === 'object' &&
+    metadata !== null &&
+    'map' in metadata
+  ) {
+    return simplifyObject(metadata.map as { k: unknown; v: unknown }[]);
+  } else if (
+    typeof metadata === 'object' &&
+    metadata !== null &&
+    'string' in metadata
+  ) {
+    return metadata.string;
+  } else if (
+    typeof metadata === 'object' &&
+    metadata !== null &&
+    'int' in metadata
+  ) {
+    return metadata.int;
+  }
+  return metadata;
+};
