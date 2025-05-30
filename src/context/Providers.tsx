@@ -24,6 +24,10 @@ export const DatumProvider = ({ children }: { children: React.ReactNode }) => {
     );
   };
 
+  const unselectAllDatums = () => {
+    setSelectedDatums([]);
+  };
+
   useEffect(() => {
     setSelectedDatums([]);
   }, [location]);
@@ -36,6 +40,7 @@ export const DatumProvider = ({ children }: { children: React.ReactNode }) => {
         selectedDatums,
         selectDatum,
         unselectDatum,
+        unselectAllDatums,
       }}
     >
       {children}

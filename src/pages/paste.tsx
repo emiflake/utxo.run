@@ -1,17 +1,17 @@
-import { useMemo } from 'react';
-import { pasteInterfaces, pasteSchema } from '../paste';
-import { usePaste } from '../paste';
-import { useParams } from 'react-router';
-import { SkipLink } from '../components/layout/A11y';
-import { NavBar } from '../components/nav';
-import CommandPalette from '../components/CommandPalette';
-import { MainLayout } from '../components/layout/Main';
-import { Footer } from '../components/layout/Footer';
-import { ErrorBox } from '../App';
-import { TxViewPage } from './transaction_cbor';
-import { Box, BoxHeader } from '../components/layout/Box';
-import { AddressPage } from './address';
-import { SubmittedTxPage } from './submitted_tx';
+import { useMemo } from "react";
+import { pasteInterfaces, pasteSchema } from "../paste";
+import { usePaste } from "../paste";
+import { useParams } from "react-router";
+import { SkipLink } from "../components/layout/A11y";
+import { NavBar } from "../components/nav";
+import CommandPalette from "../components/CommandPalette";
+import { MainLayout } from "../components/layout/Main";
+import { Footer } from "../components/layout/Footer";
+import { ErrorBox } from "../App";
+import { TxViewPage } from "./transaction_cbor";
+import { Box, BoxHeader } from "../components/layout/Box";
+import { AddressPage } from "./address";
+import { SubmittedTxPage } from "./submitted_tx";
 
 export const HandlePaste = ({
   iface,
@@ -21,7 +21,7 @@ export const HandlePaste = ({
   const params = useParams();
 
   const pasteId = useMemo(() => {
-    return params.id ?? '';
+    return params.id ?? "";
   }, [params]);
 
   const { data } = usePaste(iface, pasteId);
@@ -33,6 +33,7 @@ export const HandlePaste = ({
 
     const paste = pasteSchema.safeParse(data);
     if (!paste.success) {
+      console.error("Failed to parse paste data:", paste.error);
       return null;
     }
     return paste.data.content;
@@ -53,7 +54,11 @@ export const HandlePaste = ({
           <Box>
             <BoxHeader title="What we got:" />
 
-            {!!data && <pre>{JSON.stringify(data, null, 2)}</pre>}
+            {!!data && (
+              <pre className="font-mono break-all whitespace-pre-wrap">
+                {JSON.stringify(data, null, 2)}
+              </pre>
+            )}
             {!data && <p>No paste data found.</p>}
           </Box>
         </MainLayout>
@@ -63,15 +68,15 @@ export const HandlePaste = ({
     );
   }
 
-  if (pageData.type === 'cbor') {
+  if (pageData.type === "cbor") {
     return <TxViewPage cbor={pageData.body} />;
   }
 
-  if (pageData.type === 'address') {
+  if (pageData.type === "address") {
     return <AddressPage address={pageData.body} />;
   }
 
-  if (pageData.type === 'hash') {
+  if (pageData.type === "hash") {
     return <SubmittedTxPage txHash={pageData.body} />;
   }
 };
