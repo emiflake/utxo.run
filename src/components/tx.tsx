@@ -5,7 +5,7 @@ import {
 } from '@/betterfrost';
 import { RefTag } from './MiniTag';
 
-import { useCallback, useContext, useId, useMemo } from 'react';
+import { useCallback, useContext, useEffect, useId, useMemo } from 'react';
 import {
   addressInfo,
   LegacyRedeemer,
@@ -29,7 +29,7 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from '@/components/ui/drawer';
-import { DatumContext, DatumContextInterface } from '@/context/DatumContext';
+import { DatumContext } from '@/context/DatumContext';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useMediaQuery } from '@/hooks/use-media-query';
 import {
@@ -711,16 +711,10 @@ export const ViewMetadata = ({
 };
 
 export const TxViewer = ({ tx }: { tx: Transaction }) => {
-  const datumContext = useContext(DatumContext);
-
-  const handleSetIsOpen = useCallback(
-    (open: boolean) => {
-      if (!open) {
-        datumContext?.unselectAllDatums();
-      }
-    },
-    [datumContext],
-  );
+  useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (window as any).tx = tx;
+  }, [tx]);
 
   const inputs = tx.inputs.map((input, index) => {
     const redeemer = tx.legacyRedeemers.find(
@@ -856,21 +850,22 @@ export const TxViewer = ({ tx }: { tx: Transaction }) => {
           <ViewValue value={tx.burn} />
         </div>
       )}
-      <DiffDialog
-        datumContext={datumContext}
-        handleSetIsOpen={handleSetIsOpen}
-      />
+      <DiffDialog />
     </div>
   );
 };
 
-const DiffDialog = ({
-  datumContext,
-  handleSetIsOpen,
-}: {
-  datumContext: DatumContextInterface | undefined;
-  handleSetIsOpen: (open: boolean) => void;
-}) => {
+const DiffDialog = () => {
+  const datumContext = useContext(DatumContext);
+  const handleSetIsOpen = useCallback(
+    (open: boolean) => {
+      if (!open) {
+        datumContext?.unselectAllDatums();
+      }
+    },
+    [datumContext],
+  );
+
   const isDesktop = useMediaQuery('(min-width: 768px)');
   const open = (datumContext?.selectedDatums.length ?? 0) > 1;
   const onOpenChange = (open: boolean) => {
