@@ -1,4 +1,4 @@
-name = "fine-proxy"
+name = "utxo-run-proxy"
 main = "proxy-cf.ts"
 
 compatibility_flags = [ "nodejs_compat" ]

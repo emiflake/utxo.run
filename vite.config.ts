@@ -4,6 +4,7 @@ import wasm from 'vite-plugin-wasm';
 import tailwindcss from '@tailwindcss/vite';
 import process from 'process';
 import dotenv from 'dotenv';
+import path from 'path';
 
 dotenv.config();
 
@@ -24,6 +25,11 @@ export default defineConfig({
     }),
     tailwindcss(),
   ],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
+  },
   build: {
     target: 'esnext',
   },

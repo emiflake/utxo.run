@@ -33,6 +33,7 @@ export const HandlePaste = ({
 
     const paste = pasteSchema.safeParse(data);
     if (!paste.success) {
+      console.error('Failed to parse paste data:', paste.error);
       return null;
     }
     return paste.data.content;
@@ -53,7 +54,11 @@ export const HandlePaste = ({
           <Box>
             <BoxHeader title="What we got:" />
 
-            {!!data && <pre>{JSON.stringify(data, null, 2)}</pre>}
+            {!!data && (
+              <pre className="font-mono break-all whitespace-pre-wrap">
+                {JSON.stringify(data, null, 2)}
+              </pre>
+            )}
             {!data && <p>No paste data found.</p>}
           </Box>
         </MainLayout>

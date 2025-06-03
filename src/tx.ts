@@ -41,6 +41,7 @@ export type Transaction = {
   inputs: TransactionInput[];
   outputs: TransactionOutput[];
   referenceInputs: TransactionInput[];
+  metadata: Record<string, string>;
   fee: bigint;
   hash: string;
   ttl: bigint | undefined;
@@ -134,6 +135,16 @@ export const convertCMLMapToRecord = <KP, K extends string, V>(
   return res;
 };
 
+export const convertCMLMapToRecordMetadata = (
+  metadata: CML.Metadata,
+): Record<string, string> => {
+  const res: Record<string, string> = {};
+  for (const key of convertCMLList(metadata.labels())) {
+    res[key.toString()] = metadata.get(key)?.to_json() ?? '';
+  }
+  return res;
+};
+
 export const processTxFromCbor = (
   txCbor: string,
 ): Result<Transaction, TxProcessError> => {
@@ -146,6 +157,10 @@ export const processTxFromCbor = (
     const inputs = convertCMLList<CML.TransactionInput>(body.inputs());
 
     const ttl = body.ttl();
+
+    const metadata = cmlTx.auxiliary_data()?.metadata();
+
+    const metadataMap = metadata ? convertCMLMapToRecordMetadata(metadata) : {};
 
     const witnessSet = cmlTx.witness_set();
     const redeemers = witnessSet.redeemers();
@@ -234,6 +249,7 @@ export const processTxFromCbor = (
         transactionId: i.transaction_id().to_hex(),
         outputIndex: i.index(),
       })),
+      metadata: metadataMap,
       outputs,
       referenceInputs,
       fee: body.fee(),

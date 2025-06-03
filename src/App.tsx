@@ -44,27 +44,92 @@ function App() {
       client={queryClient}
       persistOptions={{ persister }}
     >
-      <Providers>
-        <Router>
-          <Routes>
-            <Route path="/tx" element={<TxViewPage />} />
-            <Route path="/" element={<HomePage />} />
+      <Router>
+        <Routes>
+          <Route
+            path="/tx"
+            element={
+              <Providers>
+                <TxViewPage />
+              </Providers>
+            }
+          />
+          <Route
+            path="/"
+            element={
+              <Providers>
+                <HomePage />
+              </Providers>
+            }
+          />
 
-            <Route path="/tx/:txCbor?" element={<TxViewPage />} />
-            <Route path="/registry" element={<RegistryPage />} />
-            <Route path="/chain" element={<ChainPage />} />
-            <Route path="/policy/:unit" element={<PolicyPage />} />
-            <Route
-              path="/submitted-tx/:txHash?"
-              element={<SubmittedTxPage />}
-            />
-            <Route path="/address/:address" element={<AddressPage />} />
-            <Route path="/blueprint" element={<BlueprintPage />} />
-            <Route path="/p/:id" element={<HandlePaste iface="sf" />} />
-          </Routes>
-        </Router>
-        <ReactQueryDevtools initialIsOpen />
-      </Providers>
+          <Route
+            path="/tx/:txCbor?"
+            element={
+              <Providers>
+                <TxViewPage />
+              </Providers>
+            }
+          />
+          <Route
+            path="/registry"
+            element={
+              <Providers>
+                <RegistryPage />
+              </Providers>
+            }
+          />
+          <Route
+            path="/chain"
+            element={
+              <Providers>
+                <ChainPage />
+              </Providers>
+            }
+          />
+          <Route
+            path="/policy/:unit"
+            element={
+              <Providers>
+                <PolicyPage />
+              </Providers>
+            }
+          />
+          <Route
+            path="/submitted-tx/:txHash?"
+            element={
+              <Providers>
+                <SubmittedTxPage />
+              </Providers>
+            }
+          />
+          <Route
+            path="/address/:address"
+            element={
+              <Providers>
+                <AddressPage />
+              </Providers>
+            }
+          />
+          <Route
+            path="/blueprint"
+            element={
+              <Providers>
+                <BlueprintPage />
+              </Providers>
+            }
+          />
+          <Route
+            path="/p/:id"
+            element={
+              <Providers>
+                <HandlePaste iface="sf" />
+              </Providers>
+            }
+          />
+        </Routes>
+      </Router>
+      <ReactQueryDevtools initialIsOpen />
     </PersistQueryClientProvider>
   );
 }

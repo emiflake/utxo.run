@@ -2,27 +2,48 @@ import {
   TransactionAmount,
   useTxByHash,
   useTxUtxosByHash,
-} from '../betterfrost';
+} from '@/betterfrost';
 import { RefTag } from './MiniTag';
 
-import { useId, useMemo } from 'react';
+import { useCallback, useContext, useEffect, useId, useMemo } from 'react';
 import {
   addressInfo,
   LegacyRedeemer,
   Transaction,
   TransactionInput,
   TransactionOutput,
-} from '../tx';
+} from '@/tx';
 import { Link } from 'react-router';
-import { scriptInfoByAddress, useRegistry } from '../registry';
-import { shorten } from '../utils';
+import { scriptInfoByAddress, useRegistry } from '@/registry';
+import { shorten } from '@/utils';
 import { MonoTag, Tag } from './MiniTag';
-import { ViewDatum } from './Datum';
+import { ViewDatum, ViewDatumDiff, ViewMetadatum } from './Datum';
 import { Box, BoxHeader } from './layout/Box';
 import { ThreeDots } from './layout/ThreeDots';
 import * as CML from '@dcspark/cardano-multiplatform-lib-browser';
-import * as Betterfrost from '../betterfrost';
-import { ErrorBox } from '../App';
+import * as Betterfrost from '@/betterfrost';
+import { ErrorBox } from '@/App';
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+} from '@/components/ui/drawer';
+import { DatumContext } from '@/context/DatumContext';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { useMediaQuery } from '@/hooks/use-media-query';
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 
 export const ViewTransactionLiveness = ({ hash }: { hash: string }) => {
   const { data: tx, isLoading, isError } = useTxByHash(hash);
@@ -54,6 +75,16 @@ export const ViewTransactionLiveness = ({ hash }: { hash: string }) => {
             <li className="text-xs text-gray-800 dark:text-gray-300">
               <span>Block: </span>
               <span className="font-medium">{tx.block_height}</span>
+              {' ('}
+              minted at{' '}
+              <span className="text-xs text-gray-700 dark:text-gray-400">
+                {tx.block_time}
+              </span>
+              {', or '}
+              <span className="text-xs text-green-700 dark:text-green-400">
+                {new Date(tx.block_time * 1000).toLocaleString()}
+              </span>
+              {')'}
             </li>
             <li className="text-xs text-gray-800 dark:text-gray-300">
               {tx?.size} bytes
@@ -217,7 +248,7 @@ export const InputExtraInfo = ({
   }, [utxo.address]);
 
   return (
-    <div className="flex flex-col min-w-0 p-2 space-y-2 text-xs">
+    <div className="flex flex-col min-w-0 p-2 space-y-2 text-xs break-all">
       {/* Header */}
       <div className="pb-1 mb-1 border-b border-zinc-200 dark:border-zinc-700">
         <h3 className="text-xs font-medium text-zinc-700 dark:text-zinc-300">
@@ -331,9 +362,23 @@ export const ViewTransactionInput = ({
     <Box>
       <BoxHeader title={`Input`}>
         {inputUtxo && (
-          <ThreeDots>
-            <InputExtraInfo utxo={inputUtxo} input={input} />
-          </ThreeDots>
+          <Popover>
+            <PopoverTrigger>
+              <ThreeDots />
+            </PopoverTrigger>
+            <PopoverContent
+              className="w-168"
+              style={{
+                maxHeight:
+                  'calc(var(--radix-popover-content-available-height))',
+                overflow: 'auto',
+              }}
+              side="left"
+              align="start"
+            >
+              <InputExtraInfo utxo={inputUtxo} input={input} />
+            </PopoverContent>
+          </Popover>
         )}
 
         <Link
@@ -375,6 +420,7 @@ export const ViewTransactionInput = ({
           <span className="text-sm dark:text-gray-400 text-gray-600">
             Datum
           </span>
+
           <ViewDatum datum={inputUtxo.inline_datum} />
         </>
       )}
@@ -431,11 +477,7 @@ const outputKey = (output: TransactionOutput) => {
   return `out-${output.address}#${output.index}`;
 };
 
-export const OutputExtraInfo = ({
-  utxo,
-}: {
-  utxo: TransactionOutput;
-}) => {
+export const OutputExtraInfo = ({ utxo }: { utxo: TransactionOutput }) => {
   const addrInfo = useMemo(() => {
     if (!utxo.address) {
       return;
@@ -444,7 +486,7 @@ export const OutputExtraInfo = ({
   }, [utxo.address]);
 
   return (
-    <div className="flex flex-col min-w-0 p-2 space-y-2 text-xs">
+    <div className="flex flex-col min-w-0 w-full p-2 space-y-2 text-xs break-all">
       {/* Header */}
       <div className="pb-1 mb-1 border-b border-zinc-200 dark:border-zinc-700">
         <h3 className="text-xs font-medium text-zinc-700 dark:text-zinc-300">
@@ -560,9 +602,18 @@ export const ViewTransactionOutput = ({
   return (
     <Box>
       <BoxHeader title="Output">
-        <ThreeDots>
-          <OutputExtraInfo utxo={output} />
-        </ThreeDots>
+        <Popover>
+          <PopoverTrigger>
+            <ThreeDots />
+          </PopoverTrigger>
+          <PopoverContent
+            className="w-168 max-h-[calc(var(--radix-popover-content-available-height))] overflow-auto"
+            side="left"
+            align="start"
+          >
+            <OutputExtraInfo utxo={output} />
+          </PopoverContent>
+        </Popover>
         {consumedByTx && (
           <Link
             to={`/submitted-tx/${consumedByTx}`}
@@ -607,46 +658,7 @@ export const ViewTransactionOutput = ({
   );
 };
 
-/**
- * A component that displays a generic label and value inline, similar to MonoTag in ScriptInfo.
- *
- * @param label - The label to display
- * @param value - The value to display
- * @param href - Optional link URL
- * @returns A styled inline label-value pair component
- */
-export const GenericInfo = ({
-  label,
-  value,
-  href,
-}: {
-  label: string;
-  value: string;
-  href?: string;
-}) => {
-  return (
-    <span className="inline-flex items-stretch text-xs mr-2 mb-1 border border-gray-100 dark:border-gray-700 w-full">
-      <span className="bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-300 px-1.5 py-0.5 flex-shrink-0">
-        {label}
-      </span>
-      {href && (
-        <Link
-          to={href}
-          className="bg-gray-50 dark:bg-gray-800 text-indigo-500 dark:text-indigo-300 hover:underline px-1.5 py-0.5 font-mono flex-grow"
-        >
-          {value}
-        </Link>
-      )}
-      {!href && (
-        <span className="bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-200 px-1.5 py-0.5 font-mono flex-grow">
-          {value}
-        </span>
-      )}
-    </span>
-  );
-};
-
-export const ViewWithdrawal = ({
+const ViewWithdrawal = ({
   address,
   amount,
   redeemer,
@@ -681,7 +693,29 @@ export const ViewWithdrawal = ({
   );
 };
 
+export const ViewMetadata = ({
+  metadata,
+}: {
+  metadata: Record<string, string>;
+}) => {
+  return (
+    <div className="flex flex-col gap-2 border border-gray-300 dark:border-gray-700 p-2">
+      <span className="text-md text-slate-900 dark:text-white">Metadata</span>
+      <div className="flex flex-row gap-2">
+        {Object.entries(metadata).map(([key, value]) => (
+          <ViewMetadatum key={key} label={key} metadatum={value} />
+        ))}
+      </div>
+    </div>
+  );
+};
+
 export const TxViewer = ({ tx }: { tx: Transaction }) => {
+  useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (window as any).tx = tx;
+  }, [tx]);
+
   const inputs = tx.inputs.map((input, index) => {
     const redeemer = tx.legacyRedeemers.find(
       (r) => r.index === index && r.tag === 'Spend',
@@ -718,6 +752,9 @@ export const TxViewer = ({ tx }: { tx: Transaction }) => {
             </div>
           </div>
         </div>
+        {Object.entries(tx.metadata).length > 0 && (
+          <ViewMetadata metadata={tx.metadata} />
+        )}
         {tx.requiredSigners.length > 0 && (
           <div className="flex flex-col gap-2 border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-2">
             <span className="text-md text-slate-900 dark:text-white">
@@ -813,6 +850,68 @@ export const TxViewer = ({ tx }: { tx: Transaction }) => {
           <ViewValue value={tx.burn} />
         </div>
       )}
+      <DiffDialog />
     </div>
+  );
+};
+
+const DiffDialog = () => {
+  const datumContext = useContext(DatumContext);
+  const handleSetIsOpen = useCallback(
+    (open: boolean) => {
+      if (!open) {
+        datumContext?.unselectAllDatums();
+      }
+    },
+    [datumContext],
+  );
+
+  const isDesktop = useMediaQuery('(min-width: 768px)');
+  const open = (datumContext?.selectedDatums.length ?? 0) > 1;
+  const onOpenChange = (open: boolean) => {
+    handleSetIsOpen(open);
+  };
+
+  const DiffContent = () => {
+    if (!datumContext || datumContext.selectedDatums.length !== 2) return null;
+    return (
+      <ViewDatumDiff
+        key={'datum_diff'}
+        datumA={datumContext.selectedDatums[0].cbor}
+        datumB={datumContext.selectedDatums[1].cbor}
+      />
+    );
+  };
+
+  if (isDesktop) {
+    return (
+      <Sheet open={open} onOpenChange={onOpenChange}>
+        <SheetContent
+          side="bottom"
+          className="sm:max-w-[1024px] w-full bottom-0 left-1/2 -translate-x-1/2 p-4 max-h-[80vh] min-w-[60vw]"
+        >
+          <SheetHeader>
+            <SheetTitle>Selected Datums</SheetTitle>
+            <SheetDescription>Compare selected datums</SheetDescription>
+          </SheetHeader>
+          <ScrollArea className="overflow-y-scroll">
+            <DiffContent />
+          </ScrollArea>
+        </SheetContent>
+      </Sheet>
+    );
+  }
+
+  return (
+    <Drawer open={open} onOpenChange={onOpenChange}>
+      <DrawerContent className="fixed bottom-0 left-0 right-0 max-h-[90dvh]">
+        <ScrollArea className="overflow-auto p-4">
+          <DrawerHeader>
+            <DrawerTitle>Selected Datums</DrawerTitle>
+          </DrawerHeader>
+          <DiffContent />
+        </ScrollArea>
+      </DrawerContent>
+    </Drawer>
   );
 };
