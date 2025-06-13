@@ -5,7 +5,6 @@ import { NavBar } from '../components/nav';
 import CommandPalette from '../components/CommandPalette';
 import { MainLayout } from '../components/layout/Main';
 import { handleSearch } from '../search';
-import { useOgmiosHealth } from '../ogmios';
 import { useLatestBlock } from '../betterfrost';
 import { KeyboardShortcut } from '../components/KeyboardShortcut';
 import { Footer } from '../components/layout/Footer';
@@ -137,13 +136,6 @@ export const HomePage = () => {
     isLoading: latestBlockLoading,
     isError: latestBlockError,
   } = useLatestBlock();
-  const ogmiosHealth = useOgmiosHealth();
-  const ogmiosConnectionState = useMemo(() => {
-    if (ogmiosHealth.isLoading) return 'loading';
-    if (ogmiosHealth.isError) return 'error';
-    return ogmiosHealth.data ? 'connected' : 'error';
-  }, [ogmiosHealth]);
-
   const betterfrostConnectionState = useMemo(() => {
     if (latestBlockLoading) return 'loading';
     if (latestBlockError) return 'error';
@@ -189,10 +181,6 @@ export const HomePage = () => {
           <p className="p-2 text-gray-700 dark:text-gray-300">
             <span className="font-semibold">Betterfrost:</span>{' '}
             {betterfrostConnectionState}
-          </p>
-          <p className="p-2 text-gray-700 dark:text-gray-300">
-            <span className="font-semibold">Ogmios:</span>{' '}
-            {ogmiosConnectionState}
           </p>
 
           <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200">

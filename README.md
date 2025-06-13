@@ -8,7 +8,7 @@ A feature... fine transaction viewer. Especially useful for local devnet debuggi
 
 ## Dependencies
 
-utxo.run depends on `betterfrost` and _optionally_ `ogmios`. Configure `.env` based on the example `.env.example`.
+utxo.run depends on `betterfrost` (or `blockfrost`) and _optionally_ `ogmios`. Configure `.env` based on the example `.env.example`.
 
 ## proxy server
 
