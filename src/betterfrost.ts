@@ -213,7 +213,9 @@ export const getBlockByHashOrNumber = async (
 export const getTxByHash = async (
   hash: string,
 ): Promise<Transaction | null> => {
-  const response = await fetch(`${betterfrostURL}/api/v0/txs/${hash}`);
+  const response = await fetch(`${betterfrostURL}/api/v0/txs/${hash}`, {
+    signal: AbortSignal.timeout(1000),
+  });
   const json = await response.json();
 
   return transactionSchema.parse(json);
@@ -311,6 +313,7 @@ export const useTxByHash = (
     queryKey: ['tx', hash],
     queryFn: () => getTxByHash(hash),
     staleTime: 10_000,
+    retry: 2,
   });
 };
 
@@ -383,4 +386,15 @@ export const useAssetTransactions = (
     queryFn: () => getAssetTransactions(unit, pagination),
     staleTime: 10_000,
   });
+};
+
+export const submitTx = async (bytes: Uint8Array) => {
+  const response = await fetch(`${betterfrostURL}/api/v0/tx/submit`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/cbor',
+    },
+    body: bytes,
+  });
+  return response.json();
 };

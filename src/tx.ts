@@ -51,6 +51,7 @@ export type Transaction = {
   cbor: string;
   withdrawals: Record<string, bigint>;
   redeemersMap: Record<string, CML.RedeemerVal | undefined>;
+  signers: unknown[];
   legacyRedeemers: LegacyRedeemer[];
 };
 
@@ -160,6 +161,13 @@ export const processTxFromCbor = (
 
     const metadata = cmlTx.auxiliary_data()?.metadata();
 
+    const vkeywitnesses = cmlTx.witness_set().vkeywitnesses();
+    const signersList = vkeywitnesses
+      ? convertCMLList<CML.Vkeywitness>(vkeywitnesses).map((v) =>
+          v.to_cbor_hex(),
+        )
+      : [];
+
     const metadataMap = metadata ? convertCMLMapToRecordMetadata(metadata) : {};
 
     const witnessSet = cmlTx.witness_set();
@@ -263,6 +271,7 @@ export const processTxFromCbor = (
       // TODO: Support this properly
       redeemersMap,
       legacyRedeemers,
+      signers: signersList,
     };
 
     return success(transaction);

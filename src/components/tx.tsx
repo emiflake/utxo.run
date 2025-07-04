@@ -1,4 +1,5 @@
 import {
+  submitTx,
   TransactionAmount,
   useTxByHash,
   useTxUtxosByHash,
@@ -44,9 +45,29 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import { Button } from './ui/button';
 
-export const ViewTransactionLiveness = ({ hash }: { hash: string }) => {
+const bytesFromCbor = (cbor: string) => {
+  const bs = [];
+  for (let i = 0; i < cbor.length; i += 2) {
+    bs.push(parseInt(cbor.slice(i, i + 2), 16));
+  }
+  return Uint8Array.from(bs);
+};
+
+export const ViewTransactionLiveness = ({
+  hash,
+  cbor,
+}: { hash: string; cbor?: string }) => {
   const { data: tx, isLoading, isError } = useTxByHash(hash);
+
+  const submit = useCallback(async () => {
+    if (!cbor) return;
+    const bytes = bytesFromCbor(cbor);
+    const response = await submitTx(bytes);
+    // TODO: Make it a toast.
+    console.log(response);
+  }, [cbor]);
 
   return (
     <>
@@ -100,9 +121,12 @@ export const ViewTransactionLiveness = ({ hash }: { hash: string }) => {
           <span className="dark:text-white">
             Transaction not found on-chain
           </span>
-          <span className="dark:text-gray-300 text-gray-500 text-xs">
-            Likely this is because the transaction is not yet submitted.
-          </span>
+          <div className="flex flex-row gap-2">
+            You can try to submit the transaction to the network.
+          </div>
+          <Button onClick={submit} variant="outline">
+            Submit
+          </Button>
         </div>
       )}
     </>
@@ -712,6 +736,7 @@ export const ViewMetadata = ({
 
 export const TxViewer = ({ tx }: { tx: Transaction }) => {
   useEffect(() => {
+    // This makes the transaction available in the console for debugging
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (window as any).tx = tx;
   }, [tx]);
@@ -740,7 +765,7 @@ export const TxViewer = ({ tx }: { tx: Transaction }) => {
       <div className="flex flex-col gap-2">
         <div className="flex flex-row gap-2">
           <div className="flex flex-col w-1/2">
-            <ViewTransactionLiveness hash={tx.hash} />
+            <ViewTransactionLiveness hash={tx.hash} cbor={tx.cbor} />
           </div>
           <div className="flex flex-col w-1/2 gap-2 border border-gray-300 dark:border-gray-700 p-2">
             <h2 className="text-md text-slate-900 dark:text-white">
