@@ -193,7 +193,7 @@ export const ViewUnit = ({
     <div
       role="listitem"
       aria-label="UTxO unit"
-      className="flex flex-row justify-between gap-4 border-1 shadow-xs bg-gray-50/20 dark:bg-gray-900/20 border-gray-200 dark:border-gray-600 p-2 break-all"
+      className="flex flex-row justify-between gap-4 border-1 shadow-xs bg-gray-50/20 dark:bg-gray-900/20 border-gray-200 dark:border-gray-700 p-2 break-all"
     >
       <span className="text-sm self-center" id={labelId} aria-hidden>
         {unit === 'lovelace' ? (

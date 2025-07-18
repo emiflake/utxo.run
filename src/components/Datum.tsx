@@ -111,10 +111,10 @@ export const ViewDatum = ({ datum }: { datum: string }) => {
   };
 
   return (
-    <div className="border-black border-1 bg-gray-900 text-white overflow-hidden">
+    <div className="dark:border-black/10 dark:inset-shadow-black border-gray-200 border-1 bg-amber-50/10 dark:bg-gray-900 text-gray-200 dark:text-white overflow-hidden shadow-md">
       <div className="flex flex-col">
         {/* Toolbar with buttons always visible at the top */}
-        <div className="flex justify-between items-center p-1 border-b border-gray-800">
+        <div className="flex justify-between items-center p-1 border-b border-gray-200 dark:border-gray-800">
           <ViewModeSelector />
           <div className="flex gap-1">
             <DiffCheckbox
@@ -128,11 +128,11 @@ export const ViewDatum = ({ datum }: { datum: string }) => {
                 !datumContext?.selectedDatums.some((d) => d.ref === ref) &&
                 (datumContext?.selectedDatums?.length ?? 0) >= 2
               }
-              className="text-white hover:text-blue-300"
+              className="dark:text-white hover:text-blue-300"
             />
             <button
               onClick={toggleExpand}
-              className="text-white hover:text-blue-300 p-1"
+              className="text-gray-900 dark:text-white hover:text-blue-300 p-1"
               title={isExpanded ? 'Collapse' : 'Expand'}
             >
               {isExpanded ? (
@@ -143,18 +143,18 @@ export const ViewDatum = ({ datum }: { datum: string }) => {
             </button>
             <ExternalLinkButton
               href={cborNemo}
-              className="text-white hover:text-blue-300"
+              className="text-gray-900 dark:text-white hover:text-blue-300"
             />
             <ClipboardButton
               text={textToDisplay}
-              className="text-white hover:text-blue-300"
+              className="text-gray-900 dark:text-white hover:text-blue-300"
             />
           </div>
         </div>
         {/* Content area */}
         <div className="p-2 overflow-x-auto leading-none">
           <span
-            className={`text-xs font-mono break-all dark:text-white ${
+            className={`text-xs font-mono break-all text-gray-600 dark:text-white ${
               isExpanded ? 'whitespace-pre-wrap' : ''
             }`}
           >
@@ -259,7 +259,7 @@ export const ViewDatumDiff = ({
   }, [diff]);
 
   return (
-    <div className="border-black border-1 bg-gray-900 text-white overflow-hidden">
+    <div className="dark:border-black/10 dark:inset-shadow-black border-gray-200 border-1 bg-amber-50/10 dark:bg-gray-900 text-gray-200 dark:text-white overflow-hidden shadow-md">
       <div className="flex flex-col">
         <div className="flex justify-between items-center p-1 border-b border-gray-800">
           <ViewModeSelector />
@@ -269,7 +269,7 @@ export const ViewDatumDiff = ({
           <div className="flex flex-1 gap-2">
             <div className="flex w-1/2">
               <span
-                className={`text-xs font-mono break-all dark:text-white whitespace-pre-wrap`}
+                className={`text-xs font-mono break-all text-gray-600 dark:text-white whitespace-pre-wrap`}
               >
                 {nodesA}
               </span>
@@ -277,7 +277,7 @@ export const ViewDatumDiff = ({
             {
               <div className="flex border-l border-gray-00 pl-5 w-1/2">
                 <span
-                  className={`text-xs font-mono break-all dark:text-white whitespace-pre-wrap`}
+                  className={`text-xs font-mono break-all text-gray-600 dark:text-white whitespace-pre-wrap`}
                 >
                   {nodesB}
                 </span>
@@ -301,7 +301,10 @@ export const ViewModeSelector = () => {
         onValueChange={(value) => datumContext?.setViewMode(value as ViewMode)}
         value={datumContext?.viewMode}
       >
-        <SelectTrigger className="w-[180px] border-0 border-r-1 border-gray-800 dark:bg-gray-900 bg-gray-900 hover:bg-gray-800">
+        <SelectTrigger
+          className="w-[180px] border-0 border-r-1 dark:border-gray-800 dark:bg-gray-900 bg-amber-50/10 hover:bg-gray-100 dark:hover:bg-gray-800
+          text-gray-900 dark:text-white"
+        >
           <SelectValue placeholder="Theme" />
         </SelectTrigger>
         <SelectContent onAnimationStart={(e) => e.stopPropagation()}>
@@ -336,20 +339,20 @@ export const ViewMetadatum = ({
   }, [hastTree]);
 
   return (
-    <div className="bg-gray-900 text-white overflow-hidden">
+    <div className="dark:border-gray-800 border-gray-200 border-1 bg-amber-50/10 dark:bg-gray-900 text-gray-200 dark:text-white overflow-hidden shadow-md">
       <div className="flex flex-col">
-        <div className="flex justify-between items-center p-2 border-b border-gray-800">
-          <span className="text-sm text-slate-100 dark:text-white">
+        <div className="flex justify-between items-center p-2 border-b border-gray-200 dark:border-gray-800">
+          <span className="text-sm text-gray-900 dark:text-white">
             Label {label}
           </span>
           <ClipboardButton
             text={asYaml}
-            className="text-white hover:text-blue-300"
+            className="text-gray-700 hover:text-blue-600 dark:text-white dark:hover:text-blue-300"
           />
         </div>
         <div className="p-2 overflow-x-auto leading-none">
           <span
-            className={`text-xs font-mono break-all dark:text-white whitespace-pre-wrap`}
+            className={`text-xs font-mono break-all text-gray-600 dark:text-white whitespace-pre-wrap`}
           >
             {jsxRuntime}
           </span>
