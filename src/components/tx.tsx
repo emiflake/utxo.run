@@ -724,10 +724,17 @@ export const ViewMetadata = ({
 }) => {
   return (
     <div className="flex flex-col gap-2 border border-gray-300 dark:border-gray-700 p-2">
-      <span className="text-md text-slate-900 dark:text-white">Metadata</span>
-      <div className="flex flex-row gap-2">
+      <span className="text-md text-slate-900 dark:text-white">
+        Metadata{' '}
+        <span className="text-xs text-gray-500 dark:text-gray-300">
+          ({Object.keys(metadata).length})
+        </span>
+      </span>
+      <div className="flex flex-col gap-2">
         {Object.entries(metadata).map(([key, value]) => (
-          <ViewMetadatum key={key} label={key} metadatum={value} />
+          <>
+            <ViewMetadatum key={key} label={key} metadatum={value} />
+          </>
         ))}
       </div>
     </div>
