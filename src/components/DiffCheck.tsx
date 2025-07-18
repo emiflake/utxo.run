@@ -29,7 +29,7 @@ export const DiffCheckbox = ({
     <div className="flex items-center">
       <label className="gap-1 relative inline-flex items-center cursor-pointer">
         {label && (
-          <span className="ml-3 text-sm font-medium text-white dark:text-gray-300 visible">
+          <span className="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300 visible">
             {label}:
           </span>
         )}
@@ -46,7 +46,9 @@ export const DiffCheckbox = ({
           }}
         />
         <div
-          className={`w-5 min-w-5 h-5 min-h-5 bg-gray-800 transition-all duration-200 hover:bg-gray-700 hover:border-blue-400 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-500 dark:peer-focus:ring-blue-600 peer dark:bg-gray-900 border-[3px] border-gray-600 flex items-center justify-center shadow-md ${className}`}
+          className={`w-5 min-w-5 h-5 min-h-5 bg-gray-100 dark:bg-gray-800 transition-all duration-200 dark:hover:bg-gray-700 hover:border-blue-400 peer-focus:outline-none 
+            peer-focus:ring-2 peer-focus:ring-blue-500 dark:peer-focus:ring-blue-600 peer 
+            border-[3px] border-gray-200 dark:border-gray-600 flex items-center justify-center dark:shadow-md ${className}`}
         >
           {checked && <CheckIcon className="w-4 h-4 text-blue-400" />}
         </div>
