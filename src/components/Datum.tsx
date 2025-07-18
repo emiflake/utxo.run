@@ -27,12 +27,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
-import { Button } from '@/components/ui/button';
 import * as yaml from 'yaml';
 
 const JSONbig = jsonBigInt();
@@ -342,35 +336,25 @@ export const ViewMetadatum = ({
   }, [hastTree]);
 
   return (
-    <Popover>
-      <PopoverTrigger asChild>
-        <Button className="w-fit bg-transparent" variant="outline">
-          {label}
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent
-        side="bottom"
-        className="w-168 max-h-[calc(var(--radix-popover-content-available-height))] overflow-auto bg-background dark:bg-gray-900"
-      >
-        <div className="flex flex-col">
-          <div className="p-2 overflow-x-auto leading-none flex justify-between">
-            <span>Metadata with label {label}</span>
-            <ClipboardButton
-              text={asYaml}
-              className="text-white hover:text-blue-300"
-            />
-          </div>
-          <div className="flex justify-between items-center bg-gray-900 p-1 text-white border-2 ">
-            <div className=" p-2 overflow-x-auto leading-none w-full">
-              <span
-                className={`text-xs font-mono break-all dark:text-white whitespace-pre-wrap`}
-              >
-                {jsxRuntime}
-              </span>
-            </div>
-          </div>
+    <div className="bg-gray-900 text-white overflow-hidden">
+      <div className="flex flex-col">
+        <div className="flex justify-between items-center p-2 border-b border-gray-800">
+          <span className="text-sm text-slate-100 dark:text-white">
+            Label {label}
+          </span>
+          <ClipboardButton
+            text={asYaml}
+            className="text-white hover:text-blue-300"
+          />
         </div>
-      </PopoverContent>
-    </Popover>
+        <div className="p-2 overflow-x-auto leading-none">
+          <span
+            className={`text-xs font-mono break-all dark:text-white whitespace-pre-wrap`}
+          >
+            {jsxRuntime}
+          </span>
+        </div>
+      </div>
+    </div>
   );
 };
