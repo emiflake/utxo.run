@@ -17,8 +17,14 @@ import {
   XIcon,
 } from './Icons';
 import { handleSearch } from '../search';
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 
 export function SearchBar() {
   const [searchValue, setSearchValue] = useState('');
@@ -251,12 +257,15 @@ export function NavBar() {
                 <ThemeToggle />
 
                 <Dialog>
-                  <DialogTrigger>
+                  <DialogTrigger asChild>
                     <Button variant="outline">
                       <SettingsIcon />
                     </Button>
                   </DialogTrigger>
                   <DialogContent>
+                    <VisuallyHidden>
+                      <DialogTitle>Settings</DialogTitle>
+                    </VisuallyHidden>
                     <SettingsModal />
                   </DialogContent>
                 </Dialog>

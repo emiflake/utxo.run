@@ -79,18 +79,22 @@ const ConnectionState = ({
 }) => {
   if (connectionState === 'connected') {
     return (
-      <span className="text-green-800 dark:text-green-400">Connected</span>
+      <span className="text-sm text-green-800 dark:text-green-400">
+        Connected
+      </span>
     );
   } else if (connectionState === 'loading') {
     return (
-      <div className="p-2 gap-2 text-gray-500 dark:text-gray-400 flex items-center">
+      <div className="text-sm p-2 gap-2 text-gray-500 dark:text-gray-400 flex items-center">
         <Spinner />
         Loading
       </div>
     );
   } else {
     return (
-      <span className="text-red-800 dark:text-red-400">Not connected</span>
+      <span className="text-sm text-red-800 dark:text-red-400">
+        Not connected
+      </span>
     );
   }
 };

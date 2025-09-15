@@ -7,7 +7,7 @@ import { addressInfo, TransactionOutput } from '../tx';
 import { ErrorBox } from '../App';
 import { scriptInfoByAddress, useRegistry } from '../registry';
 import { ScriptInfo } from '../components/ScriptInfo';
-import { CopyBody } from '../components/layout/CopyBody';
+import { PageTitle } from '../components/layout/PageTitle';
 import { Box, BoxHeader } from '../components/layout/Box';
 import { MonoTag } from '../components/MiniTag';
 import CommandPalette from '../components/CommandPalette';
@@ -96,7 +96,7 @@ export const AddressPage = ({
       <CommandPalette />
 
       <MainLayout ariaLabel="Address page">
-        <CopyBody title="Address" value={address} url={addressUrl} />
+        <PageTitle title="Address" value={address} url={addressUrl} />
         {scriptInfo && <ScriptInfo script={scriptInfo} />}
 
         <Box>

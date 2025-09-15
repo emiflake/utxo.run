@@ -15,7 +15,7 @@
   --foreground: var(--gray-950);
   --card: var(--gray-500);
   --card-foreground: var(--gray-950);
-  --popover: var(--gray-50);
+  --popover: var(--color-white);
   --popover-foreground: var(--gray-950);
   --primary: var(--orange-500);
   --primary-foreground: var(--orange-500);
@@ -51,7 +51,7 @@
   --foreground: var(--gray-50);
   --card: var(--gray-950);
   --card-foreground: var(--gray-50);
-  --popover: var(--gray-950);
+  --popover: var(--gray-900);
   --popover-foreground: var(--gray-50);
   --primary: var(--orange-400);
   --primary-foreground: var(--orange-400);

@@ -4,7 +4,7 @@ import { TxViewer } from '../components/tx';
 import { useNavigate, useParams } from 'react-router';
 import { NavBar } from '../components/nav';
 import { AnimatedSearchInput } from '../components/AnimatedSearchInput';
-import { CopyBody } from '../components/layout/CopyBody';
+import { TransactionTitle } from '../components/layout/PageTitle';
 import CommandPalette from '../components/CommandPalette';
 import { MainLayout } from '../components/layout/Main';
 import { Box } from '../components/layout/Box';
@@ -101,11 +101,7 @@ export function TxViewPage({ cbor }: { cbor?: string }) {
         )}
         {processedCbor.success && (
           <div>
-            <CopyBody
-              title="Transaction"
-              value={processedCbor.value.hash}
-              url={window.location.href}
-            />
+            <TransactionTitle tx={processedCbor.value} />
             <TxViewer tx={processedCbor.value} />
           </div>
         )}

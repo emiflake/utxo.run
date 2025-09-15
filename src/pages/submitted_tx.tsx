@@ -5,7 +5,7 @@ import { useTxDataByHash } from '../betterfrost';
 import { ErrorBox } from '../App';
 import { TxViewer } from '../components/tx';
 import { AnimatedSearchInput } from '../components/AnimatedSearchInput';
-import { CopyBody } from '../components/layout/CopyBody';
+import { TransactionTitle } from '../components/layout/PageTitle';
 import CommandPalette from '../components/CommandPalette';
 import { MainLayout } from '../components/layout/Main';
 import { KeyboardShortcut } from '../components/KeyboardShortcut';
@@ -66,10 +66,6 @@ export const SubmittedTxPage = ({
     return txHashOverride ?? params.txHash ?? '';
   }, [params, txHashOverride]);
 
-  const txUrl = useMemo(() => {
-    return `${window.location.href}`;
-  }, []);
-
   const { data: txData, isError } = useTxDataByHash(txHash);
 
   useEffect(() => {
@@ -102,7 +98,7 @@ export const SubmittedTxPage = ({
         )}
         {txData && (
           <div>
-            <CopyBody title="Transaction" value={txData.hash} url={txUrl} />
+            <TransactionTitle tx={txData} />
             <TxViewer tx={txData} />
           </div>
         )}

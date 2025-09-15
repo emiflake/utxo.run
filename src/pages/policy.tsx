@@ -12,7 +12,7 @@ import { ErrorBox } from '../App';
 import { MiniTransactionCard } from '../components/MiniTx';
 import { useRegistry } from '../registry';
 import { ScriptInfo } from '../components/ScriptInfo';
-import { CopyBody } from '../components/layout/CopyBody';
+import { PageTitle } from '../components/layout/PageTitle';
 import CommandPalette from '../components/CommandPalette';
 import { MainLayout } from '../components/layout/Main';
 import { Footer } from '../components/layout/Footer';
@@ -160,7 +160,7 @@ export const PolicyPage = () => {
       <CommandPalette />
 
       <MainLayout>
-        <CopyBody title="Policy" value={policy} url={policyUrl} />
+        <PageTitle title="Policy" value={policy} url={policyUrl} />
 
         {/* Token information, if available */}
         {registryQuery.data && relevantScript && (

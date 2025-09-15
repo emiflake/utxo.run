@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { CheckIcon, CopyIcon, LinkIcon } from './Icons';
+import { Button } from './ui/button';
 
 // Utility functions
 async function copyToClipboard(text: string): Promise<boolean> {
@@ -60,6 +61,35 @@ interface ClipboardButtonProps {
   text: string;
   className?: string;
   copyDuration?: number;
+}
+
+export function FeedbackButton(
+  props: React.ComponentProps<typeof Button> & {
+    duration?: number;
+    children: React.ReactNode;
+    feedback?: React.ReactNode;
+  },
+) {
+  const { duration = 500, children, feedback } = props;
+  const [active, setActive] = useState(false);
+
+  const handleClick = () => {
+    console.log('handleClick');
+    setActive(true);
+    setTimeout(() => setActive(false), duration);
+  };
+
+  return (
+    <Button
+      {...props}
+      onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+        handleClick();
+        props.onClick?.(e);
+      }}
+    >
+      {active ? feedback || 'Copied!' : children}
+    </Button>
+  );
 }
 
 export function ClipboardButton({
